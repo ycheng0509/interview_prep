@@ -393,29 +393,40 @@ pre .c-comment { color: var(--text3); }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-/* ─── HAMBURGER ─── */
-.hamburger {
+/* ─── MOBILE TOP BAR ─── */
+.mobile-bar {
   display: none;
   position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 100;
+  top: 0; left: 0; right: 0;
+  height: 52px;
   background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  flex-direction: column;
+  border-bottom: 1px solid var(--border2);
   align-items: center;
-  justify-content: center;
+  padding: 0 1rem;
+  z-index: 100;
+  gap: 12px;
+}
+
+.mobile-bar-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
   gap: 5px;
-  padding: 0;
+  padding: 4px;
 }
 
 .hamburger span {
   display: block;
-  width: 18px;
+  width: 20px;
   height: 2px;
   background: var(--text2);
   border-radius: 2px;
@@ -436,7 +447,7 @@ pre .c-comment { color: var(--text3); }
 
 /* ─── MOBILE ─── */
 @media (max-width: 768px) {
-  .hamburger { display: flex; }
+  .mobile-bar { display: flex; }
   nav {
     display: block;
     position: fixed;
@@ -448,16 +459,19 @@ pre .c-comment { color: var(--text3); }
   }
   nav.open { transform: translateX(0); }
   .nav-overlay.open { display: block; }
-  main { padding: 1.5rem 1rem 4rem; }
+  main { padding: 4rem 1rem 4rem; margin-top: 52px; }
   .concept-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
 
-<button class="hamburger" id="hamburger" aria-label="Toggle menu">
-  <span></span><span></span><span></span>
-</button>
+<div class="mobile-bar">
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+  <span class="mobile-bar-title">Interview Review</span>
+</div>
 <div class="nav-overlay" id="nav-overlay"></div>
 
 <div class="shell">
