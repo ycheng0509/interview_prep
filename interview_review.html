@@ -435,6 +435,19 @@ pre .c-comment { color: var(--text3); }
   <a class="nav-item" onclick="show('linux-bash')">Bash 脚本</a>
   <a class="nav-item" onclick="show('linux-troubleshoot')">🔧 排查流程</a>
   <a class="nav-item" onclick="show('linux-interview-qa')">🎯 面试问答 Q&A</a>
+
+  <div class="nav-section" style="margin-top:1rem">Python</div>
+  <a class="nav-item" onclick="show('python-basics')">Basics & Data Types</a>
+  <a class="nav-item" onclick="show('python-oop')">OOP</a>
+  <a class="nav-item" onclick="show('python-parsing')">File Parsing</a>
+  <a class="nav-item" onclick="show('python-qa')">🎯 Interview Q&A</a>
+
+  <div class="nav-section" style="margin-top:1rem">Research</div>
+  <a class="nav-item" onclick="show('ipmi-overview')">IPMI Overview</a>
+  <a class="nav-item" onclick="show('ipmi-sensors')">Sensor Types & Interfaces</a>
+  <a class="nav-item" onclick="show('ipmi-flowchart')">PEF / PET / SEL / SDR</a>
+  <a class="nav-item" onclick="show('redfish-schema')">Redfish Schema Versions</a>
+  <a class="nav-item" onclick="show('redfish-telemetry')">Redfish Telemetry Service</a>
 </nav>
 
 <!-- ─── MAIN CONTENT ─── -->
@@ -1658,6 +1671,527 @@ pre .c-comment { color: var(--text3); }
       <div class="qa-a">
         <span class="answer-label">完整回答</span>
         <div class="interview-box">&gt; redirects stdout and overwrites the file if it exists. &gt;&gt; redirects stdout and appends to the file. 2&gt;&amp;1 means "redirect file descriptor 2 (stderr) to wherever file descriptor 1 (stdout) currently points" — effectively merging error output into the normal output stream. A common pattern is command &gt; output.log 2&gt;&amp;1 which captures both stdout and stderr into one log file.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════ PYTHON ════════════════ -->
+
+<!-- PYTHON BASICS -->
+<div class="section" id="python-basics">
+  <h1>Python <em>Basics</em></h1>
+  <p class="section-desc">Core language fundamentals required for the interview. Make sure your IDE is set up and you can run code before the interview.</p>
+
+  <h2>Data Types</h2>
+  <table class="kv-table">
+    <tr><th>Type</th><th>Example</th><th>Notes</th></tr>
+    <tr><td>int / float</td><td><code class="cmd">x = 42</code> / <code class="cmd">x = 3.14</code></td><td>No type declaration needed</td></tr>
+    <tr><td>str</td><td><code class="cmd">s = "hello"</code></td><td>Immutable. f-strings: <code class="cmd">f"val={x}"</code></td></tr>
+    <tr><td>list</td><td><code class="cmd">[1, 2, 3]</code></td><td>Mutable, ordered, allows duplicates</td></tr>
+    <tr><td>tuple</td><td><code class="cmd">(1, 2, 3)</code></td><td>Immutable list — use for fixed data</td></tr>
+    <tr><td>dict</td><td><code class="cmd">{"key": "val"}</code></td><td>Key-value pairs, fast lookup</td></tr>
+    <tr><td>set</td><td><code class="cmd">{1, 2, 3}</code></td><td>Unique values, no order</td></tr>
+    <tr><td>bool</td><td><code class="cmd">True / False</code></td><td>Subclass of int</td></tr>
+  </table>
+
+  <h2>Control Flow</h2>
+  <pre>
+<span class="c-comment"># if / elif / else</span>
+<span class="c-blue">if</span> x &gt; 10:
+    <span class="c-green">print</span>(<span class="c-green">"big"</span>)
+<span class="c-blue">elif</span> x == 10:
+    <span class="c-green">print</span>(<span class="c-green">"ten"</span>)
+<span class="c-blue">else</span>:
+    <span class="c-green">print</span>(<span class="c-green">"small"</span>)
+
+<span class="c-comment"># for loop</span>
+<span class="c-blue">for</span> item <span class="c-blue">in</span> [<span class="c-gold">1</span>, <span class="c-gold">2</span>, <span class="c-gold">3</span>]:
+    <span class="c-green">print</span>(item)
+
+<span class="c-comment"># while loop</span>
+<span class="c-blue">while</span> x &gt; 0:
+    x -= <span class="c-gold">1</span>
+</pre>
+
+  <h2>Functions</h2>
+  <pre>
+<span class="c-blue">def</span> <span class="c-gold">add</span>(a, b):
+    <span class="c-blue">return</span> a + b
+
+<span class="c-comment"># default argument</span>
+<span class="c-blue">def</span> <span class="c-gold">greet</span>(name=<span class="c-green">"World"</span>):
+    <span class="c-blue">return</span> <span class="c-green">f"Hello, {name}"</span>
+
+<span class="c-comment"># *args and **kwargs</span>
+<span class="c-blue">def</span> <span class="c-gold">show</span>(*args, **kwargs):
+    <span class="c-green">print</span>(args, kwargs)
+</pre>
+
+  <h2>Useful Built-ins</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--accent)"></div><span style="color:var(--accent)">List Comprehension</span></div>
+      <div class="c-body"><code class="cmd">[x*2 for x in range(5)]</code> → <code class="cmd">[0,2,4,6,8]</code>. Cleaner than a for loop for building lists.</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--blue)"></div><span style="color:var(--blue)">enumerate / zip</span></div>
+      <div class="c-body"><code class="cmd">for i, v in enumerate(lst)</code> gives index + value. <code class="cmd">zip(a, b)</code> pairs two lists.</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--gold)"></div><span style="color:var(--gold)">Exception Handling</span></div>
+      <div class="c-body"><code class="cmd">try / except / finally</code>. Always catch specific exceptions, not bare <code class="cmd">except:</code>.</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--purple)"></div><span style="color:var(--purple)">with statement</span></div>
+      <div class="c-body"><code class="cmd">with open("f.txt") as f:</code> — automatically closes the file even if an exception occurs.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PYTHON OOP -->
+<div class="section" id="python-oop">
+  <h1>Python <em>OOP</em></h1>
+  <p class="section-desc">Object-Oriented Programming is a key interview topic. Know the four pillars and be able to write a class from scratch.</p>
+
+  <h2>Four Pillars</h2>
+  <table class="kv-table">
+    <tr><th>Pillar</th><th>Meaning</th><th>Python Example</th></tr>
+    <tr><td>Encapsulation</td><td>Bundle data + methods; hide internals</td><td><code class="cmd">self.__private</code> convention</td></tr>
+    <tr><td>Inheritance</td><td>Child class reuses parent class</td><td><code class="cmd">class Dog(Animal):</code></td></tr>
+    <tr><td>Polymorphism</td><td>Same method, different behavior</td><td>Override <code class="cmd">__str__</code>, method overriding</td></tr>
+    <tr><td>Abstraction</td><td>Expose interface, hide implementation</td><td><code class="cmd">abc.ABC</code> + <code class="cmd">@abstractmethod</code></td></tr>
+  </table>
+
+  <h2>Class Example</h2>
+  <pre>
+<span class="c-blue">class</span> <span class="c-gold">Sensor</span>:
+    <span class="c-blue">def</span> <span class="c-gold">__init__</span>(self, name, unit):
+        self.name = name
+        self.unit = unit
+        self.__reading = <span class="c-gold">0</span>      <span class="c-comment"># private attribute</span>
+
+    <span class="c-blue">def</span> <span class="c-gold">set_reading</span>(self, value):
+        <span class="c-blue">if</span> value &lt; <span class="c-gold">0</span>:
+            <span class="c-blue">raise</span> ValueError(<span class="c-green">"Reading cannot be negative"</span>)
+        self.__reading = value
+
+    <span class="c-blue">def</span> <span class="c-gold">get_reading</span>(self):
+        <span class="c-blue">return</span> self.__reading
+
+    <span class="c-blue">def</span> <span class="c-gold">__str__</span>(self):
+        <span class="c-blue">return</span> <span class="c-green">f"{self.name}: {self.__reading} {self.unit}"</span>
+
+
+<span class="c-blue">class</span> <span class="c-gold">TemperatureSensor</span>(<span class="c-gold">Sensor</span>):        <span class="c-comment"># Inheritance</span>
+    <span class="c-blue">def</span> <span class="c-gold">__init__</span>(self, name):
+        <span class="c-gold">super</span>().__init__(name, <span class="c-green">"°C"</span>)
+
+    <span class="c-blue">def</span> <span class="c-gold">is_critical</span>(self, threshold=<span class="c-gold">80</span>):
+        <span class="c-blue">return</span> self.get_reading() &gt; threshold
+
+
+<span class="c-comment"># Usage</span>
+s = <span class="c-gold">TemperatureSensor</span>(<span class="c-green">"CPU_Temp"</span>)
+s.set_reading(<span class="c-gold">92</span>)
+<span class="c-green">print</span>(s)               <span class="c-comment"># CPU_Temp: 92 °C</span>
+<span class="c-green">print</span>(s.is_critical()) <span class="c-comment"># True</span>
+</pre>
+
+  <h2>Key Special Methods</h2>
+  <table class="kv-table">
+    <tr><th>Method</th><th>Called When</th></tr>
+    <tr><td><code class="cmd">__init__</code></td><td>Object is created</td></tr>
+    <tr><td><code class="cmd">__str__</code></td><td><code class="cmd">print(obj)</code> or <code class="cmd">str(obj)</code></td></tr>
+    <tr><td><code class="cmd">__repr__</code></td><td>Developer representation, used in REPL</td></tr>
+    <tr><td><code class="cmd">__len__</code></td><td><code class="cmd">len(obj)</code></td></tr>
+    <tr><td><code class="cmd">__eq__</code></td><td><code class="cmd">obj1 == obj2</code></td></tr>
+  </table>
+
+  <div class="callout tip"><span class="callout-icon">TIP</span>When asked about OOP in an interview, give a concrete example from the domain — e.g., a Sensor base class with subclasses for Temperature, Fan, Voltage sensors. This shows you understand the concept in context.</div>
+</div>
+
+<!-- PYTHON PARSING -->
+<div class="section" id="python-parsing">
+  <h1>Python <em>File Parsing</em></h1>
+  <p class="section-desc">Reading and parsing output files is a core scripting skill. Covers reading files, splitting/stripping, regex, and structured output parsing.</p>
+
+  <h2>Reading a File</h2>
+  <pre>
+<span class="c-comment"># Read all lines</span>
+<span class="c-blue">with</span> <span class="c-gold">open</span>(<span class="c-green">"output.txt"</span>, <span class="c-green">"r"</span>) <span class="c-blue">as</span> f:
+    lines = f.readlines()   <span class="c-comment"># list of strings, includes \n</span>
+
+<span class="c-comment"># Iterate line by line (memory-efficient)</span>
+<span class="c-blue">with</span> <span class="c-gold">open</span>(<span class="c-green">"output.txt"</span>) <span class="c-blue">as</span> f:
+    <span class="c-blue">for</span> line <span class="c-blue">in</span> f:
+        line = line.strip()  <span class="c-comment"># removes \n and whitespace</span>
+        <span class="c-blue">if</span> line:
+            <span class="c-green">print</span>(line)
+</pre>
+
+  <h2>Parsing Key=Value Output</h2>
+  <pre>
+<span class="c-comment"># Example output.txt:
+# Temperature: 72 C
+# Fan Speed: 4200 RPM
+# Voltage: 12.1 V</span>
+
+data = {}
+<span class="c-blue">with</span> <span class="c-gold">open</span>(<span class="c-green">"output.txt"</span>) <span class="c-blue">as</span> f:
+    <span class="c-blue">for</span> line <span class="c-blue">in</span> f:
+        line = line.strip()
+        <span class="c-blue">if</span> <span class="c-green">":"</span> <span class="c-blue">in</span> line:
+            key, val = line.split(<span class="c-green">":"</span>, <span class="c-gold">1</span>)   <span class="c-comment"># maxsplit=1 for safety</span>
+            data[key.strip()] = val.strip()
+
+<span class="c-green">print</span>(data[<span class="c-green">"Temperature"</span>])  <span class="c-comment"># "72 C"</span>
+</pre>
+
+  <h2>Parsing with Regex</h2>
+  <pre>
+<span class="c-blue">import</span> re
+
+log_line = <span class="c-green">"[ERROR] 2024-03-01 CPU temp exceeded threshold: 95 C"</span>
+
+<span class="c-comment"># Extract severity and temperature value</span>
+pattern = <span class="c-green">r"\[(.*?)\].*?(\d+)\s*C"</span>
+match = re.search(pattern, log_line)
+<span class="c-blue">if</span> match:
+    severity = match.group(<span class="c-gold">1</span>)  <span class="c-comment"># "ERROR"</span>
+    temp     = match.group(<span class="c-gold">2</span>)  <span class="c-comment"># "95"</span>
+    <span class="c-green">print</span>(<span class="c-green">f"{severity}: {temp}°C"</span>)
+
+<span class="c-comment"># Find all numbers in a string</span>
+nums = re.findall(<span class="c-green">r"\d+\.?\d*"</span>, <span class="c-green">"Fan: 4200 RPM, Volt: 12.1 V"</span>)
+<span class="c-comment"># ['4200', '12.1']</span>
+</pre>
+
+  <h2>Parsing JSON / Structured Output</h2>
+  <pre>
+<span class="c-blue">import</span> json, subprocess
+
+<span class="c-comment"># Parse a command's JSON output</span>
+result = subprocess.run(
+    [<span class="c-green">"ipmitool"</span>, <span class="c-green">"sdr"</span>, <span class="c-green">"list"</span>],
+    capture_output=<span class="c-gold">True</span>, text=<span class="c-gold">True</span>
+)
+<span class="c-blue">for</span> line <span class="c-blue">in</span> result.stdout.splitlines():
+    parts = [p.strip() <span class="c-blue">for</span> p <span class="c-blue">in</span> line.split(<span class="c-green">"|"</span>)]
+    <span class="c-blue">if</span> <span class="c-gold">len</span>(parts) == <span class="c-gold">3</span>:
+        name, value, status = parts
+        <span class="c-green">print</span>(<span class="c-green">f"Sensor: {name}, Value: {value}, Status: {status}"</span>)
+
+<span class="c-comment"># Parse actual JSON</span>
+<span class="c-blue">with</span> <span class="c-gold">open</span>(<span class="c-green">"data.json"</span>) <span class="c-blue">as</span> f:
+    obj = json.load(f)
+    <span class="c-green">print</span>(obj[<span class="c-green">"Readings"</span>][<span class="c-gold">0</span>][<span class="c-green">"Value"</span>])
+</pre>
+</div>
+
+<!-- PYTHON QA -->
+<div class="section" id="python-qa">
+  <h1>Python <em>Interview Q&amp;A</em></h1>
+  <p class="section-desc">Common Python questions in a hardware/systems engineering interview context.</p>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q1</span><span class="q-text">What is the difference between a list and a tuple?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">A list is mutable — you can add, remove, or change elements after creation. A tuple is immutable — once created it cannot be modified. Tuples are slightly faster and are used for fixed data like coordinates or function return values where you want to prevent accidental modification.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q2</span><span class="q-text">Explain inheritance with a real example.</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">Inheritance lets a child class reuse code from a parent class. For example, a Sensor base class could define common attributes like name and unit, plus a get_reading method. A TemperatureSensor subclass inherits all of that but adds a is_critical() method specific to temperature. You avoid rewriting shared logic and make the code easier to extend.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q3</span><span class="q-text">Write a script to parse a file and extract all lines containing "ERROR".</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Code</span>
+<pre style="margin-top:8px">
+<span class="c-blue">with</span> <span class="c-gold">open</span>(<span class="c-green">"system.log"</span>) <span class="c-blue">as</span> f:
+    errors = [line.strip() <span class="c-blue">for</span> line <span class="c-blue">in</span> f <span class="c-blue">if</span> <span class="c-green">"ERROR"</span> <span class="c-blue">in</span> line]
+
+<span class="c-blue">for</span> e <span class="c-blue">in</span> errors:
+    <span class="c-green">print</span>(e)
+</pre>
+        <div class="interview-box">Using a list comprehension with a conditional is the Pythonic approach. If the file is very large, it's better to iterate line-by-line rather than loading everything into memory at once — this pattern already does that correctly.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q4</span><span class="q-text">What does "self" mean in a class method?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">self refers to the specific instance of the class that the method is being called on. When you write sensor.get_reading(), Python automatically passes the sensor object as the first argument to get_reading. This is how instance methods access and modify the object's own attributes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ RESEARCH ════════════════ -->
+
+<!-- IPMI OVERVIEW -->
+<div class="section" id="ipmi-overview">
+  <h1>IPMI <em>Overview</em></h1>
+  <p class="section-desc">Intelligent Platform Management Interface — an open standard for out-of-band server management via the BMC. Understand it as the spec that defines how software talks to BMC hardware.</p>
+
+  <h2>Architecture</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--accent)"></div><span style="color:var(--accent)">BMC (Baseboard Management Controller)</span></div>
+      <div class="c-body">Dedicated microcontroller on the motherboard. Runs independently of the main CPU — works even when the server is powered off (standby power). Implements the IPMI spec.</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--blue)"></div><span style="color:var(--blue)">In-band vs Out-of-band</span></div>
+      <div class="c-body">In-band: host OS talks to BMC via system bus (KCS/SSIF). Out-of-band: management station talks to BMC directly via dedicated LAN (IPMI over LAN / RMCP+).</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--gold)"></div><span style="color:var(--gold)">IPMI Version</span></div>
+      <div class="c-body">IPMI 2.0 is the current standard. Adds encrypted remote access (RMCP+), serial over LAN (SOL), and payload authentication vs IPMI 1.5.</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--purple)"></div><span style="color:var(--purple)">ipmitool</span></div>
+      <div class="c-body">CLI tool to interact with BMC. <code class="cmd">ipmitool sdr list</code>, <code class="cmd">ipmitool sel list</code>, <code class="cmd">ipmitool chassis status</code> are the most common commands.</div>
+    </div>
+  </div>
+
+  <h2>Key Components</h2>
+  <table class="kv-table">
+    <tr><th>Component</th><th>Full Name</th><th>Role</th></tr>
+    <tr><td>SDR</td><td>Sensor Data Repository</td><td>Database of all sensor definitions (type, thresholds, entity)</td></tr>
+    <tr><td>SEL</td><td>System Event Log</td><td>Hardware event log stored in non-volatile BMC memory</td></tr>
+    <tr><td>PEF</td><td>Platform Event Filtering</td><td>Rules engine — filters events and triggers actions</td></tr>
+    <tr><td>PET</td><td>Platform Event Trap</td><td>SNMP trap sent by BMC when PEF fires an alert action</td></tr>
+    <tr><td>FRU</td><td>Field Replaceable Unit</td><td>Inventory data for replaceable components (part number, serial)</td></tr>
+  </table>
+</div>
+
+<!-- IPMI SENSORS -->
+<div class="section" id="ipmi-sensors">
+  <h1>IPMI <em>Sensor Types &amp; Interfaces</em></h1>
+  <p class="section-desc">Two core sensor classes defined in the IPMI spec, and the four hardware messaging interfaces BMC uses to communicate with the host.</p>
+
+  <h2>Sensor Types (IPMI Spec)</h2>
+  <div class="callout info"><span class="callout-icon">KEY</span>All IPMI sensors fall into two classes: Threshold-based (numeric) or Discrete (event/state bitmask).</div>
+
+  <table class="kv-table">
+    <tr><th>Class</th><th>How It Works</th><th>Examples</th></tr>
+    <tr><td><strong style="color:var(--accent)">Threshold-based</strong></td><td>Returns a numeric reading. Has up to 6 threshold levels: Lower Non-Critical, Lower Critical, Lower Non-Recoverable, and upper equivalents. An event fires when a reading crosses a threshold.</td><td>Temperature, Voltage, Fan Speed, Current</td></tr>
+    <tr><td><strong style="color:var(--blue)">Discrete</strong></td><td>Returns a bitmask of up to 15 event states. Each bit represents a specific condition (asserted/deasserted). No numeric value — just which states are active.</td><td>Processor status, Power Supply status, Drive Slot state, Button state</td></tr>
+  </table>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--accent)"></div><span style="color:var(--accent)">Threshold Sensor Thresholds</span></div>
+      <div class="c-body">LNR → LC → LNC → (normal) → UNC → UC → UNR<br>Lower Non-Recoverable is worst-case low; Upper Non-Recoverable is worst-case high. BMC logs a SEL event when any threshold is crossed.</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--blue)"></div><span style="color:var(--blue)">Discrete Sensor Subtypes</span></div>
+      <div class="c-body"><strong>Generic discrete</strong>: uses standard event/reading type codes (e.g., 0x03 = state asserted).<br><strong>Sensor-specific discrete</strong>: event meanings are defined per sensor type (e.g., Processor sensor: bit0 = IERR, bit1 = Thermal trip).</div>
+    </div>
+  </div>
+
+  <h2>BMC Hardware Interfaces (Host-side)</h2>
+  <div class="callout info"><span class="callout-icon">KEY</span>These are the physical interfaces the host CPU/OS uses to send IPMI messages to the BMC on the same board (in-band).</div>
+
+  <table class="kv-table">
+    <tr><th>Interface</th><th>Full Name</th><th>How It Works</th><th>Common Use</th></tr>
+    <tr><td><strong style="color:var(--accent)">KCS</strong></td><td>Keyboard Controller Style</td><td>Mapped to I/O ports (default 0xCA0/0xCA4). Host writes command bytes to input buffer; BMC processes and writes response to output buffer. Interrupt or polling-based.</td><td>Most common in-band interface. Used by ipmitool on Linux via /dev/ipmi0.</td></tr>
+    <tr><td><strong style="color:var(--blue)">SMIC</strong></td><td>Server Management Interface Chip</td><td>3-wire serial interface (SMS_ATN, SMS_DATA, SMS_CLK). Older design, lower bandwidth than KCS.</td><td>Legacy systems. Rarely seen on modern hardware.</td></tr>
+    <tr><td><strong style="color:var(--gold)">BT</strong></td><td>Block Transfer</td><td>Similar to KCS but with larger buffer size and supports full duplex. Uses 3 I/O registers. Allows sending/receiving bigger payloads in one transaction.</td><td>Less common; seen in some older server platforms.</td></tr>
+    <tr><td><strong style="color:var(--purple)">SSIF</strong></td><td>SMBus System Interface</td><td>Uses the SMBus (I2C-based) to communicate with BMC. Host acts as SMBus master, BMC as slave. Address 0x10 by default.</td><td>Used in some embedded/ATCA systems. Also common in BMC-less designs using a dedicated management microcontroller.</td></tr>
+  </table>
+</div>
+
+<!-- IPMI FLOWCHART -->
+<div class="section" id="ipmi-flowchart">
+  <h1>PEF / PET / SEL / <em>SDR</em></h1>
+  <p class="section-desc">How the four components interact: SDR defines sensors → sensors generate events → SEL stores them → PEF filters them → PET delivers alerts.</p>
+
+  <h2>Component Definitions</h2>
+  <table class="kv-table">
+    <tr><th>Component</th><th>What It Is</th><th>Stored In</th></tr>
+    <tr><td><strong style="color:var(--accent)">SDR</strong></td><td>Sensor Data Repository — a table of sensor records. Each record describes one sensor: name, type, entity, thresholds, units, event generation settings.</td><td>BMC non-volatile storage. Read via <code class="cmd">ipmitool sdr list</code>.</td></tr>
+    <tr><td><strong style="color:var(--blue)">SEL</strong></td><td>System Event Log — a ring buffer of hardware events. Each entry has a timestamp, sensor reference, event direction (assert/deassert), and event data.</td><td>BMC non-volatile storage. Read via <code class="cmd">ipmitool sel list</code>.</td></tr>
+    <tr><td><strong style="color:var(--gold)">PEF</strong></td><td>Platform Event Filtering — a table of rules. Each rule matches event fields (sensor type, event type, severity) and specifies an action to take when the event matches.</td><td>BMC volatile/NV storage. Configured via <code class="cmd">ipmitool pef</code>.</td></tr>
+    <tr><td><strong style="color:var(--red)">PET</strong></td><td>Platform Event Trap — an SNMP trap payload. Sent by the BMC to a configured management station IP when PEF fires an "Alert" action. Carries event data in a standardized format.</td><td>Transmitted over the network (UDP/162). Received by SNMP trap manager.</td></tr>
+  </table>
+
+  <h2>Flow Diagram</h2>
+  <div class="callout info"><span class="callout-icon">FLOW</span>Follow the path: hardware event → sensor reading → SDR threshold check → SEL log → PEF filter → PET alert</div>
+
+  <pre style="line-height:2">
+<span class="c-comment">┌─────────────────────────────────────────────────────────┐
+│  HARDWARE EVENT  (e.g. CPU temp crosses 80°C threshold) │
+└────────────────────────┬────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  SDR  (Sensor Data Record for "CPU Temp" sensor)        │
+│  → defines threshold levels, event generation rules     │
+│  → BMC compares reading to thresholds defined in SDR    │
+└────────────────────────┬────────────────────────────────┘
+                         │  threshold crossed → generate event
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  SEL  (System Event Log)                                │
+│  → event is written as SEL record                       │
+│  → fields: timestamp | sensor # | event type | data    │
+└────────────────────────┬────────────────────────────────┘
+                         │  simultaneously passed to PEF
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  PEF  (Platform Event Filtering)                        │
+│  → scans Event Filter Table for a matching rule        │
+│  → if match found, check Action: Alert / Power off /   │
+│    Reset / Power cycle / OEM                            │
+└────────────────────────┬────────────────────────────────┘
+                         │  if Action = Alert
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│  PET  (Platform Event Trap)                             │
+│  → BMC sends SNMP trap to Alert Destination IP          │
+│  → trap payload contains event data from SEL record     │
+│  → received by SNMP manager / NMS                       │
+└─────────────────────────────────────────────────────────┘</span>
+</pre>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">How does PEF decide to send a PET?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">When the BMC receives an event (either from a sensor threshold crossing or a discrete sensor state change), it evaluates the Event Filter Table in PEF. Each filter entry specifies matching criteria — sensor type, event type, event severity. If an incoming event matches a filter entry and that entry's action is set to "Alert", the BMC constructs a PET and sends it as an SNMP trap to the configured destination. The PET payload includes the SEL record data so the management station knows exactly what happened.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REDFISH SCHEMA -->
+<div class="section" id="redfish-schema">
+  <h1>Redfish <em>Schema Versions</em></h1>
+  <p class="section-desc">How to identify which Redfish schema version a URI or property supports — essential for writing compatible management tools.</p>
+
+  <h2>How to Identify Schema Version</h2>
+  <div class="callout info"><span class="callout-icon">KEY</span>The primary method is reading <code class="cmd">@odata.type</code> in any Redfish resource response. It encodes the schema name and version directly.</div>
+
+  <table class="kv-table">
+    <tr><th>Method</th><th>What to Look At</th><th>Example</th></tr>
+    <tr><td><strong style="color:var(--accent)">@odata.type</strong></td><td>Present in every resource response. Format: <code class="cmd">#SchemaName.vX_Y_Z.TypeName</code></td><td><code class="cmd">"@odata.type": "#Thermal.v1_7_0.Thermal"</code> → Thermal schema v1.7.0</td></tr>
+    <tr><td><strong style="color:var(--blue)">Service Root</strong></td><td>GET <code class="cmd">/redfish/v1/</code> — the RedfishVersion field shows the Redfish protocol version</td><td><code class="cmd">"RedfishVersion": "1.16.0"</code></td></tr>
+    <tr><td><strong style="color:var(--gold)">$metadata</strong></td><td>GET <code class="cmd">/redfish/v1/$metadata</code> — OData metadata document listing all schemas and versions supported by this implementation</td><td>Lists all EntityType and EnumType definitions with their namespaces</td></tr>
+    <tr><td><strong style="color:var(--purple)">Schema Store</strong></td><td>GET <code class="cmd">/redfish/v1/schemas/</code> — collection of schema files served by the BMC</td><td>Each member is a JSON schema file (e.g., <code class="cmd">Thermal.v1_7_0.json</code>)</td></tr>
+  </table>
+
+  <h2>Reading @odata.type</h2>
+  <pre>
+<span class="c-comment"># GET /redfish/v1/Chassis/1/Thermal response:</span>
+{
+  <span class="c-gold">"@odata.type"</span>: <span class="c-green">"#Thermal.v1_7_0.Thermal"</span>,
+  <span class="c-gold">"@odata.id"</span>:   <span class="c-green">"/redfish/v1/Chassis/1/Thermal"</span>,
+  <span class="c-gold">"Id"</span>:           <span class="c-green">"Thermal"</span>,
+  ...
+}
+
+<span class="c-comment"># Breakdown: #SchemaName . vMAJOR_MINOR_ERRATA . TypeName
+#   SchemaName  = Thermal
+#   Version     = v1_7_0  → 1.7.0
+#   TypeName    = Thermal (the specific type within the schema)</span>
+</pre>
+
+  <div class="callout tip"><span class="callout-icon">TIP</span>When writing a management tool that reads Redfish, always check <code class="cmd">@odata.type</code> before accessing version-specific properties. A property added in v1.5.0 won't exist on a BMC that only supports v1.3.0.</div>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">How do you check which Redfish schema version is supported without looking at individual resources?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">The most complete way is to GET /redfish/v1/$metadata, which returns an OData metadata document listing every schema and version supported by that implementation. For a quick check, GET /redfish/v1/ gives you the RedfishVersion for the protocol version, and individual resources always include @odata.type with the exact schema version for that resource type.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REDFISH TELEMETRY -->
+<div class="section" id="redfish-telemetry">
+  <h1>Redfish <em>Telemetry Service</em></h1>
+  <p class="section-desc">The Redfish Telemetry Service provides a standardized way to collect, define, and report sensor and metric data from a BMC.</p>
+
+  <h2>Telemetry Schemas Overview</h2>
+  <table class="kv-table">
+    <tr><th>Schema</th><th>URI Pattern</th><th>Main Coverage</th></tr>
+    <tr><td><strong style="color:var(--accent)">TelemetryService</strong></td><td><code class="cmd">/redfish/v1/TelemetryService</code></td><td>Entry point. Exposes links to MetricDefinitions and MetricReportDefinitions collections. Describes max report count, min collection interval, and supported features.</td></tr>
+    <tr><td><strong style="color:var(--blue)">MetricDefinition</strong></td><td><code class="cmd">/redfish/v1/TelemetryService/MetricDefinitions/{id}</code></td><td>Defines what a metric <em>is</em>: name, units, data type (Numeric/Boolean/String/Enumeration), implementation (PhysicalContext, sensor type), wildcards for multi-instance metrics.</td></tr>
+    <tr><td><strong style="color:var(--gold)">MetricReportDefinition</strong></td><td><code class="cmd">/redfish/v1/TelemetryService/MetricReportDefinitions/{id}</code></td><td>Defines <em>how</em> and <em>when</em> to collect metrics: schedule (interval or OnChange), report type (Periodic/OnChange/OnRequest), which MetricDefinitions to include, and where to log the result.</td></tr>
+    <tr><td><strong style="color:var(--green)">MetricReport</strong></td><td><code class="cmd">/redfish/v1/TelemetryService/MetricReports/{id}</code></td><td>The actual collected data. Contains a timestamped array of MetricValues — each entry has a MetricId, Value, and Timestamp. Generated automatically based on its MetricReportDefinition.</td></tr>
+    <tr><td><strong style="color:var(--red)">Triggers</strong></td><td><code class="cmd">/redfish/v1/TelemetryService/Triggers/{id}</code></td><td>Defines alert conditions on metric values: numeric threshold triggers (Upper/Lower Critical/Warning) or discrete-state triggers. Actions include LogToLogService or sending an event.</td></tr>
+  </table>
+
+  <h2>Schema Relationship</h2>
+  <pre style="line-height:2">
+<span class="c-comment">TelemetryService
+  ├── MetricDefinitions/        ← what metrics exist and what they measure
+  │     └── {MetricId}         ← e.g., "CPU0_Temp", unit=°C, type=Numeric
+  │
+  ├── MetricReportDefinitions/  ← when/how to collect
+  │     └── {ReportDefId}      ← e.g., every 10s, collect CPU0_Temp + Fan speeds
+  │           │
+  │           └── generates ──▶ MetricReports/{ReportId}
+  │                              ← actual readings with timestamps
+  │
+  └── Triggers/                 ← alert rules on metric values
+        └── {TriggerId}        ← e.g., alert if CPU0_Temp &gt; 85°C</span>
+</pre>
+
+  <h2>Which Schema Covers Sensor Readings?</h2>
+  <div class="callout tip"><span class="callout-icon">BMC</span><strong>MetricReport</strong> is the primary telemetry source for sensor readings. For direct per-sensor access, the <strong>Sensor</strong> schema is used.</div>
+
+  <table class="kv-table">
+    <tr><th>Schema</th><th>Sensor Reading Coverage</th><th>Notes</th></tr>
+    <tr><td><strong style="color:var(--green)">MetricReport</strong></td><td>Contains MetricValues[] array with Value + Timestamp per metric. The primary output of the Telemetry Service for bulk/scheduled readings.</td><td>Most relevant for BMC telemetry design. Reports are auto-generated per MetricReportDefinition schedule.</td></tr>
+    <tr><td><strong style="color:var(--accent)">Sensor</strong> (v1.0+)</td><td>Direct per-sensor resource under <code class="cmd">/redfish/v1/Chassis/{id}/Sensors/</code>. Each sensor has Reading, ReadingType, ReadingUnits, thresholds, and status.</td><td>Introduced in Redfish DSP0268 v1.8. The modern replacement for the older Thermal/Power inline sensor arrays.</td></tr>
+    <tr><td><strong style="color:var(--gold)">Thermal / Power</strong></td><td>Older schemas that embed sensor data inline (Temperatures[], Fans[], Voltages[]). Still widely supported for backward compatibility.</td><td>Deprecated in favor of standalone Sensor schema. BMCs typically support both.</td></tr>
+  </table>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q1</span><span class="q-text">What is the difference between MetricDefinition and MetricReport?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">MetricDefinition describes a metric in the abstract — its name, unit, data type, and what hardware it corresponds to. It doesn't contain any actual readings. MetricReport contains the collected readings — an array of values with timestamps, generated at runtime based on the schedule defined in a MetricReportDefinition. Think of MetricDefinition as the schema and MetricReport as the data.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q2</span><span class="q-text">Which Redfish schema is most relevant to BMC sensor reading design?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">For a BMC implementation, the Sensor schema (under /redfish/v1/Chassis/{id}/Sensors/) is the most directly relevant — it gives a per-sensor resource with Reading, ReadingType, thresholds, and health status. For bulk scheduled collection, MetricReport from the TelemetryService is the right answer. In practice, modern BMC designs implement both: Sensor for direct polling and MetricReport for periodic telemetry delivery.</div>
       </div>
     </div>
   </div>
