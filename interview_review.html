@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面试复习 — Hardware & Linux</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e1014;
+  --surface: #161a22;
+  --surface2: #1e2330;
+  --border: #252c3a;
+  --border2: #333d52;
+  --text: #dde2ef;
+  --text2: #8892aa;
+  --text3: #4e5a72;
+  --accent: #5eead4;
+  --accent-dim: #0d2e2a;
+  --gold: #fbbf24;
+  --gold-dim: #2a2010;
+  --red: #f87171;
+  --red-dim: #2e1414;
+  --blue: #7dd3fc;
+  --blue-dim: #0d2038;
+  --purple: #c4b5fd;
+  --purple-dim: #1e1838;
+  --green: #86efac;
+  --green-dim: #0d2818;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ─── LAYOUT ─── */
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ─── SIDEBAR ─── */
+nav {
+  width: 260px;
+  min-width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.5rem 0;
+  flex-shrink: 0;
+}
+
+.nav-logo {
+  padding: 0 1.25rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.nav-logo .title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-logo .sub {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.nav-section {
+  padding: 0.5rem 1.25rem 0.25rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.nav-item {
+  display: block;
+  padding: 6px 1.25rem;
+  font-size: 13px;
+  color: var(--text2);
+  text-decoration: none;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+  line-height: 1.4;
+}
+
+.nav-item:hover { color: var(--text); background: var(--surface2); }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim); }
+
+/* ─── CONTENT ─── */
+main {
+  flex: 1;
+  padding: 3rem 3rem 5rem;
+  max-width: 860px;
+}
+
+/* ─── SECTIONS ─── */
+.section {
+  display: none;
+  animation: fadeIn 0.2s ease;
+}
+
+.section.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── TYPOGRAPHY ─── */
+h1 {
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+h1 em { font-style: normal; color: var(--accent); }
+
+.section-desc {
+  font-size: 14px;
+  color: var(--text2);
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.6;
+}
+
+h2 {
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+h2:first-of-type { margin-top: 0; }
+
+/* ─── QA CARDS ─── */
+.qa-list { display: flex; flex-direction: column; gap: 16px; }
+
+.qa-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.qa-q {
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: background 0.12s;
+  user-select: none;
+}
+
+.qa-q:hover { background: var(--surface2); }
+
+.qa-q .q-icon {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gold);
+  background: var(--gold-dim);
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.qa-q .q-text { flex: 1; line-height: 1.5; }
+
+.qa-q .q-arrow {
+  font-size: 11px;
+  color: var(--text3);
+  transition: transform 0.2s;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.qa-card.open .q-arrow { transform: rotate(90deg); }
+
+.qa-a {
+  display: none;
+  padding: 0 18px 16px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.qa-card.open .qa-a { display: block; }
+
+.qa-a .answer-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 14px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.qa-a .answer-text {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.75;
+}
+
+.qa-a .interview-box {
+  margin-top: 12px;
+  background: var(--accent-dim);
+  border: 1px solid #1a4a42;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--accent);
+  line-height: 1.65;
+  font-style: italic;
+}
+
+.qa-a .interview-box::before {
+  content: '面试可讲 ›  ';
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ─── KEY-VALUE TABLE ─── */
+.kv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 1rem 0;
+}
+
+.kv-table th {
+  background: var(--surface2);
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border2);
+}
+
+.kv-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+}
+
+.kv-table tr:last-child td { border-bottom: none; }
+.kv-table td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+.kv-table tr:hover td { background: var(--surface2); }
+
+/* ─── CONCEPT GRID ─── */
+.concept-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 1rem 0;
+}
+
+.concept-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.concept-card .c-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.concept-card .c-title .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.concept-card .c-body {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+
+/* ─── CALLOUT ─── */
+.callout {
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 1rem 0;
+  font-size: 13px;
+  line-height: 1.65;
+  display: flex;
+  gap: 10px;
+}
+
+.callout.warn { background: var(--gold-dim); border: 1px solid #4a3a10; color: #fde68a; }
+.callout.info { background: var(--blue-dim); border: 1px solid #1a3560; color: var(--blue); }
+.callout.tip { background: var(--green-dim); border: 1px solid #1a4a28; color: var(--green); }
+.callout.danger { background: var(--red-dim); border: 1px solid #4a1a1a; color: var(--red); }
+
+.callout-icon { flex-shrink: 0; font-family: var(--mono); font-size: 11px; font-weight: 500; margin-top: 1px; }
+
+/* ─── CODE ─── */
+.cmd {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  color: var(--accent);
+}
+
+pre {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text2);
+  overflow-x: auto;
+  margin: 0.75rem 0;
+  line-height: 1.7;
+}
+
+pre .c-green { color: var(--green); }
+pre .c-gold { color: var(--gold); }
+pre .c-blue { color: var(--blue); }
+pre .c-red { color: var(--red); }
+pre .c-purple { color: var(--purple); }
+pre .c-comment { color: var(--text3); }
+
+/* ─── BADGE ─── */
+.badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.badge.hw { background: #2d1f4a; color: #c4b5fd; border: 1px solid #4a3880; }
+.badge.linux { background: #0d2038; color: #7dd3fc; border: 1px solid #1a4a70; }
+.badge.fast { background: var(--green-dim); color: var(--green); border: 1px solid #1a5a30; }
+.badge.slow { background: var(--red-dim); color: var(--red); border: 1px solid #5a1a1a; }
+.badge.mgmt { background: var(--purple-dim); color: var(--purple); border: 1px solid #3a2a6a; }
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ─── MOBILE ─── */
+@media (max-width: 768px) {
+  nav { display: none; }
+  main { padding: 1.5rem 1rem 4rem; }
+  .concept-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- ─── SIDEBAR ─── -->
+<nav id="sidebar">
+  <div class="nav-logo">
+    <div class="title">Interview Review</div>
+    <div class="sub">Hardware + Linux</div>
+  </div>
+
+  <div class="nav-section">Hardware</div>
+  <a class="nav-item" onclick="show('hw-overview')">系统概览 & Dual Socket</a>
+  <a class="nav-item" onclick="show('hw-cpu-upi')">CPU & UPI</a>
+  <a class="nav-item" onclick="show('hw-memory')">内存 DDR5</a>
+  <a class="nav-item" onclick="show('hw-pcie')">PCIe & 存储接口</a>
+  <a class="nav-item" onclick="show('hw-storage')">NVMe / SATA / SAS</a>
+  <a class="nav-item" onclick="show('hw-network')">网络 & AIOM</a>
+  <a class="nav-item" onclick="show('hw-chipset-bmc')">Chipset & BMC</a>
+  <a class="nav-item" onclick="show('hw-blockdiagram')">Block Diagram 总图</a>
+  <a class="nav-item" onclick="show('hw-interview-qa')">🎯 面试问答 Q&A</a>
+
+  <div class="nav-section" style="margin-top:1rem">Linux</div>
+  <a class="nav-item" onclick="show('linux-overview')">Linux 框架总览</a>
+  <a class="nav-item" onclick="show('linux-filesystem')">文件系统 & 命令</a>
+  <a class="nav-item" onclick="show('linux-permissions')">权限 & 用户</a>
+  <a class="nav-item" onclick="show('linux-process')">进程管理</a>
+  <a class="nav-item" onclick="show('linux-service')">systemd & 服务</a>
+  <a class="nav-item" onclick="show('linux-network')">网络排查</a>
+  <a class="nav-item" onclick="show('linux-storage')">存储 & 磁盘</a>
+  <a class="nav-item" onclick="show('linux-text')">文本处理</a>
+  <a class="nav-item" onclick="show('linux-bash')">Bash 脚本</a>
+  <a class="nav-item" onclick="show('linux-troubleshoot')">🔧 排查流程</a>
+  <a class="nav-item" onclick="show('linux-interview-qa')">🎯 面试问答 Q&A</a>
+</nav>
+
+<!-- ─── MAIN CONTENT ─── -->
+<main>
+
+<!-- ════════════════ HARDWARE ════════════════ -->
+
+<!-- HW OVERVIEW -->
+<div class="section active" id="hw-overview">
+  <h1>系统概览 &amp; <em>Dual Socket</em></h1>
+  <p class="section-desc">SYS-221HE-FTNR 是完整的 2U 服务器系统，X13DEM 是其中的主板。面试最常问为什么要用双路——答案要从三个维度展开。</p>
+
+  <h2>系统 vs 主板</h2>
+  <table class="kv-table">
+    <tr><th>型号</th><th>是什么</th><th>角色</th></tr>
+    <tr><td>SYS-221HE-FTNR</td><td>完整 2U 服务器系统</td><td>Short-depth, front-I/O，定义机箱布局和外部接口</td></tr>
+    <tr><td>X13DEM</td><td>主板 (11.5" × 17")</td><td>定义所有核心硬件能力，同一块板也用于 SYS-121H / 621H 等</td></tr>
+  </table>
+
+  <h2>为什么要 Dual Socket</h2>
+  <div class="callout info"><span class="callout-icon">KEY</span>双路不是"更高级"，而是 workload 同时需要更多 CPU + 更大内存 + 更多 I/O 三个维度时的选择。</div>
+
+  <table class="kv-table">
+    <tr><th>维度</th><th>单路上限</th><th>双路扩展</th><th>X13DEM 实际值</th></tr>
+    <tr><td>算力</td><td>1× CPU, max 64C</td><td>2× CPU</td><td>最多 128 cores</td></tr>
+    <tr><td>内存</td><td>16 DIMM / 8ch / ~4TB</td><td>32 DIMM / 16ch</td><td>最多 8TB (3DS RDIMM)</td></tr>
+    <tr><td>PCIe I/O</td><td>~80 lanes</td><td>~160 lanes</td><td>PCIe 5.0 全速</td></tr>
+  </table>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">面试怎么一句话解释 dual-socket？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">A dual-socket design is used when the workload requires more compute, memory, and I/O than a single CPU can provide. This platform scales to 128 cores, 8 TB memory, and roughly 160 PCIe 5.0 lanes by using two processors.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>应用场景</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#5eead4"></div><span style="color:var(--accent)">Telecom / NFV / 5G</span></div>
+      <div class="c-body">需要多核处理大量虚拟化网络功能，同时需要高带宽 NIC 直连 CPU</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><span style="color:var(--gold)">AI Inference Edge</span></div>
+      <div class="c-body">多 GPU 卡需要大量 PCIe 5.0 x16 slot，内存带宽需求大</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#c4b5fd"></div><span style="color:var(--purple)">数据库 / In-memory</span></div>
+      <div class="c-body">需要超大内存容量（TB级），单路无法满足</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#86efac"></div><span style="color:var(--green)">HPC / Scientific</span></div>
+      <div class="c-body">高核心数 + 高内存带宽，NUMA-aware 应用可充分利用</div>
+    </div>
+  </div>
+</div>
+
+<!-- HW CPU UPI -->
+<div class="section" id="hw-cpu-upi">
+  <h1>CPU &amp; <em>UPI</em></h1>
+  <p class="section-desc">UPI 是面试里最常被问到"QPI 是什么关系"的知识点。要能解释 UPI 的作用、速率，以及它如何引出 NUMA。</p>
+
+  <h2>CPU 规格</h2>
+  <table class="kv-table">
+    <tr><th>项目</th><th>规格</th></tr>
+    <tr><td>支持 CPU</td><td>4th / 5th Gen Intel Xeon Scalable (Sapphire Rapids / Emerald Rapids)</td></tr>
+    <tr><td>Socket</td><td>LGA-4677</td></tr>
+    <tr><td>最大核心数</td><td>单路 64C，双路 128C</td></tr>
+    <tr><td>最大 TDP</td><td>350W</td></tr>
+    <tr><td>特殊版本支持</td><td>Xeon Max Series (with HBM)，CXL 1.1</td></tr>
+  </table>
+
+  <h2>UPI vs QPI</h2>
+  <div class="callout warn"><span class="callout-icon">!</span>面试提 QPI 时，要主动说"正确叫法是 UPI，QPI 是上一代"——这体现你知道细节。</div>
+
+  <table class="kv-table">
+    <tr><th>属性</th><th>QPI（旧）</th><th>UPI 2.0（当前）</th></tr>
+    <tr><td>全称</td><td>QuickPath Interconnect</td><td>Ultra Path Interconnect</td></tr>
+    <tr><td>用于</td><td>Haswell-EP 及以前</td><td>Skylake-SP 及以后 (包括本平台)</td></tr>
+    <tr><td>速率</td><td>6.4–9.6 GT/s</td><td><strong style="color:var(--accent)">16 GT/s</strong></td></tr>
+    <tr><td>链路数 (典型)</td><td>2–3</td><td><strong style="color:var(--accent)">3–4 links</strong></td></tr>
+    <tr><td>特性</td><td>Cache coherent</td><td>Cache coherent, 更高带宽</td></tr>
+  </table>
+
+  <h2>UPI 的作用</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#5eead4"></div><span style="color:var(--accent)">Socket 间通信</span></div>
+      <div class="c-body">CPU1 和 CPU2 通过 UPI 链路直连，可以互相访问对方的内存（cross-socket）</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><span style="color:var(--gold)">Cache Coherency</span></div>
+      <div class="c-body">两颗 CPU 看到一致的内存视图。CPU2 写入的数据，CPU1 能读到最新版本</div>
+    </div>
+  </div>
+
+  <h2>NUMA 是什么</h2>
+  <div class="callout info"><span class="callout-icon">KEY</span>UPI 的存在引出了 NUMA（Non-Uniform Memory Access）——本地内存快，跨 socket 内存慢。</div>
+
+  <table class="kv-table">
+    <tr><th>访问类型</th><th>路径</th><th>延迟</th></tr>
+    <tr><td>本地内存 (CPU1 → 其自己的 DIMM)</td><td>CPU 内部 Memory Controller</td><td>低（约 60–80 ns）</td></tr>
+    <tr><td>远端内存 (CPU1 → CPU2 的 DIMM)</td><td>CPU1 → UPI → CPU2 Memory Controller → DRAM</td><td>高（额外 +40–80 ns）</td></tr>
+  </table>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">QPI 和 UPI 什么关系？怎么回答？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">QPI was Intel's older socket interconnect. For Sapphire Rapids and Emerald Rapids, it has been replaced by UPI 2.0 at 16 GT/s with 3 to 4 links. Same concept — coherent socket-to-socket communication — but newer and faster generation.</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">NUMA 是什么？对实际应用有什么影响？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">NUMA means each CPU has its own local memory, which is fast to access. Accessing the other socket's memory requires going through UPI, which adds latency. The OS scheduler tries to keep a process and its memory on the same NUMA node for best performance. Applications can also be NUMA-aware to pin workloads explicitly.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HW MEMORY -->
+<div class="section" id="hw-memory">
+  <h1>内存 <em>DDR5</em></h1>
+  <p class="section-desc">内存部分重点是 1DPC vs 2DPC 的速率差异、RDIMM 为什么必须、以及 Memory Controller 在哪里。</p>
+
+  <h2>X13DEM 内存规格</h2>
+  <table class="kv-table">
+    <tr><th>配置</th><th>速率</th><th>最大容量 (单路)</th><th>最大容量 (双路)</th></tr>
+    <tr><td>1DPC (每通道1根)</td><td style="color:var(--accent)">DDR5-5600 MT/s</td><td>2 TB</td><td>4 TB</td></tr>
+    <tr><td>2DPC (每通道2根)</td><td style="color:var(--gold)">DDR5-4400 MT/s</td><td>4 TB (8TB w/ 3DS)</td><td>8 TB (3DS RDIMM)</td></tr>
+  </table>
+
+  <div class="callout warn"><span class="callout-icon">!</span>2DPC 速率下降是因为通道上多了一根 DIMM，电气负载增大，信号完整性变差，必须降频。</div>
+
+  <h2>内存通道架构</h2>
+  <table class="kv-table">
+    <tr><th>项目</th><th>数值</th></tr>
+    <tr><td>每颗 CPU 的 DDR5 通道数</td><td>8 channels</td></tr>
+    <tr><td>双路总通道数</td><td>16 channels</td></tr>
+    <tr><td>总 DIMM 槽位 (2DPC)</td><td>32 slots = 2 CPU × 8ch × 2</td></tr>
+    <tr><td>必须用的 DIMM 类型</td><td>ECC RDIMM</td></tr>
+  </table>
+
+  <h2>Memory Controller 在哪里？</h2>
+  <div class="callout danger"><span class="callout-icon">!</span>Memory Controller 集成在 CPU 内部，不是独立芯片，不是 Chipset，也不是 BMC。面试容易混淆。</div>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#86efac"></div><span style="color:var(--green)">为什么集成在 CPU</span></div>
+      <div class="c-body">减少内存访问延迟，避免走外部总线。CPU 直接通过内存通道读写 DRAM。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#f87171"></div><span style="color:var(--red)">为什么要 RDIMM</span></div>
+      <div class="c-body">Register Buffer（寄存器缓冲）减少电气负载，支持更多 DIMM / 通道，提升信号完整性。消费级用 UDIMM，无法扩展到服务器规模。</div>
+    </div>
+  </div>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">1DPC 和 2DPC 有什么区别？什么时候选哪个？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">1DPC gives higher speed at DDR5-5600, but lower total capacity per system. 2DPC doubles the DIMM count to 32 slots and can reach 8 TB, but the speed drops to DDR5-4400 due to increased electrical load on the memory bus. You choose 2DPC when the workload is memory-capacity bound, and 1DPC when you prioritize memory bandwidth.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HW PCIE -->
+<div class="section" id="hw-pcie">
+  <h1>PCIe <em>5.0</em> &amp; 接口</h1>
+  <p class="section-desc">PCIe Root Port 是 CPU 内部产生 lanes 的逻辑单元。理解高速设备为什么直连 CPU 而不走 chipset。</p>
+
+  <h2>PCIe 各代速率对比</h2>
+  <table class="kv-table">
+    <tr><th>世代</th><th>每 lane 速率</th><th>x16 单向带宽</th><th>x8 单向带宽</th></tr>
+    <tr><td>PCIe 3.0</td><td>8 GT/s</td><td>~16 GB/s</td><td>~8 GB/s</td></tr>
+    <tr><td>PCIe 4.0</td><td>16 GT/s</td><td>~32 GB/s</td><td>~16 GB/s</td></tr>
+    <tr><td style="color:var(--accent)">PCIe 5.0</td><td style="color:var(--accent)">32 GT/s</td><td style="color:var(--accent)">~64 GB/s</td><td style="color:var(--accent)">~32 GB/s</td></tr>
+  </table>
+
+  <h2>X13DEM PCIe 资源全览</h2>
+  <table class="kv-table">
+    <tr><th>接口</th><th>规格</th><th>连到哪里</th><th>用途</th></tr>
+    <tr><td>4× PCIe 5.0 x16 slot</td><td>可 bifurcation</td><td>CPU 直连</td><td>GPU, HBA, add-in cards</td></tr>
+    <tr><td>2× AIOM slot</td><td>PCIe 5.0 x16, OCP 3.0</td><td>CPU 直连</td><td>模块化 NIC</td></tr>
+    <tr><td>8× MCIO</td><td>PCIe 5.0 x8 each</td><td>CPU 直连</td><td>NVMe 前置盘位</td></tr>
+    <tr><td>2× M.2</td><td>PCIe 3.0 x2</td><td>Chipset 侧</td><td>Boot/OS drive</td></tr>
+  </table>
+
+  <h2>PCIe Bifurcation</h2>
+  <div class="callout info"><span class="callout-icon">KEY</span>Bifurcation = 在 BIOS 里把一个物理 x16 slot 拆分成更小的逻辑链路，允许多设备共用一个物理插槽。</div>
+
+  <table class="kv-table">
+    <tr><th>配置方式</th><th>物理 slot</th><th>逻辑链路</th></tr>
+    <tr><td>x16 模式</td><td>4× x16</td><td>4× x16 (每个满速)</td></tr>
+    <tr><td>x8 分拆</td><td>4× x16</td><td>8× x8 (带宽减半但设备数翻倍)</td></tr>
+  </table>
+
+  <h2>为什么 M.2 只有 PCIe 3.0？</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><span style="color:var(--gold)">设计意图</span></div>
+      <div class="c-body">M.2 用于 boot/OS drive，不是性能存储。限制到 PCIe 3.0 x2 可以把高速 PCIe 5.0 lanes 留给 NVMe 数据盘和 GPU。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#86efac"></div><span style="color:var(--green)">带宽够用</span></div>
+      <div class="c-body">PCIe 3.0 x2 ≈ 2 GB/s，对于 OS 盘的顺序读 + 随机小 IO 已经足够，无需浪费高速 lanes。</div>
+    </div>
+  </div>
+</div>
+
+<!-- HW STORAGE -->
+<div class="section" id="hw-storage">
+  <h1>NVMe / SATA / <em>SAS</em></h1>
+  <p class="section-desc">三种存储接口是面试必考对比。重点：NVMe 直连 CPU，SATA 走 chipset，SAS 需要 HBA card。</p>
+
+  <h2>三种接口对比总览</h2>
+  <table class="kv-table">
+    <tr><th>接口</th><th>速率</th><th>路径</th><th>控制器</th><th>用途</th></tr>
+    <tr><td><span class="badge fast">NVMe</span></td><td>PCIe 5.0 x8 ≈ 32 GB/s</td><td>CPU 直连 (MCIO)</td><td>无需额外 controller</td><td>高性能数据存储</td></tr>
+    <tr><td><span class="badge slow">SATA III</span></td><td>6 Gbps ≈ 600 MB/s</td><td>C741 → DMI → CPU</td><td>C741 chipset 内建</td><td>boot drive, 低成本存储</td></tr>
+    <tr><td><span class="badge mgmt">SAS-4</span></td><td>22.5 Gbps / lane</td><td>PCIe HBA → CPU</td><td>需要 PCIe add-in HBA</td><td>企业 HDD, JBOD 扩柜</td></tr>
+  </table>
+
+  <div class="callout danger"><span class="callout-icon">!</span>X13DEM 没有板载 SAS。如果 workload 需要 SAS，必须在 PCIe slot 插一张 SAS HBA 或 RAID controller。</div>
+
+  <h2>NVMe 详解</h2>
+  <table class="kv-table">
+    <tr><th>属性</th><th>说明</th></tr>
+    <tr><td>连接方式</td><td>8× MCIO connectors，每个 PCIe 5.0 x8</td></tr>
+    <tr><td>最高单盘带宽</td><td>~32 GB/s (PCIe 5.0 x8)</td></tr>
+    <tr><td>路径</td><td>CPU PCIe Root Port → MCIO → NVMe SSD，无中间控制器</td></tr>
+    <tr><td>RAID</td><td>通过 Intel VROC key header 做 NVMe RAID，不需要 HBA</td></tr>
+  </table>
+
+  <h2>SATA 的瓶颈在哪里</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#f87171"></div><span style="color:var(--red)">SATA → DMI 瓶颈</span></div>
+      <div class="c-body">SATA 走 C741 → DMI 4.0 → CPU。DMI 4.0 总带宽约 16 GB/s，多个 SATA 设备共享这条总线。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><span style="color:var(--gold)">实际使用场景</span></div>
+      <div class="c-body">适合 boot drive、日志盘、低成本归档存储。对于数据库或高 IOPS 应用，NVMe 才是正确选择。</div>
+    </div>
+  </div>
+
+  <h2>SAS HBA 的作用</h2>
+  <table class="kv-table">
+    <tr><th>功能</th><th>说明</th></tr>
+    <tr><td>协议转换</td><td>把 PCIe 协议转成 SAS/SATA 协议，驱动 SAS 设备</td></tr>
+    <tr><td>可选 RAID</td><td>部分 HBA 支持硬件 RAID 0/1/5/6/10</td></tr>
+    <tr><td>SAS Expander</td><td>可连接 SAS expander，扩展到数十甚至上百个盘</td></tr>
+    <tr><td>向下兼容</td><td>SAS controller 通常也能驱动 SATA 盘</td></tr>
+  </table>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">NVMe 和 SATA 有什么核心区别？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">NVMe connects directly to CPU PCIe lanes through MCIO connectors, giving up to 32 GB/s per drive on this platform. SATA goes through the chipset at only 6 Gbps, and is also limited by the shared DMI link to the CPU. NVMe is the high-performance storage path; SATA is for lower-cost or legacy drives like boot media.</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">为什么 SAS 需要额外 controller？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">SAS is not natively supported by the CPU or chipset on this platform. A SAS HBA or RAID controller in a PCIe slot acts as the protocol bridge, translating PCIe to SAS. It also optionally provides hardware RAID and supports connecting SAS expanders for large external JBOD enclosures.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HW NETWORK -->
+<div class="section" id="hw-network">
+  <h1>网络 &amp; <em>AIOM</em></h1>
+  <p class="section-desc">AIOM 是 Supermicro 对 OCP 3.0 的称呼，核心是模块化 NIC 直连 CPU PCIe，适合高带宽网络场景。</p>
+
+  <h2>网络架构</h2>
+  <table class="kv-table">
+    <tr><th>接口</th><th>规格</th><th>连到哪里</th><th>用途</th></tr>
+    <tr><td>2× AIOM slot</td><td>PCIe 5.0 x16, OCP 3.0 superset</td><td>CPU 直连</td><td>生产业务网络</td></tr>
+    <tr><td>1× BMC RJ45</td><td>1GbE dedicated</td><td>AST2600 BMC</td><td>带外管理网络</td></tr>
+  </table>
+
+  <h2>AIOM 的优势</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#5eead4"></div><span style="color:var(--accent)">模块化选择</span></div>
+      <div class="c-body">根据需求插不同速率的 NIC 模块：1G / 10G / 25G / 100G / 200G，不改主板</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#86efac"></div><span style="color:var(--green)">节省 PCIe slot</span></div>
+      <div class="c-body">AIOM 不占用标准 PCIe expansion slot，让 4个 x16 slot 全部留给 GPU / HBA</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><span style="color:var(--gold)">直连 CPU</span></div>
+      <div class="c-body">AIOM 走 CPU-side PCIe 5.0，适合 NFV / 5G 场景的高带宽低延迟网络需求</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#c4b5fd"></div><span style="color:var(--purple)">OCP 标准</span></div>
+      <div class="c-body">兼容 OCP NIC 3.0 标准，生态广泛，不锁定单一 NIC 厂商</div>
+    </div>
+  </div>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">AIOM / LAN chip 的设计为什么是模块化的？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">Networking uses 2 AIOM modules on OCP 3.0 slots connected to CPU-side PCIe 5.0. This is modular — you choose the NIC speed by selecting the appropriate AIOM card. It keeps the 4 standard PCIe expansion slots free for GPUs or other add-in cards, and avoids locking the board to a specific NIC vendor or speed.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HW CHIPSET BMC -->
+<div class="section" id="hw-chipset-bmc">
+  <h1>Chipset &amp; <em>BMC</em></h1>
+  <p class="section-desc">面试常问 BMC 是什么、和 Memory Controller 有什么区别。C741 是低速 I/O hub，BMC 是管理平面，两者角色完全不同。</p>
+
+  <h2>Intel C741 Chipset</h2>
+  <table class="kv-table">
+    <tr><th>属性</th><th>说明</th></tr>
+    <tr><td>连接到 CPU 的总线</td><td>DMI 4.0 (基于 PCIe 4.0 x8，双向 ~16 GB/s)</td></tr>
+    <tr><td>提供 SATA</td><td>8× SATA 6Gbps</td></tr>
+    <tr><td>提供 USB</td><td>USB 3.2 Gen2 / USB 2.0</td></tr>
+    <tr><td>提供 SPI Flash</td><td>连接 AMI UEFI BIOS 固件</td></tr>
+    <tr><td>提供 LPC/eSPI</td><td>连接 TPM 2.0 安全芯片</td></tr>
+    <tr><td>角色</td><td>低速平台 I/O hub，不是高性能数据路径</td></tr>
+  </table>
+
+  <div class="callout warn"><span class="callout-icon">!</span>DMI 4.0 是 C741 chipset 的带宽瓶颈。所以 NVMe / GPU / 高速 NIC 全都走 CPU-side PCIe，绕过 DMI。</div>
+
+  <h2>AST2600 BMC</h2>
+  <table class="kv-table">
+    <tr><th>属性</th><th>说明</th></tr>
+    <tr><td>芯片</td><td>ASPEED AST2600，ARM-based 嵌入式处理器</td></tr>
+    <tr><td>运行条件</td><td>只需 standby 电源，主系统关机仍运行</td></tr>
+    <tr><td>支持协议</td><td>IPMI 2.0, Redfish API, KVM-over-IP, Virtual Media, Intel Node Manager</td></tr>
+    <tr><td>物理接口</td><td>1× 专用 RJ45 LAN (前面板), VGA 输出</td></tr>
+    <tr><td>用途</td><td>带外管理：远程开关机、BIOS 设置、KVM 控制台、日志监控</td></tr>
+  </table>
+
+  <div class="callout danger"><span class="callout-icon">!</span>BMC ≠ Memory Controller。BMC 负责管理服务器，Memory Controller 负责 CPU 和 DRAM 之间的读写，集成在 CPU 内部。</div>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#5eead4"></div><span style="color:var(--accent)">BMC 能做什么</span></div>
+      <div class="c-body">远程开关机、KVM 远程控制台、查看硬件传感器（温度/电源）、挂载虚拟光驱安装系统</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#f87171"></div><span style="color:var(--red)">Memory Controller 做什么</span></div>
+      <div class="c-body">管理 CPU 和 DRAM 之间所有读写操作，决定内存时序、ECC 纠错、DIMM 通道调度</div>
+    </div>
+  </div>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">BMC 和 Memory Controller 有什么区别？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">They are completely different things. The BMC is a separate ARM processor that handles out-of-band server management — remote power control, KVM access, hardware monitoring — and runs independently even when the main system is off. The Memory Controller is integrated inside the CPU die and handles all data transfers between the CPU and DRAM. One is a management plane, the other is a data path component.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HW BLOCK DIAGRAM -->
+<div class="section" id="hw-blockdiagram">
+  <h1>Block Diagram <em>总图</em></h1>
+  <p class="section-desc">能画出这张图并解释每条路径是面试加分项。记住三条路径：高速走 CPU PCIe，低速走 chipset DMI，管理走 BMC sideband。</p>
+
+  <h2>ASCII 架构图</h2>
+<pre>
+<span class="c-comment">           SYS-221HE-FTNR / X13DEM Block Diagram</span>
+
+<span class="c-blue">┌──────────────────────────┐</span>          <span class="c-blue">┌──────────────────────────┐</span>
+<span class="c-blue">│         CPU 1            │</span><span class="c-gold">◄─── UPI ───►</span><span class="c-blue">│         CPU 2            │</span>
+<span class="c-blue">│  5th Gen Xeon, LGA-4677  │</span><span class="c-gold"> 16GT/s,3-4L </span><span class="c-blue">│  5th Gen Xeon, LGA-4677  │</span>
+<span class="c-blue">│  up to 64 cores, 350W    │</span>          <span class="c-blue">│  up to 64 cores, 350W    │</span>
+<span class="c-blue">└───────────┬──────────────┘</span>          <span class="c-blue">└──────────────┬───────────┘</span>
+            │ 8× DDR5 channels                    │ 8× DDR5 channels
+   <span class="c-green">┌──────────┴──────────────┐</span>      <span class="c-green">┌────────────┴────────────┐</span>
+   <span class="c-green">│  16× DDR5 ECC RDIMM     │</span>      <span class="c-green">│  16× DDR5 ECC RDIMM     │</span>
+   <span class="c-green">│  1DPC: 5600MT/s, 2TB    │</span>      <span class="c-green">│  1DPC: 5600MT/s, 2TB    │</span>
+   <span class="c-green">│  2DPC: 4400MT/s, 4-8TB  │</span>      <span class="c-green">│  2DPC: 4400MT/s, 4-8TB  │</span>
+   <span class="c-green">└─────────────────────────┘</span>      <span class="c-green">└─────────────────────────┘</span>
+
+            │ PCIe 5.0 Root Ports
+  <span class="c-blue">┌───────────┼────────────────────┐</span>
+  ▼          ▼                    ▼
+<span class="c-blue">┌───────┐ ┌────────┐        ┌──────────────┐</span>
+<span class="c-blue">│ 4×    │ │ 2×AIOM │        │ 8× MCIO      │</span>
+<span class="c-blue">│PCIe5.0│ │OCP 3.0 │        │ NVMe PCIe5.0 │</span>
+<span class="c-blue">│ x16   │ │ x16 NIC│        │ x8 per port  │</span>
+<span class="c-blue">└───┬───┘ └────────┘        └──────┬───────┘</span>
+    │                               │
+    │ GPU/HBA/SAS card              │ 6× 2.5" hot-swap
+    │ (PCIe 5.0 x8 or x16)         │ (NVMe or SATA, direct BP)
+
+            │ DMI 4.0 (~16GB/s bidir)
+   <span class="c-gold">┌──────────┴──────────────────────────────────┐</span>
+   <span class="c-gold">│          Intel C741 Chipset                  │</span>
+   <span class="c-gold">└──────────┬──────────────────────────────────┘</span>
+            │
+  <span class="c-gold">┌──────────┼────────────┐</span>
+  ▼          ▼            ▼
+<span class="c-gold">8× SATA   USB 3.2    SPI Flash</span>
+<span class="c-gold">6Gbps     /USB 2.0   (UEFI BIOS)</span>
+                     LPC → TPM 2.0
+
+   <span class="c-comment">2× M.2 (PCIe 3.0 x2, boot/OS only)</span>
+   <span class="c-comment">VROC key header (NVMe RAID w/o HBA)</span>
+
+   <span class="c-purple">┌──────────────────────────────────────────┐</span>
+   <span class="c-purple">│  AST2600 BMC (always on, standby power)  │</span>
+   <span class="c-purple">│  IPMI 2.0 / Redfish / KVM / vMedia       │</span>
+   <span class="c-purple">└────────────────────┬─────────────────────┘</span>
+                        ▼
+              <span class="c-purple">1× Dedicated BMC RJ45 (front)</span>
+</pre>
+
+  <h2>三条路径总结</h2>
+  <table class="kv-table">
+    <tr><th>路径</th><th>接口</th><th>带宽</th><th>接在哪</th></tr>
+    <tr><td><span class="badge fast">高速</span> NVMe</td><td>PCIe 5.0 x8 via MCIO</td><td>~32 GB/s per drive</td><td>CPU direct</td></tr>
+    <tr><td><span class="badge fast">高速</span> GPU/HBA</td><td>PCIe 5.0 x16 slot</td><td>~64 GB/s per slot</td><td>CPU direct</td></tr>
+    <tr><td><span class="badge fast">高速</span> NIC (AIOM)</td><td>PCIe 5.0 x16</td><td>~64 GB/s</td><td>CPU direct</td></tr>
+    <tr><td><span class="badge slow">低速</span> SATA</td><td>SATA III 6Gbps</td><td>~600 MB/s per port</td><td>C741 chipset</td></tr>
+    <tr><td><span class="badge slow">低速</span> USB</td><td>USB 3.2/2.0</td><td>Low</td><td>C741 chipset</td></tr>
+    <tr><td><span class="badge slow">低速</span> M.2</td><td>PCIe 3.0 x2</td><td>~2 GB/s</td><td>Chipset 侧</td></tr>
+    <tr><td><span class="badge mgmt">管理</span> BMC</td><td>eSPI/I2C sideband</td><td>Management only</td><td>独立平面</td></tr>
+  </table>
+
+  <div class="callout tip"><span class="callout-icon">TIP</span>一句话总结：高带宽走 CPU-side PCIe 5.0，低速走 chipset via DMI 4.0，管理走 BMC sideband。</div>
+</div>
+
+<!-- HW INTERVIEW QA -->
+<div class="section" id="hw-interview-qa">
+  <h1>Hardware <em>面试 Q&amp;A</em></h1>
+  <p class="section-desc">点击每个问题查看完整回答。这是面试最可能被问到的问题集。</p>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q1</span><span class="q-text">为什么选 dual-socket？能不能用两台单路服务器代替？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">两台单路服务器可以提供总的 CPU 数量，但无法做到内存和数据的物理共享。Dual-socket 的核心优势是两颗 CPU 通过 UPI 共享同一内存地址空间，程序看到的是一台机器的 128 核、8TB 内存。两台独立服务器需要通过网络通信，延迟和带宽无法相比。</div>
+        <div class="interview-box">Two separate single-socket servers can scale CPU count, but they cannot share memory in a unified address space. A dual-socket system lets both processors access all 8 TB of memory coherently through UPI, which is critical for workloads like large in-memory databases or NUMA-aware applications that need tight coupling between compute and data.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q2</span><span class="q-text">UPI 带宽不够用的时候会发生什么？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">当大量跨 socket 的内存访问发生时，UPI 成为瓶颈，表现为延迟增高、CPU 有时间等待数据。这就是为什么 NUMA-aware 调度非常重要——OS 应该把进程和它的内存放在同一个 NUMA node 上，减少 UPI 流量。可以通过 numactl 命令强制绑定。</div>
+        <div class="interview-box">If cross-socket memory traffic is high, UPI becomes a bottleneck and latency increases significantly. This is why NUMA-aware scheduling matters — the OS should allocate memory on the same node as the process. On Linux you can use numactl to explicitly bind processes and memory to a specific NUMA node.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q3</span><span class="q-text">PCIe Root Port 是什么？它和 PCIe slot 有什么区别？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">PCIe Root Port 是 CPU 内部的逻辑单元，是 PCIe hierarchy 的根节点，产生实际的 PCIe lanes。PCIe slot 是物理插槽，是 lanes 的物理表现形式。一个 Root Port 可以驱动一个 x16 slot，也可以通过 bifurcation 拆分驱动多个 slot 或设备。</div>
+        <div class="interview-box">A PCIe Root Port is a logical unit inside the CPU that originates PCIe lanes — it is the root of the PCIe device hierarchy. A physical PCIe slot is just the connector on the board that exposes those lanes to add-in cards. One Root Port can drive a single x16 slot, or be split via bifurcation into multiple narrower logical links.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q4</span><span class="q-text">SAS controller 具体做了什么？为什么 NVMe 不需要？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">SAS controller 做协议转换（PCIe → SAS 协议）、管理 SAS expander 拓扑、提供可选的硬件 RAID。NVMe 不需要这些，因为 NVMe 本身就是基于 PCIe 的协议，host 通过 PCIe 直接和 SSD 通信，CPU 的 NVMe 驱动直接操作设备。NVMe 去掉了 controller 这个中间层。</div>
+        <div class="interview-box">A SAS controller performs protocol translation from PCIe to SAS, manages SAS expander topologies, and optionally provides hardware RAID. NVMe does not need this because NVMe is a native PCIe protocol — the CPU communicates directly with the SSD over PCIe with no protocol translation. NVMe eliminates the controller intermediary, which is why it has lower latency and higher throughput.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q5</span><span class="q-text">如果需要扩展到 24 个 NVMe 盘，X13DEM 能做到吗？怎么做？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">X13DEM 直连最多 8 个 NVMe (via MCIO)。要扩展到 24 个，需要在 PCIe x16 slot 插一张 NVMe HBA (例如 Supermicro AOC-SLG3-4E2P 或类似产品)，这类 HBA 通过 PCIe x16 接入，内部再 bifurcate 成多路 NVMe 连接。另一种方式是 NVMe-oF (NVMe over Fabrics) 通过网络挂载远端 NVMe。</div>
+        <div class="interview-box">The X13DEM provides 8 direct NVMe ports via MCIO. To reach 24 drives, you would install a PCIe NVMe HBA in one of the x16 slots — it bifurcates internally to expose additional NVMe connections. Alternatively, NVMe over Fabrics allows mounting remote NVMe storage across high-speed networking, which scales further without consuming local PCIe slots.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q6</span><span class="q-text">IPMI 和 Redfish 的区别是什么？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">IPMI 2.0 是更老的标准，使用二进制协议，命令行工具为 ipmitool。Redfish 是 DMTF 定义的现代 RESTful API 标准，用 JSON 格式，更易于自动化集成（Ansible, Python 脚本等）。AST2600 两者都支持，Redfish 是未来的方向。</div>
+        <div class="interview-box">IPMI 2.0 is an older binary protocol commonly used with the ipmitool command line. Redfish is a modern RESTful API standard from DMTF that uses JSON, making it much easier to integrate with automation tools like Ansible or Python scripts. Both are supported on this platform, but Redfish is the preferred interface for new automation work.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q7</span><span class="q-text">什么情况下 DMI 4.0 会成为系统瓶颈？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">DMI 4.0 双向约 16 GB/s。如果同时有多个 SATA 盘高速 IO + USB 设备 + M.2 boot 盘大量读写，这些流量都要挤过同一条 DMI 总线。实际场景中，把数据盘都换成 NVMe（走 CPU PCIe）可以彻底避免 DMI 瓶颈，只让 SATA 做低优先级任务。</div>
+        <div class="interview-box">DMI 4.0 provides about 16 GB/s bidirectionally. If multiple SATA drives are doing heavy I/O simultaneously alongside USB and M.2 traffic, they all share this single DMI link to the CPU. The solution is to use NVMe for high-performance storage, which bypasses DMI entirely by connecting directly to CPU PCIe root ports, leaving DMI only for legacy or low-priority devices.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════ LINUX ════════════════ -->
+
+<!-- LINUX OVERVIEW -->
+<div class="section" id="linux-overview">
+  <h1>Linux <em>框架总览</em></h1>
+  <p class="section-desc">不要把 Linux 只看成命令集合，要按八个层次来理解，面试里"你会怎么排查"类问题都基于这个框架。</p>
+
+  <h2>八个核心层次</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#5eead4"></div><span style="color:var(--accent)">1. 文件系统</span></div>
+      <div class="c-body">一切都是文件和目录。理解目录结构（/etc, /var, /proc 等）是一切的基础。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><span style="color:var(--gold)">2. 用户与权限</span></div>
+      <div class="c-body">谁能读、写、执行。chmod / chown / sudo 是排查权限问题的工具。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#c4b5fd"></div><span style="color:var(--purple)">3. 进程</span></div>
+      <div class="c-body">程序跑起来就是进程。ps / top / kill 管理进程生命周期。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#86efac"></div><span style="color:var(--green)">4. 服务 (systemd)</span></div>
+      <div class="c-body">长期运行的程序由 systemd 管理。systemctl / journalctl 是标准工具。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#7dd3fc"></div><span style="color:var(--blue)">5. 网络</span></div>
+      <div class="c-body">IP、端口、连通性。ip / ss / ping / curl / dig 是网络排查工具链。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#f87171"></div><span style="color:var(--red)">6. 存储</span></div>
+      <div class="c-body">磁盘、分区、挂载、容量。df / du / lsblk 是必知命令。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><span style="color:var(--gold)">7. 日志</span></div>
+      <div class="c-body">出问题第一步看日志。tail -f / journalctl / grep 是日志工具。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#5eead4"></div><span style="color:var(--accent)">8. Shell/Bash</span></div>
+      <div class="c-body">把命令串起来做自动化。变量、条件、循环、管道是脚本基础。</div>
+    </div>
+  </div>
+
+  <div class="qa-list" style="margin-top:1.5rem">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">你如何描述你的 Linux 知识框架？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">When I review Linux, I organize it into filesystem, permissions, processes, services, networking, storage, logging, and shell scripting, because that matches how real troubleshooting usually works. When something fails, I follow that same sequence: check if the process is running, look at logs, check permissions, verify network connectivity, and confirm disk space.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINUX FILESYSTEM -->
+<div class="section" id="linux-filesystem">
+  <h1>文件系统 <em>&amp; 命令</em></h1>
+  <p class="section-desc">Linux 里"一切皆文件"。知道关键目录用途，以及 find / grep / tail 这几个高频命令的区别。</p>
+
+  <h2>关键目录速查</h2>
+  <table class="kv-table">
+    <tr><th>目录</th><th>用途</th><th>典型内容</th></tr>
+    <tr><td><code class="cmd">/</code></td><td>根目录</td><td>整个文件系统起点</td></tr>
+    <tr><td><code class="cmd">/etc</code></td><td>配置文件</td><td>网络配置、服务配置、用户账户</td></tr>
+    <tr><td><code class="cmd">/var/log</code></td><td>日志文件</td><td>syslog, auth.log, 应用日志</td></tr>
+    <tr><td><code class="cmd">/var</code></td><td>可变数据</td><td>日志、缓存、spool、数据库文件</td></tr>
+    <tr><td><code class="cmd">/tmp</code></td><td>临时文件</td><td>重启后清空</td></tr>
+    <tr><td><code class="cmd">/home</code></td><td>用户家目录</td><td>/home/username/</td></tr>
+    <tr><td><code class="cmd">/root</code></td><td>root 家目录</td><td>root 用户专用</td></tr>
+    <tr><td><code class="cmd">/proc</code></td><td>内核虚拟文件系统</td><td>进程信息、CPU/内存状态 (虚拟，不占磁盘)</td></tr>
+    <tr><td><code class="cmd">/dev</code></td><td>设备文件</td><td>/dev/sda (磁盘), /dev/null, /dev/tty</td></tr>
+    <tr><td><code class="cmd">/opt</code></td><td>第三方软件</td><td>手动安装的独立应用</td></tr>
+    <tr><td><code class="cmd">/usr/local</code></td><td>本地安装软件</td><td>包管理器之外编译安装的程序</td></tr>
+  </table>
+
+  <h2>高频命令</h2>
+  <table class="kv-table">
+    <tr><th>命令</th><th>功能</th><th>常用例子</th></tr>
+    <tr><td><code class="cmd">pwd</code></td><td>当前目录</td><td><code class="cmd">pwd</code></td></tr>
+    <tr><td><code class="cmd">ls -la</code></td><td>列出含隐藏文件的详细列表</td><td><code class="cmd">ls -la /etc</code></td></tr>
+    <tr><td><code class="cmd">find</code></td><td>按条件查找文件</td><td><code class="cmd">find /var/log -name "*.log"</code></td></tr>
+    <tr><td><code class="cmd">grep</code></td><td>在文件内容中搜索关键词</td><td><code class="cmd">grep -i "error" app.log</code></td></tr>
+    <tr><td><code class="cmd">tail -f</code></td><td>实时追踪日志</td><td><code class="cmd">tail -f /var/log/syslog</code></td></tr>
+    <tr><td><code class="cmd">less</code></td><td>分页查看长文件</td><td><code class="cmd">less /var/log/messages</code></td></tr>
+    <tr><td><code class="cmd">cat</code></td><td>输出文件内容</td><td><code class="cmd">cat /etc/hostname</code></td></tr>
+    <tr><td><code class="cmd">wc -l</code></td><td>统计行数</td><td><code class="cmd">grep ERROR app.log | wc -l</code></td></tr>
+  </table>
+
+  <h2>find vs grep — 容易混淆</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#5eead4"></div><code style="color:var(--accent);font-size:13px">find</code></div>
+      <div class="c-body">在文件系统里<strong>找文件</strong>（按名字、类型、时间、大小）<br><br>
+        <code class="cmd">find /var/log -name "*.log" -mtime -7</code><br>
+        <span style="color:var(--text3);font-size:12px">7天内修改的 .log 文件</span>
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><code style="color:var(--gold);font-size:13px">grep</code></div>
+      <div class="c-body">在<strong>文件内容</strong>里找匹配行<br><br>
+        <code class="cmd">grep -ri "out of memory" /var/log/</code><br>
+        <span style="color:var(--text3);font-size:12px">递归搜索所有日志</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINUX PERMISSIONS -->
+<div class="section" id="linux-permissions">
+  <h1>权限 <em>&amp; 用户</em></h1>
+  <p class="section-desc">权限模型是 Linux 排查最常触碰的地方。脚本跑不起来、服务读不到文件，第一步查权限。</p>
+
+  <h2>权限模型</h2>
+  <table class="kv-table">
+    <tr><th>分类</th><th>含义</th><th>权限类型</th></tr>
+    <tr><td>user (owner)</td><td>文件的所有者</td><td rowspan="3">r (read=4), w (write=2), x (execute=1)</td></tr>
+    <tr><td>group</td><td>文件所属的组</td></tr>
+    <tr><td>others</td><td>其他所有人</td></tr>
+  </table>
+
+  <h2>数字权限速查</h2>
+<pre>
+<span class="c-comment"># 权限字符串解析</span>
+-rwxr-xr--
+ <span class="c-green">rwx</span>      = owner: read + write + execute  = 7
+    <span class="c-gold">r-x</span>   = group: read + execute           = 5
+       <span class="c-red">r--</span> = others: read only              = 4
+
+<span class="c-comment"># 常见权限组合</span>
+755 = rwx r-x r-x  <span class="c-comment">(脚本/程序: owner可读写执行, 其他可读执行)</span>
+644 = rw- r-- r--  <span class="c-comment">(配置文件: owner可读写, 其他只读)</span>
+600 = rw- --- ---  <span class="c-comment">(私钥文件: 只有owner能读写)</span>
+777 = rwx rwx rwx  <span class="c-comment">(危险! 所有人都有完全权限)</span>
+</pre>
+
+  <h2>常用命令</h2>
+  <table class="kv-table">
+    <tr><th>命令</th><th>功能</th><th>例子</th></tr>
+    <tr><td><code class="cmd">chmod 755 file</code></td><td>设置数字权限</td><td>使脚本可执行</td></tr>
+    <tr><td><code class="cmd">chmod +x file</code></td><td>添加执行权限</td><td>快速让脚本可运行</td></tr>
+    <tr><td><code class="cmd">chown user:group file</code></td><td>修改 owner 和 group</td><td><code class="cmd">chown nginx:nginx /var/www</code></td></tr>
+    <tr><td><code class="cmd">whoami</code></td><td>当前用户</td><td>确认自己是谁</td></tr>
+    <tr><td><code class="cmd">id</code></td><td>uid / gid / groups 详情</td><td>查看所属组</td></tr>
+    <tr><td><code class="cmd">sudo</code></td><td>以 root 权限执行单条命令</td><td><code class="cmd">sudo systemctl restart nginx</code></td></tr>
+  </table>
+
+  <h2>排查权限问题的思路</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#f87171"></div><span style="color:var(--red)">脚本 Permission Denied</span></div>
+      <div class="c-body">1. <code class="cmd">ls -la script.sh</code> 查权限<br>2. 有没有 x 位？<br>3. 当前用户是 owner / group / others 哪个？<br>4. 需要的话 <code class="cmd">chmod +x script.sh</code></div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:#fbbf24"></div><span style="color:var(--gold)">服务读不到文件</span></div>
+      <div class="c-body">1. 服务以哪个用户运行？(<code class="cmd">ps aux | grep service</code>)<br>2. 文件 owner 是谁？<br>3. 该用户有没有 r 权限？<br>4. 用 <code class="cmd">chown</code> 或 <code class="cmd">chmod</code> 修正</div>
+    </div>
+  </div>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">排查 Permission Denied 的标准流程是什么？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">Linux permissions are based on owner, group, and others, with read, write, and execute bits. In troubleshooting, I first check who owns the file with ls -la, then check what permissions it has, then identify which user the failing process is running as. Usually the fix is either chmod to add the right permission bits, or chown to correct the ownership.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINUX PROCESS -->
+<div class="section" id="linux-process">
+  <h1>进程 <em>管理</em></h1>
+  <p class="section-desc">进程排查的目标是回答：进程在不在？是谁启动的？资源占用高不高？卡住了吗？</p>
+
+  <h2>进程查看命令</h2>
+  <table class="kv-table">
+    <tr><th>命令</th><th>功能</th><th>关键输出列</th></tr>
+    <tr><td><code class="cmd">ps aux</code></td><td>列出所有进程</td><td>USER, PID, %CPU, %MEM, COMMAND</td></tr>
+    <tr><td><code class="cmd">ps aux | grep python</code></td><td>过滤特定进程</td><td>找 python 相关进程</td></tr>
+    <tr><td><code class="cmd">pgrep -a nginx</code></td><td>按名字找 PID</td><td>PID + 完整命令行</td></tr>
+    <tr><td><code class="cmd">top</code></td><td>动态资源监控</td><td>实时 CPU/MEM, 可按 P/M 排序</td></tr>
+    <tr><td><code class="cmd">htop</code></td><td>交互式版本 top</td><td>更直观，可鼠标操作 (需安装)</td></tr>
+  </table>
+
+  <h2>终止进程</h2>
+  <table class="kv-table">
+    <tr><th>命令</th><th>信号</th><th>行为</th><th>什么时候用</th></tr>
+    <tr><td><code class="cmd">kill 1234</code></td><td>SIGTERM (15)</td><td>礼貌地请进程自行退出，进程可以处理</td><td>正常终止，优先用这个</td></tr>
+    <tr><td><code class="cmd">kill -9 1234</code></td><td>SIGKILL (9)</td><td>内核强制终止，进程无法拦截</td><td>进程卡死或拒绝退出时的最后手段</td></tr>
+    <tr><td><code class="cmd">kill -2 1234</code></td><td>SIGINT (2)</td><td>中断信号，等同于 Ctrl+C</td><td>从另一个终端中断前台进程</td></tr>
+  </table>
+
+  <div class="callout warn"><span class="callout-icon">!</span>先用 SIGTERM，给进程机会清理资源（关闭文件、释放锁）。只有 SIGTERM 无效才用 SIGKILL。</div>
+
+  <pre>
+<span class="c-comment"># 典型进程排查流程</span>
+<span class="c-green">ps aux | grep nginx</span>       <span class="c-comment"># 确认进程在跑，看 PID 和 user</span>
+<span class="c-green">pgrep -a nginx</span>            <span class="c-comment"># 更干净的方式找 PID</span>
+<span class="c-green">top</span>                       <span class="c-comment"># 看 CPU/MEM 实时占用</span>
+<span class="c-green">kill 1234</span>                 <span class="c-comment"># 优雅终止</span>
+<span class="c-green">kill -9 1234</span>              <span class="c-comment"># 强制终止 (最后手段)</span></pre>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">SIGTERM 和 SIGKILL 有什么区别？实际工作中怎么选？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">For process troubleshooting, I check whether the process exists with ps aux or pgrep, inspect resource usage with top, and if I need to terminate it, I start with SIGTERM to give it a chance to close files and release locks cleanly. SIGKILL is a last resort because the process has no chance to clean up, which can leave stale lock files or corrupt state.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINUX SERVICE -->
+<div class="section" id="linux-service">
+  <h1>systemd <em>&amp; 服务</em></h1>
+  <p class="section-desc">现代 Linux 发行版（RHEL, Ubuntu, Debian）都用 systemd 管理服务。systemctl + journalctl 是标准工具组合。</p>
+
+  <h2>systemctl 命令</h2>
+  <table class="kv-table">
+    <tr><th>命令</th><th>功能</th></tr>
+    <tr><td><code class="cmd">systemctl status nginx</code></td><td>查看服务状态 + 最近日志片段</td></tr>
+    <tr><td><code class="cmd">systemctl start nginx</code></td><td>启动服务</td></tr>
+    <tr><td><code class="cmd">systemctl stop nginx</code></td><td>停止服务</td></tr>
+    <tr><td><code class="cmd">systemctl restart nginx</code></td><td>停止 + 启动（连接中断）</td></tr>
+    <tr><td><code class="cmd">systemctl reload nginx</code></td><td>重载配置（不中断连接，如果服务支持）</td></tr>
+    <tr><td><code class="cmd">systemctl enable nginx</code></td><td>设置开机自启</td></tr>
+    <tr><td><code class="cmd">systemctl disable nginx</code></td><td>取消开机自启</td></tr>
+    <tr><td><code class="cmd">systemctl is-active nginx</code></td><td>返回 active/inactive，适合脚本判断</td></tr>
+  </table>
+
+  <h2>journalctl 日志查看</h2>
+  <table class="kv-table">
+    <tr><th>命令</th><th>功能</th></tr>
+    <tr><td><code class="cmd">journalctl -u nginx</code></td><td>查看 nginx 服务的所有日志</td></tr>
+    <tr><td><code class="cmd">journalctl -u nginx -n 50</code></td><td>最近 50 行</td></tr>
+    <tr><td><code class="cmd">journalctl -u nginx -f</code></td><td>实时追踪 (类似 tail -f)</td></tr>
+    <tr><td><code class="cmd">journalctl -xe</code></td><td>最近日志 + 错误上下文，服务启动失败必看</td></tr>
+    <tr><td><code class="cmd">journalctl --since "1 hour ago"</code></td><td>最近一小时的日志</td></tr>
+  </table>
+
+  <h2>服务排查标准流程</h2>
+<pre>
+<span class="c-comment"># Step 1: 看服务状态</span>
+<span class="c-green">systemctl status nginx</span>
+
+<span class="c-comment"># Step 2: 看最近日志</span>
+<span class="c-green">journalctl -u nginx -n 100</span>
+<span class="c-green">journalctl -xe</span>           <span class="c-comment"># 启动失败时用这个</span>
+
+<span class="c-comment"># Step 3: 检查配置文件</span>
+<span class="c-green">nginx -t</span>                  <span class="c-comment"># nginx 语法检查 (每个服务方法不同)</span>
+
+<span class="c-comment"># Step 4: 检查端口有没有监听</span>
+<span class="c-green">ss -tulpn | grep 80</span>
+
+<span class="c-comment"># Step 5: 检查权限和文件</span>
+<span class="c-green">ls -la /etc/nginx/</span>
+<span class="c-green">ls -la /var/log/nginx/</span>
+</pre>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">一个服务启动失败，你的排查思路是什么？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">On systemd-based Linux, I start with systemctl status to see if it's active or failed and get the last few log lines. Then I use journalctl -xe for more detailed error context. If it looks like a config issue, I validate the config file syntax. If the service should be listening on a port, I check ss -tulpn to see if that port is actually open. Finally I check file permissions and whether all dependencies are satisfied.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINUX NETWORK -->
+<div class="section" id="linux-network">
+  <h1>网络 <em>排查</em></h1>
+  <p class="section-desc">网络排查要分层进行：先确认本地服务，再确认端口，再测连通性，最后查 DNS / 路由 / 防火墙。</p>
+
+  <h2>常用网络命令</h2>
+  <table class="kv-table">
+    <tr><th>命令</th><th>功能</th><th>例子</th></tr>
+    <tr><td><code class="cmd">ip addr</code></td><td>查看 IP 地址和接口</td><td><code class="cmd">ip addr show eth0</code></td></tr>
+    <tr><td><code class="cmd">ip route</code></td><td>查看路由表</td><td>确认默认网关</td></tr>
+    <tr><td><code class="cmd">ping</code></td><td>测试连通性</td><td><code class="cmd">ping -c 4 8.8.8.8</code></td></tr>
+    <tr><td><code class="cmd">ss -tulpn</code></td><td>查看监听端口 + 进程</td><td><code class="cmd">ss -tulpn | grep 8080</code></td></tr>
+    <tr><td><code class="cmd">curl</code></td><td>测试 HTTP 接口</td><td><code class="cmd">curl http://localhost:8080/health</code></td></tr>
+    <tr><td><code class="cmd">nslookup / dig</code></td><td>DNS 解析</td><td><code class="cmd">dig example.com</code></td></tr>
+    <tr><td><code class="cmd">netstat -tulpn</code></td><td>旧版端口查看 (同 ss)</td><td>部分旧系统用这个</td></tr>
+    <tr><td><code class="cmd">hostname</code></td><td>查看主机名</td><td><code class="cmd">hostname -I</code> 显示所有 IP</td></tr>
+  </table>
+
+  <h2>分层排查框架</h2>
+<pre>
+<span class="c-comment"># 服务无法从外部访问 — 逐层排查</span>
+
+<span class="c-comment"># 1. 服务本身起了吗？</span>
+<span class="c-green">systemctl status myapp</span>
+
+<span class="c-comment"># 2. 端口在监听吗？</span>
+<span class="c-green">ss -tulpn | grep 8080</span>
+
+<span class="c-comment"># 3. 本机可以访问吗？</span>
+<span class="c-green">curl http://localhost:8080/health</span>
+
+<span class="c-comment"># 4. 远端能 ping 通吗？</span>
+<span class="c-green">ping 192.168.1.10</span>
+
+<span class="c-comment"># 5. DNS 能解析吗？</span>
+<span class="c-green">nslookup myapp.internal</span>
+<span class="c-green">dig myapp.internal</span>
+
+<span class="c-comment"># 6. 防火墙挡了吗？</span>
+<span class="c-green">iptables -L -n | grep 8080</span>
+<span class="c-green">firewall-cmd --list-all</span>   <span class="c-comment"># RHEL/CentOS</span>
+<span class="c-green">ufw status</span>                <span class="c-comment"># Ubuntu</span>
+</pre>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">外部客户端连不上服务器上的应用，你怎么排查？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">For Linux network troubleshooting, I work through it in layers. First I verify the service is running with systemctl status. Then I check if the port is actually listening with ss -tulpn. If it's listening, I test locally with curl. If that works, the issue is network-level — I check basic connectivity with ping, DNS resolution with nslookup, routing with ip route, and finally whether a firewall rule is blocking the traffic.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">怎么查某个端口被哪个进程占用？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">I use ss -tulpn — the -p flag shows the process name and PID that owns each socket. For example, ss -tulpn | grep 80 shows everything listening on port 80 along with the process responsible. On older systems without ss, netstat -tulpn provides the same information.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINUX STORAGE -->
+<div class="section" id="linux-storage">
+  <h1>存储 <em>&amp; 磁盘</em></h1>
+  <p class="section-desc">磁盘满了服务会挂。df / du / lsblk 是三个必须会的命令，能回答"哪里占了多少空间"。</p>
+
+  <h2>存储排查命令</h2>
+  <table class="kv-table">
+    <tr><th>命令</th><th>功能</th><th>例子</th></tr>
+    <tr><td><code class="cmd">df -h</code></td><td>查看各文件系统容量和使用率</td><td>最常用，快速看哪个分区快满了</td></tr>
+    <tr><td><code class="cmd">du -sh /var/log</code></td><td>查看目录占用大小</td><td>找到大目录</td></tr>
+    <tr><td><code class="cmd">du -sh /var/log/* | sort -h</code></td><td>按大小排序子目录</td><td>找最大的日志文件</td></tr>
+    <tr><td><code class="cmd">lsblk</code></td><td>列出所有块设备</td><td>看磁盘、分区、LVM 关系</td></tr>
+    <tr><td><code class="cmd">mount | grep data</code></td><td>查看挂载状态</td><td>确认分区是否已挂载</td></tr>
+    <tr><td><code class="cmd">fdisk -l</code></td><td>查看磁盘分区表</td><td>看新盘的分区情况</td></tr>
+  </table>
+
+  <div class="callout danger"><span class="callout-icon">!</span>磁盘满了，写操作失败，服务会崩溃、数据库会拒绝写入、日志无法记录。定期监控 df -h 是基本运维习惯。</div>
+
+  <h2>磁盘空间问题排查</h2>
+<pre>
+<span class="c-comment"># Step 1: 看哪个文件系统快满了</span>
+<span class="c-green">df -h</span>
+
+<span class="c-comment"># Step 2: 进入使用率高的挂载点，找占用大的目录</span>
+<span class="c-green">du -sh /var/*  | sort -h</span>
+
+<span class="c-comment"># Step 3: 深入找大文件</span>
+<span class="c-green">du -sh /var/log/* | sort -h</span>
+<span class="c-green">find /var/log -name "*.log" -size +100M</span>
+
+<span class="c-comment"># Step 4: 清理 (小心操作)</span>
+<span class="c-green">journalctl --vacuum-size=500M</span>  <span class="c-comment"># 清理 journal 日志</span>
+<span class="c-green">logrotate -f /etc/logrotate.conf</span>  <span class="c-comment"># 强制轮转日志</span>
+</pre>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">应用报错写入失败，怎么快速判断是不是磁盘满了？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">For storage checks, I first run df -h to see filesystem usage across all mount points — if anything shows 100% or close to it, that's the issue. Then I use du -sh to drill down into the largest directories and find what's consuming the space. Common culprits are application logs in /var/log, old database dumps, or core dump files. Disk exhaustion often causes application failures because write operations silently fail.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINUX TEXT -->
+<div class="section" id="linux-text">
+  <h1>文本处理 <em>工具链</em></h1>
+  <p class="section-desc">Linux 自动化的核心是把命令输出串起来处理。grep / awk / sed / cut / xargs 是这套工具链的主力。</p>
+
+  <h2>工具对照表</h2>
+  <table class="kv-table">
+    <tr><th>工具</th><th>做什么</th><th>典型用法</th></tr>
+    <tr><td><code class="cmd">grep</code></td><td>过滤匹配行</td><td><code class="cmd">grep -i "error" app.log</code></td></tr>
+    <tr><td><code class="cmd">grep -v</code></td><td>排除匹配行</td><td><code class="cmd">grep -v "DEBUG" app.log</code></td></tr>
+    <tr><td><code class="cmd">awk</code></td><td>按列处理，提取字段</td><td><code class="cmd">ps aux | awk '{print $1,$2}'</code></td></tr>
+    <tr><td><code class="cmd">cut</code></td><td>按分隔符切字段</td><td><code class="cmd">cat data.csv | cut -d',' -f2</code></td></tr>
+    <tr><td><code class="cmd">sed</code></td><td>替换 / 删除行</td><td><code class="cmd">sed 's/foo/bar/g' file.txt</code></td></tr>
+    <tr><td><code class="cmd">sort</code></td><td>排序</td><td><code class="cmd">sort -h sizes.txt</code></td></tr>
+    <tr><td><code class="cmd">uniq</code></td><td>去重复相邻行</td><td><code class="cmd">sort names.txt | uniq</code></td></tr>
+    <tr><td><code class="cmd">xargs</code></td><td>把 stdin 转为命令参数</td><td><code class="cmd">find . -name "*.tmp" | xargs rm</code></td></tr>
+    <tr><td><code class="cmd">wc -l</code></td><td>统计行数</td><td><code class="cmd">grep ERROR app.log | wc -l</code></td></tr>
+  </table>
+
+  <h2>实用管道组合</h2>
+<pre>
+<span class="c-comment"># 统计日志里 ERROR 出现次数</span>
+<span class="c-green">grep -i "error" app.log | wc -l</span>
+
+<span class="c-comment"># 找出 CPU 占用最高的进程 (按第3列排序)</span>
+<span class="c-green">ps aux | sort -k3 -rn | head -10</span>
+
+<span class="c-comment"># 提取 CSV 第二列的唯一值</span>
+<span class="c-green">cut -d',' -f2 data.csv | sort | uniq</span>
+
+<span class="c-comment"># 批量删除7天前的日志文件</span>
+<span class="c-green">find /var/log/app -name "*.log" -mtime +7 | xargs rm</span>
+
+<span class="c-comment"># 只保留含 "FAIL" 的行并取第一列 (hostname)</span>
+<span class="c-green">grep "FAIL" servers.txt | awk '{print $1}'</span>
+
+<span class="c-comment"># 实时查看 error 日志</span>
+<span class="c-green">tail -f app.log | grep --line-buffered "ERROR"</span>
+</pre>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">awk 和 cut 有什么区别？什么时候用哪个？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">cut is simpler and faster — it splits by a fixed delimiter and extracts specific fields. awk is a full text processing language that handles variable-width whitespace, can do calculations, and can apply conditions. I use cut for CSV-like files with a consistent delimiter, and awk when dealing with command output that uses spaces like ps aux, or when I need to filter rows and process multiple fields in one step.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LINUX BASH -->
+<div class="section" id="linux-bash">
+  <h1>Bash <em>脚本</em></h1>
+  <p class="section-desc">脚本是把一串命令自动化执行。面试常考变量、条件、循环、参数、返回码这五个基础。</p>
+
+  <h2>脚本基础结构</h2>
+<pre>
+<span class="c-blue">#!/bin/bash</span>                    <span class="c-comment"># shebang: 告诉 OS 用 bash 解释</span>
+
+<span class="c-comment"># 变量 (等号两边不能有空格)</span>
+<span class="c-gold">name</span>=<span class="c-green">"Justin"</span>
+<span class="c-green">echo</span> <span class="c-green">"Hello, $name"</span>
+
+<span class="c-comment"># 参数</span>
+<span class="c-green">echo</span> <span class="c-green">"Script: $0"</span>              <span class="c-comment"># 脚本名</span>
+<span class="c-green">echo</span> <span class="c-green">"First arg: $1"</span>           <span class="c-comment"># 第一个参数</span>
+<span class="c-green">echo</span> <span class="c-green">"All args: $@"</span>            <span class="c-comment"># 所有参数</span>
+
+<span class="c-comment"># 返回码 (0=成功, 非0=失败)</span>
+<span class="c-gold">ls</span> /tmp
+<span class="c-green">echo</span> <span class="c-green">"Exit code: $?"</span>           <span class="c-comment"># $? 是上一条命令的返回码</span>
+</pre>
+
+  <h2>条件判断</h2>
+<pre>
+<span class="c-comment"># 文件是否存在</span>
+<span class="c-blue">if</span> [ -f <span class="c-green">"/tmp/test.txt"</span> ]; <span class="c-blue">then</span>
+  <span class="c-green">echo</span> <span class="c-green">"file exists"</span>
+<span class="c-blue">else</span>
+  <span class="c-green">echo</span> <span class="c-green">"file missing"</span>
+<span class="c-blue">fi</span>
+
+<span class="c-comment"># 常用测试条件</span>
+<span class="c-comment">-f file    : 文件存在</span>
+<span class="c-comment">-d dir     : 目录存在</span>
+<span class="c-comment">-z str     : 字符串为空</span>
+<span class="c-comment">-n str     : 字符串非空</span>
+<span class="c-comment">$a -eq $b  : 数字相等</span>
+<span class="c-comment">$a -gt $b  : 大于</span>
+
+<span class="c-comment"># 检查命令是否成功</span>
+<span class="c-blue">if</span> <span class="c-gold">systemctl</span> is-active --quiet nginx; <span class="c-blue">then</span>
+  <span class="c-green">echo</span> <span class="c-green">"nginx is running"</span>
+<span class="c-blue">else</span>
+  <span class="c-green">echo</span> <span class="c-green">"nginx is down!"</span>
+<span class="c-blue">fi</span>
+</pre>
+
+  <h2>循环</h2>
+<pre>
+<span class="c-comment"># 遍历文件</span>
+<span class="c-blue">for</span> <span class="c-gold">file</span> <span class="c-blue">in</span> *.log; <span class="c-blue">do</span>
+  <span class="c-green">echo</span> <span class="c-green">"Processing: $file"</span>
+<span class="c-blue">done</span>
+
+<span class="c-comment"># 遍历列表</span>
+<span class="c-blue">for</span> <span class="c-gold">host</span> <span class="c-blue">in</span> server1 server2 server3; <span class="c-blue">do</span>
+  <span class="c-gold">ping</span> -c 1 <span class="c-gold">$host</span> &amp;&gt; /dev/null &amp;&amp; <span class="c-green">echo</span> <span class="c-green">"$host UP"</span> || <span class="c-green">echo</span> <span class="c-green">"$host DOWN"</span>
+<span class="c-blue">done</span>
+</pre>
+
+  <h2>重定向</h2>
+  <table class="kv-table">
+    <tr><th>语法</th><th>含义</th></tr>
+    <tr><td><code class="cmd">> file</code></td><td>stdout 覆盖写入文件</td></tr>
+    <tr><td><code class="cmd">>> file</code></td><td>stdout 追加写入文件</td></tr>
+    <tr><td><code class="cmd">2>/dev/null</code></td><td>丢弃 stderr 错误输出</td></tr>
+    <tr><td><code class="cmd">2>&1</code></td><td>把 stderr 合并到 stdout</td></tr>
+    <tr><td><code class="cmd">&>/dev/null</code></td><td>同时丢弃 stdout 和 stderr</td></tr>
+  </table>
+</div>
+
+<!-- LINUX TROUBLESHOOT -->
+<div class="section" id="linux-troubleshoot">
+  <h1>🔧 <em>排查流程</em>总结</h1>
+  <p class="section-desc">面试里"你会怎么排查X问题"是高频题型。这里整理了五个最常见场景的标准流程。</p>
+
+  <h2>场景 1：服务挂了，无法访问</h2>
+<pre>
+<span class="c-green">systemctl status myservice</span>       <span class="c-comment"># 是否 active？看最近日志</span>
+<span class="c-green">journalctl -u myservice -n 50</span>    <span class="c-comment"># 详细日志</span>
+<span class="c-green">journalctl -xe</span>                   <span class="c-comment"># 启动失败时看上下文</span>
+<span class="c-green">ss -tulpn | grep 8080</span>            <span class="c-comment"># 端口有没有监听？</span>
+<span class="c-green">curl http://localhost:8080</span>        <span class="c-comment"># 本地访问测试</span>
+<span class="c-green">ls -la /etc/myservice/</span>           <span class="c-comment"># 配置文件权限</span>
+<span class="c-green">df -h</span>                            <span class="c-comment"># 磁盘有没有满？</span>
+</pre>
+
+  <h2>场景 2：磁盘空间不足</h2>
+<pre>
+<span class="c-green">df -h</span>                            <span class="c-comment"># 哪个挂载点使用率高</span>
+<span class="c-green">du -sh /var/* | sort -h</span>          <span class="c-comment"># 找大目录</span>
+<span class="c-green">du -sh /var/log/* | sort -h</span>      <span class="c-comment"># 细化到日志</span>
+<span class="c-green">find / -name "*.log" -size +100M</span> <span class="c-comment"># 找大文件</span>
+<span class="c-green">journalctl --vacuum-size=500M</span>    <span class="c-comment"># 清 journal</span>
+</pre>
+
+  <h2>场景 3：脚本/程序权限报错</h2>
+<pre>
+<span class="c-green">ls -la script.sh</span>                 <span class="c-comment"># 查看权限和 owner</span>
+<span class="c-green">whoami</span>                           <span class="c-comment"># 当前用户</span>
+<span class="c-green">id</span>                               <span class="c-comment"># 当前用户的 uid/gid/groups</span>
+<span class="c-green">chmod +x script.sh</span>              <span class="c-comment"># 没有 x 就加</span>
+<span class="c-green">chown user:group script.sh</span>      <span class="c-comment"># 改 owner</span>
+<span class="c-green">sudo ./script.sh</span>                 <span class="c-comment"># 需要 root 权限时</span>
+</pre>
+
+  <h2>场景 4：进程 CPU/内存异常高</h2>
+<pre>
+<span class="c-green">top</span>                              <span class="c-comment"># 实时看，按 P 排 CPU</span>
+<span class="c-green">ps aux | sort -k3 -rn | head</span>    <span class="c-comment"># 按 CPU 排序</span>
+<span class="c-green">ps aux | sort -k4 -rn | head</span>    <span class="c-comment"># 按 MEM 排序</span>
+<span class="c-green">pgrep -a suspicious_process</span>     <span class="c-comment"># 找完整命令</span>
+<span class="c-green">kill PID</span>                         <span class="c-comment"># SIGTERM 优先</span>
+<span class="c-green">kill -9 PID</span>                      <span class="c-comment"># 无响应再用 SIGKILL</span>
+</pre>
+
+  <h2>场景 5：网络连通性问题</h2>
+<pre>
+<span class="c-green">ip addr</span>                          <span class="c-comment"># 有没有 IP？</span>
+<span class="c-green">ping 8.8.8.8</span>                     <span class="c-comment"># 能出网吗？</span>
+<span class="c-green">ping gateway_ip</span>                  <span class="c-comment"># 能到网关吗？</span>
+<span class="c-green">nslookup example.com</span>             <span class="c-comment"># DNS 能解析吗？</span>
+<span class="c-green">ip route</span>                         <span class="c-comment"># 路由表对不对？</span>
+<span class="c-green">ss -tulpn | grep PORT</span>            <span class="c-comment"># 服务在监听吗？</span>
+<span class="c-green">curl -v http://target:port</span>       <span class="c-comment"># HTTP 详细调试</span>
+</pre>
+
+  <div class="callout tip"><span class="callout-icon">TIP</span>排查思路：<strong>状态 → 日志 → 配置 → 端口 → 权限 → 磁盘 → 网络</strong>。按这个顺序走，90% 的问题都能定位。</div>
+</div>
+
+<!-- LINUX INTERVIEW QA -->
+<div class="section" id="linux-interview-qa">
+  <h1>Linux <em>面试 Q&amp;A</em></h1>
+  <p class="section-desc">点击问题查看完整回答。涵盖实际工作中最常被问到的场景题。</p>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q1</span><span class="q-text">你怎么查一个服务有没有起来？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答</span>
+        <div class="interview-box">I start with systemctl status to see if it's active or failed, which also shows the last few log lines. If it's supposed to be running but isn't, I look at journalctl -u to see the full service logs and find the failure reason. I also check ss -tulpn to confirm the service is actually listening on the expected port, because a service can show as active but still not be accepting connections.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q2</span><span class="q-text">你怎么实时看日志？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答</span>
+        <div class="interview-box">For file-based logs, I use tail -f which follows the file and outputs new lines as they appear — the standard way to monitor a live log. I often pipe it: tail -f app.log | grep ERROR to filter noise in real time. For systemd-managed services, journalctl -u servicename -f does the same thing for journal logs.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q3</span><span class="q-text">你怎么查磁盘满了？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答</span>
+        <div class="interview-box">I run df -h first to see the usage percentage for all mounted filesystems. If something is at 90% or above, I use du -sh on the directories under that mount point to narrow down what's consuming space. Common culprits are log files, old database backups, or core dumps. Once I identify the large files, I either archive them, compress them, or set up log rotation to prevent it happening again.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q4</span><span class="q-text">脚本报 Permission Denied，你怎么排查？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答</span>
+        <div class="interview-box">I check three things: first, ls -la on the script to see the permissions — does it have the execute bit set? Second, whoami to confirm which user I'm running as. Third, whether the user is the owner, in the group, or falls under "others" for that file's permissions. If the execute bit is missing, chmod +x fixes it. If the ownership is wrong, chown corrects it. If root permissions are needed, sudo is the solution.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q5</span><span class="q-text">你怎么查某个端口是否在监听，是哪个进程占用的？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答</span>
+        <div class="interview-box">I use ss -tulpn — it shows all listening TCP and UDP sockets with the associated process name and PID. The -p flag is the key one that adds process information. For example, ss -tulpn | grep 8080 immediately tells me whether anything is listening on 8080 and what process owns it. On older systems, netstat -tulpn does the same job.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q6</span><span class="q-text">如何找出某个目录下最近7天内被修改的文件？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答</span>
+        <div class="interview-box">find /path -mtime -7 finds files modified within the last 7 days. The -mtime flag works in 24-hour units, so -7 means "less than 7 days ago." I can add -type f to limit to files only, or -name "*.log" to filter by name. Combining find with xargs is also useful — for example, find /var/log -mtime +30 | xargs ls -lh shows all log files not modified in 30 days that might be candidates for cleanup.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q7</span><span class="q-text">写一个脚本，检查三台服务器是否能 ping 通，打印 UP/DOWN</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整代码</span>
+<pre style="margin-top:8px">
+<span class="c-blue">#!/bin/bash</span>
+
+<span class="c-gold">servers</span>=(<span class="c-green">"192.168.1.10"</span> <span class="c-green">"192.168.1.11"</span> <span class="c-green">"192.168.1.12"</span>)
+
+<span class="c-blue">for</span> <span class="c-gold">host</span> <span class="c-blue">in</span> <span class="c-gold">"${servers[@]}"</span>; <span class="c-blue">do</span>
+    <span class="c-blue">if</span> <span class="c-gold">ping</span> -c 1 -W 1 <span class="c-gold">$host</span> &gt;/dev/null 2&gt;&1; <span class="c-blue">then</span>
+        <span class="c-green">echo</span> <span class="c-green">"$host : UP"</span>
+    <span class="c-blue">else</span>
+        <span class="c-green">echo</span> <span class="c-green">"$host : DOWN"</span>
+    <span class="c-blue">fi</span>
+<span class="c-blue">done</span>
+</pre>
+        <div class="interview-box">Key points: -c 1 sends one packet, -W 1 sets a 1-second timeout. &gt;/dev/null 2&gt;&1 discards all output so only our echo statements show. The if statement uses ping's exit code — 0 means success, non-zero means failure.</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q8</span><span class="q-text">Linux 里 > 和 >> 的区别是什么？2>&1 是什么意思？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答</span>
+        <div class="interview-box">&gt; redirects stdout and overwrites the file if it exists. &gt;&gt; redirects stdout and appends to the file. 2&gt;&amp;1 means "redirect file descriptor 2 (stderr) to wherever file descriptor 1 (stdout) currently points" — effectively merging error output into the normal output stream. A common pattern is command &gt; output.log 2&gt;&amp;1 which captures both stdout and stderr into one log file.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggle(el) {
+  const card = el.parentElement;
+  card.classList.toggle('open');
+}
+
+// init first nav item as active
+document.querySelector('.nav-item').classList.add('active');
+</script>
+</body>
+</html>

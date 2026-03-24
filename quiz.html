@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hardware + Linux Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --border: #2a2f42;
+    --border2: #3a4055;
+    --text: #e8eaf0;
+    --text2: #8890a8;
+    --text3: #5a6280;
+    --accent: #4ade80;
+    --accent-dim: #1a3d28;
+    --accent-text: #bbf7d0;
+    --red: #f87171;
+    --red-dim: #3d1a1a;
+    --red-text: #fecaca;
+    --blue: #60a5fa;
+    --blue-dim: #1a2d4a;
+    --tag-hw: #a78bfa;
+    --tag-hw-dim: #2d1f4a;
+    --tag-linux: #38bdf8;
+    --tag-linux-dim: #1a3040;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text2);
+    letter-spacing: 0.05em;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .score-display {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text2);
+  }
+
+  .score-display b { color: var(--accent); font-weight: 500; }
+
+  /* ─── PROGRESS ─── */
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    z-index: 9;
+  }
+
+  .progress-fill {
+    height: 2px;
+    background: var(--accent);
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ─── MAIN ─── */
+  main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 4rem 1.5rem 3rem;
+  }
+
+  .quiz-container {
+    width: 100%;
+    max-width: 680px;
+  }
+
+  /* ─── SCREENS ─── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ─── START SCREEN ─── */
+  .start-screen {
+    text-align: center;
+    padding: 3rem 0;
+  }
+
+  .start-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    background: var(--accent-dim);
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+  }
+
+  .start-title {
+    font-size: 36px;
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .start-title em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .start-desc {
+    font-size: 15px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+    text-align: left;
+  }
+
+  .stat-cell {
+    background: var(--surface);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .stat-cell .val {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .stat-cell .lbl {
+    font-size: 12px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .start-btn {
+    background: var(--accent);
+    color: #0a1f12;
+    border: none;
+    padding: 14px 40px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .start-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .start-btn:active { transform: translateY(0); }
+
+  /* ─── QUESTION SCREEN ─── */
+  .q-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .q-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .q-tag.hw {
+    color: var(--tag-hw);
+    background: var(--tag-hw-dim);
+    border: 1px solid #4a3880;
+  }
+
+  .q-tag.linux {
+    color: var(--tag-linux);
+    background: var(--tag-linux-dim);
+    border: 1px solid #1a4a60;
+  }
+
+  .q-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .q-text {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.55;
+    color: var(--text);
+    margin-bottom: 2rem;
+    letter-spacing: -0.01em;
+  }
+
+  /* ─── OPTIONS ─── */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .opt {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 16px;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text2);
+    transition: border-color 0.12s, background 0.12s, color 0.12s;
+    line-height: 1.45;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .opt-letter {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    min-width: 16px;
+    margin-top: 2px;
+    transition: color 0.12s;
+  }
+
+  .opt:hover:not(:disabled) {
+    border-color: var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .opt:hover:not(:disabled) .opt-letter { color: var(--text2); }
+
+  .opt.correct {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent-text);
+  }
+
+  .opt.correct .opt-letter { color: var(--accent); }
+
+  .opt.wrong {
+    background: var(--red-dim);
+    border-color: var(--red);
+    color: var(--red-text);
+  }
+
+  .opt.wrong .opt-letter { color: var(--red); }
+
+  .opt.reveal {
+    background: var(--accent-dim);
+    border-color: #2a5c3a;
+    color: var(--accent-text);
+  }
+
+  .opt.reveal .opt-letter { color: var(--accent); }
+  .opt:disabled { cursor: default; }
+
+  /* ─── FEEDBACK ─── */
+  .feedback {
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
+
+  .feedback.show { display: block; }
+
+  .feedback.correct {
+    background: var(--accent-dim);
+    border: 1px solid #2a5c3a;
+    color: var(--accent-text);
+  }
+
+  .feedback.wrong {
+    background: var(--red-dim);
+    border: 1px solid #5c2a2a;
+    color: var(--red-text);
+  }
+
+  .feedback-icon {
+    font-family: var(--mono);
+    font-weight: 500;
+    margin-right: 6px;
+  }
+
+  /* ─── NAV ─── */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .skip-btn {
+    background: none;
+    border: none;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text3);
+    cursor: pointer;
+    padding: 8px 0;
+    letter-spacing: 0.05em;
+    transition: color 0.12s;
+  }
+
+  .skip-btn:hover { color: var(--text2); }
+
+  .next-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    padding: 9px 20px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s;
+    display: none;
+  }
+
+  .next-btn:hover {
+    background: var(--border);
+    border-color: var(--text3);
+  }
+
+  /* ─── RESULTS ─── */
+  .results-screen { padding: 1rem 0; }
+
+  .results-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .results-pct {
+    font-family: var(--mono);
+    font-size: 72px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .results-grade {
+    font-size: 16px;
+    color: var(--text2);
+    margin-top: 8px;
+    font-weight: 300;
+  }
+
+  .results-breakdown {
+    text-align: right;
+  }
+
+  .results-breakdown .line {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 4px;
+  }
+
+  .results-breakdown .line b { font-weight: 500; }
+
+  .b-green { color: var(--accent); }
+  .b-red { color: var(--red); }
+  .b-muted { color: var(--text3); }
+
+  .section-scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .section-cell {
+    background: var(--surface);
+    padding: 1.5rem;
+  }
+
+  .section-cell .s-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-cell .s-val {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .s-val.hw-color { color: var(--tag-hw); }
+  .s-val.linux-color { color: var(--tag-linux); }
+
+  .section-cell .s-sub {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .bar-bg {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+
+  .bar-fg {
+    height: 3px;
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  .bar-hw { background: var(--tag-hw); }
+  .bar-linux { background: var(--tag-linux); }
+
+  .results-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-restart {
+    background: var(--accent);
+    color: #0a1f12;
+    border: none;
+    padding: 12px 28px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: opacity 0.15s;
+  }
+
+  .btn-restart:hover { opacity: 0.85; }
+
+  .btn-review {
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    padding: 12px 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: border-color 0.12s, color 0.12s;
+  }
+
+  .btn-review:hover { border-color: var(--text3); color: var(--text); }
+
+  /* ─── REVIEW SCREEN ─── */
+  .review-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
+  .review-title {
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  .btn-back {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: border-color 0.12s, color 0.12s;
+  }
+
+  .btn-back:hover { border-color: var(--border2); color: var(--text); }
+
+  .review-filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    padding: 5px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.12s;
+  }
+
+  .filter-btn.active {
+    background: var(--surface2);
+    border-color: var(--border2);
+    color: var(--text);
+  }
+
+  .review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+
+  .review-item.r-correct { border-left: 3px solid var(--accent); }
+  .review-item.r-wrong { border-left: 3px solid var(--red); }
+  .review-item.r-skip { border-left: 3px solid var(--text3); }
+
+  .review-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .review-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  .review-status.correct { background: var(--accent-dim); color: var(--accent); }
+  .review-status.wrong { background: var(--red-dim); color: var(--red); }
+  .review-status.skip { background: var(--surface2); color: var(--text3); }
+
+  .review-item-q {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .review-item-ans {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .review-item-ans .correct-ans { color: var(--accent); }
+  .review-item-ans .wrong-ans { color: var(--red); text-decoration: line-through; opacity: 0.7; }
+
+  .review-item-explain {
+    font-size: 12px;
+    color: var(--text3);
+    line-height: 1.6;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 0;
+    font-size: 14px;
+    color: var(--text3);
+    font-family: var(--mono);
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 600px) {
+    header { padding: 0 1rem; }
+    main { padding: 2.5rem 1rem 2rem; }
+    .start-title { font-size: 26px; }
+    .results-pct { font-size: 52px; }
+    .results-header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+    .results-breakdown { text-align: left; }
+    .section-scores { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">quiz<span>.</span>sh</div>
+  <div class="header-right">
+    <div class="score-display" id="header-score" style="display:none">
+      <b id="h-score">0</b> / <span id="h-total">100</span>
+    </div>
+  </div>
+</header>
+
+<div class="progress-track">
+  <div class="progress-fill" id="prog"></div>
+</div>
+
+<main>
+  <div class="quiz-container">
+
+    <!-- START -->
+    <div class="screen active" id="screen-start">
+      <div class="start-screen">
+        <div class="start-badge">Interview Prep</div>
+        <h1 class="start-title">Hardware &amp; <em>Linux</em><br>Quiz</h1>
+        <p class="start-desc">
+          100 questions covering Supermicro SYS-221HE-FTNR / X13DEM hardware architecture and Linux system administration essentials.
+        </p>
+        <div class="stat-grid">
+          <div class="stat-cell">
+            <div class="val">50</div>
+            <div class="lbl">Hardware Qs</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val">50</div>
+            <div class="lbl">Linux Qs</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val">100</div>
+            <div class="lbl">Total</div>
+          </div>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">START QUIZ →</button>
+      </div>
+    </div>
+
+    <!-- QUESTION -->
+    <div class="screen" id="screen-q">
+      <div class="q-meta">
+        <span class="q-tag" id="q-tag">Hardware</span>
+        <span class="q-num" id="q-num">01 / 100</span>
+      </div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback">
+        <span class="feedback-icon" id="fb-icon"></span>
+        <span id="fb-text"></span>
+      </div>
+      <div class="nav-row">
+        <button class="skip-btn" id="skip-btn" onclick="skipQ()">skip →</button>
+        <button class="next-btn" id="next-btn" onclick="nextQ()">NEXT →</button>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="screen" id="screen-results">
+      <div class="results-screen">
+        <div class="results-header">
+          <div>
+            <div class="results-pct" id="r-pct">—</div>
+            <div class="results-grade" id="r-grade"></div>
+          </div>
+          <div class="results-breakdown">
+            <div class="line"><b class="b-green" id="r-correct">0</b> correct</div>
+            <div class="line"><b class="b-red" id="r-wrong">0</b> wrong</div>
+            <div class="line"><b class="b-muted" id="r-skip">0</b> skipped</div>
+          </div>
+        </div>
+
+        <div class="section-scores">
+          <div class="section-cell">
+            <div class="s-label">Hardware</div>
+            <div class="s-val hw-color" id="r-hw-pct">—</div>
+            <div class="s-sub" id="r-hw-sub"></div>
+            <div class="bar-row">
+              <div class="bar-bg"><div class="bar-fg bar-hw" id="bar-hw" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div class="section-cell">
+            <div class="s-label">Linux</div>
+            <div class="s-val linux-color" id="r-linux-pct">—</div>
+            <div class="s-sub" id="r-linux-sub"></div>
+            <div class="bar-row">
+              <div class="bar-bg"><div class="bar-fg bar-linux" id="bar-linux" style="width:0%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button class="btn-restart" onclick="startQuiz()">RETAKE QUIZ</button>
+          <button class="btn-review" onclick="showReview()">REVIEW ANSWERS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW -->
+    <div class="screen" id="screen-review">
+      <div class="review-header">
+        <div class="review-title">Answer Review</div>
+        <button class="btn-back" onclick="showScreen('screen-results')">← back</button>
+      </div>
+      <div class="review-filters">
+        <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('wrong',this)">Wrong</button>
+        <button class="filter-btn" onclick="setFilter('correct',this)">Correct</button>
+        <button class="filter-btn" onclick="setFilter('skip',this)">Skipped</button>
+      </div>
+      <div class="review-list" id="review-list"></div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const LETTERS = ['A','B','C','D'];
+
+const ALL_Q = [
+  // ── HARDWARE ──────────────────────────────────────────
+  {s:"Hardware",q:"What does SYS-221HE-FTNR refer to?",o:["The motherboard model","The complete 2U server system","The CPU socket type","The PCIe controller chip"],a:1,e:"SYS-221HE-FTNR is the full 2U server system (short-depth, front-I/O). X13DEM is the motherboard inside it."},
+  {s:"Hardware",q:"What is the X13DEM?",o:["The server's chassis model","The BMC chip","The motherboard inside the SYS-221HE-FTNR","The NVMe controller"],a:2,e:"X13DEM is the proprietary-form-factor motherboard (11.5\" × 17\") that defines the system's core hardware capabilities."},
+  {s:"Hardware",q:"Which three dimensions does a dual-socket design expand simultaneously?",o:["CPU, storage, cost","Compute, memory, and I/O","Power, cooling, and weight","CPU, GPU, and network"],a:1,e:"Dual-socket simultaneously scales compute (up to 128 cores), memory (up to 8 TB), and PCIe I/O (up to ~160 lanes)."},
+  {s:"Hardware",q:"What is the maximum core count on the X13DEM dual-socket platform?",o:["64 cores","96 cores","128 cores","256 cores"],a:2,e:"Each socket supports up to 64 cores, so two sockets = up to 128 cores total."},
+  {s:"Hardware",q:"What is the maximum memory capacity of the X13DEM platform with 3DS RDIMMs?",o:["2 TB","4 TB","6 TB","8 TB"],a:3,e:"At 2DPC with 3DS RDIMMs, the platform supports up to 8 TB total across both sockets."},
+  {s:"Hardware",q:"What interconnect links the two CPUs on the X13DEM?",o:["QPI 1.0","PCIe 5.0","UPI 2.0","DMI 4.0"],a:2,e:"UPI (Ultra Path Interconnect) 2.0 at 16 GT/s replaced QPI for this generation of Xeon Scalable processors."},
+  {s:"Hardware",q:"How many UPI links typically connect the two sockets?",o:["1–2 links","3–4 links","5–6 links","8 links"],a:1,e:"Typically 3–4 UPI links run between sockets at 16 GT/s each."},
+  {s:"Hardware",q:"What is the UPI 2.0 transfer speed?",o:["8 GT/s","10 GT/s","16 GT/s","32 GT/s"],a:2,e:"UPI 2.0 operates at 16 GT/s per link."},
+  {s:"Hardware",q:"Where is the memory controller located in this platform?",o:["In the Intel C741 chipset","In the AST2600 BMC","Integrated inside each CPU die","On a separate memory buffer chip"],a:2,e:"The memory controller is integrated directly into each CPU die — not the chipset or BMC."},
+  {s:"Hardware",q:"How many DDR5 memory channels does each CPU have?",o:["4 channels","6 channels","8 channels","16 channels"],a:2,e:"Each Xeon Scalable CPU has 8 DDR5 memory channels, giving 16 channels total with two CPUs."},
+  {s:"Hardware",q:"What DDR5 speed is achieved at 1DPC configuration?",o:["4400 MT/s","4800 MT/s","5200 MT/s","5600 MT/s"],a:3,e:"1DPC (1 DIMM per channel) achieves DDR5-5600 MT/s."},
+  {s:"Hardware",q:"What DDR5 speed is achieved at 2DPC configuration?",o:["3200 MT/s","4400 MT/s","5200 MT/s","5600 MT/s"],a:1,e:"2DPC drops to DDR5-4400 MT/s due to increased electrical load on the memory bus."},
+  {s:"Hardware",q:"What type of DIMM is required on the X13DEM?",o:["UDIMM","SO-DIMM","ECC RDIMM","LRDIMM only"],a:2,e:"ECC RDIMM is required. The register buffer reduces electrical load, supporting multiple DIMMs per channel."},
+  {s:"Hardware",q:"How many total DIMM slots does the dual-socket X13DEM have?",o:["16","24","32","48"],a:2,e:"32 slots = 2 CPUs × 8 channels × 2 DIMMs per channel (2DPC)."},
+  {s:"Hardware",q:"What PCIe generation is used for main expansion slots and NVMe on X13DEM?",o:["PCIe 3.0","PCIe 4.0","PCIe 5.0","PCIe 6.0"],a:2,e:"PCIe 5.0 at 32 GT/s per lane is used for expansion slots, AIOM NICs, and MCIO NVMe connectors."},
+  {s:"Hardware",q:"How fast is a single PCIe 5.0 lane?",o:["8 GT/s","16 GT/s","32 GT/s","64 GT/s"],a:2,e:"PCIe 5.0 = 32 GT/s per lane. A full x16 slot provides ~64 GB/s one-way bandwidth."},
+  {s:"Hardware",q:"What is PCIe bifurcation?",o:["Doubling PCIe lane speed in BIOS","Splitting a physical x16 slot into smaller logical links","Adding more PCIe root ports via the chipset","Enabling NVMe RAID without an HBA"],a:1,e:"Bifurcation splits a physical x16 slot into 2×x8 or 4×x4 in BIOS, allowing multiple devices per physical slot."},
+  {s:"Hardware",q:"How many PCIe 5.0 x16 expansion slots does the X13DEM have?",o:["2","4","6","8"],a:1,e:"4× PCIe 5.0 x16 slots, configurable as 8×x8 or 4×x16 via bifurcation."},
+  {s:"Hardware",q:"What interface do NVMe drives use on X13DEM?",o:["SATA via chipset","MCIO connectors to CPU PCIe","USB 3.2","M.2 PCIe 3.0"],a:1,e:"NVMe drives connect via MCIO connectors directly to CPU PCIe 5.0 root ports."},
+  {s:"Hardware",q:"How many NVMe ports are provided by the MCIO connectors?",o:["4","6","8","12"],a:2,e:"8× MCIO connectors, each PCIe 5.0 x8 for NVMe drives."},
+  {s:"Hardware",q:"What PCIe generation and width does each M.2 slot use?",o:["PCIe 4.0 x4","PCIe 5.0 x4","PCIe 3.0 x2","PCIe 4.0 x2"],a:2,e:"M.2 slots are PCIe 3.0 x2 — intentionally limited for boot/OS drives, reserving faster lanes for performance storage."},
+  {s:"Hardware",q:"How many SATA 6Gbps ports does the Intel C741 chipset provide?",o:["4","6","8","12"],a:2,e:"The C741 chipset provides 8× SATA 6Gbps ports."},
+  {s:"Hardware",q:"What is the SATA III maximum throughput per port?",o:["300 MB/s","600 MB/s","1.2 GB/s","6 GB/s"],a:1,e:"SATA III is 6 Gbps signaling = ~600 MB/s actual throughput."},
+  {s:"Hardware",q:"Where does SATA traffic flow relative to the CPU?",o:["Directly to CPU PCIe root ports","Through the chipset then DMI to the CPU","Via UPI to the second socket","Through the BMC management interface"],a:1,e:"SATA goes through C741 chipset → DMI 4.0 → CPU. This makes it a lower-bandwidth, higher-latency path."},
+  {s:"Hardware",q:"Does the X13DEM have onboard SAS?",o:["Yes, SAS-3 via chipset","Yes, SAS-4 via CPU PCIe","No, SAS requires a PCIe add-in HBA","No, SAS is not supported at all"],a:2,e:"X13DEM has no onboard SAS. A SAS HBA or RAID controller in a PCIe slot is required."},
+  {s:"Hardware",q:"What is the SAS-4 per-lane speed?",o:["12 Gbps","22.5 Gbps","25 Gbps","32 Gbps"],a:1,e:"SAS-4 runs at 22.5 Gbps per lane, used for enterprise HDDs and external enclosures."},
+  {s:"Hardware",q:"What is AIOM on the X13DEM?",o:["A SAS controller chip","Supermicro's modular NIC slot (OCP 3.0 superset)","The BMC management interface","An NVMe cache tier"],a:1,e:"AIOM is Supermicro's name for OCP 3.0-compatible modular NIC slots — two slots connected to CPU-side PCIe 5.0 x16."},
+  {s:"Hardware",q:"What is the connectivity of the AIOM NIC slots?",o:["PCIe 4.0 x8 via chipset","PCIe 5.0 x16 directly to CPU","DMI 4.0 via C741","PCIe 3.0 x16 via BMC"],a:1,e:"AIOM slots use PCIe 5.0 x16 directly connected to CPU root ports."},
+  {s:"Hardware",q:"What connects the Intel C741 chipset to the CPU?",o:["UPI 2.0","PCIe 5.0 x8","DMI 4.0","QPI"],a:2,e:"DMI 4.0 (PCIe 4.0 x8) provides ~16 GB/s bidirectional bandwidth between C741 and CPU."},
+  {s:"Hardware",q:"What is DMI 4.0 based on?",o:["PCIe 3.0 x4","PCIe 4.0 x8","PCIe 5.0 x4","PCIe 4.0 x16"],a:1,e:"DMI 4.0 is PCIe 4.0 x8, providing approximately 16 GB/s bidirectional bandwidth."},
+  {s:"Hardware",q:"What chip is the BMC on the X13DEM?",o:["Intel ME","AST2600","Nuvoton NPCM","Renesas H8S"],a:1,e:"ASPEED AST2600 is the ARM-based embedded management processor used as the BMC."},
+  {s:"Hardware",q:"What management protocols does the AST2600 BMC support?",o:["SNMP and SSH only","IPMI 2.0 and Redfish","Redfish and REST only","iDRAC and iLO"],a:1,e:"AST2600 supports IPMI 2.0, Redfish API, KVM-over-IP, Virtual Media, and Intel Node Manager."},
+  {s:"Hardware",q:"How does the BMC operate when the main system is powered off?",o:["It powers down completely","It runs on standby power independently","It switches to battery backup","It requires the OS to stay active"],a:1,e:"The BMC runs on standby power and operates fully independently — enabling out-of-band management."},
+  {s:"Hardware",q:"What is NUMA?",o:["Non-Uniform Memory Architecture — each CPU accesses its own local memory faster","Network Under Memory Architecture — memory is shared via network","Non-Unified Module Array — DIMM layout standard","A UPI error correction mode"],a:0,e:"NUMA: each CPU has local memory. Cross-socket access via UPI is possible but slower. OS should keep process and data on the same NUMA node."},
+  {s:"Hardware",q:"Why does 2DPC result in lower DDR5 speed than 1DPC?",o:["The chipset limits it","More DIMMs increase electrical load, reducing signal integrity","The CPU thermal limits kick in","PCIe bandwidth is shared"],a:1,e:"A second DIMM per channel increases electrical load on the memory bus, requiring lower speed (4400 vs 5600 MT/s)."},
+  {s:"Hardware",q:"What does Intel VROC allow on the X13DEM?",o:["SATA RAID without a controller","NVMe RAID without a traditional HBA","SAS expander connectivity","PCIe virtualization for VMs"],a:1,e:"Intel VROC uses a key header to enable NVMe RAID directly through the CPU, without a dedicated HBA."},
+  {s:"Hardware",q:"What form factor is the SYS-221HE-FTNR chassis?",o:["1U rack, rear I/O","2U rack, short-depth, front I/O","4U tower","Half-width blade"],a:1,e:"2U short-depth server with front I/O, targeting telecom, edge, AI inference, and NFV."},
+  {s:"Hardware",q:"Where do high-bandwidth devices like GPUs and fast NICs connect?",o:["Through the chipset","Directly to CPU PCIe root ports","Via UPI links directly","Through the BMC sideband"],a:1,e:"High-bandwidth devices connect directly to CPU-side PCIe 5.0 to avoid the DMI bottleneck."},
+  {s:"Hardware",q:"What is the bandwidth of a PCIe 5.0 x16 slot?",o:["~16 GB/s one-way","~32 GB/s one-way","~64 GB/s one-way","~128 GB/s one-way"],a:2,e:"PCIe 5.0 x16 = 32 GT/s × 16 lanes = ~64 GB/s one-way bandwidth."},
+  {s:"Hardware",q:"Why is the M.2 slot limited to PCIe 3.0 x2?",o:["Cost-saving measure only","Boot/OS drives don't need high bandwidth; reserves PCIe 5.0 for performance devices","PCIe 5.0 is not M.2-compatible physically","C741 chipset doesn't support PCIe 5.0"],a:1,e:"M.2 is for boot/OS drives. Limiting to PCIe 3.0 x2 preserves faster lanes for NVMe data, GPUs, and NICs."},
+  {s:"Hardware",q:"What CPU socket does the X13DEM use?",o:["LGA-3647","LGA-4189","LGA-4677","LGA-1700"],a:2,e:"X13DEM uses LGA-4677 for 4th/5th Gen Intel Xeon Scalable processors."},
+  {s:"Hardware",q:"What is the maximum TDP of supported CPUs?",o:["185W","250W","350W","400W"],a:2,e:"CPUs up to 350W TDP are supported on X13DEM."},
+  {s:"Hardware",q:"What is the role of the Intel C741 chipset?",o:["High-performance compute accelerator","Low-speed platform I/O hub (SATA, USB, SPI)","Primary memory controller","PCIe root port provider for GPUs"],a:1,e:"C741 is the low-speed platform I/O hub — SATA, USB, SPI flash for BIOS, TPM. Not a performance path."},
+  {s:"Hardware",q:"How does SYS-221HE-FTNR differ from X13DEM?",o:["They are the same thing","The system is chassis+board; the board defines hardware capabilities","The system is only the chassis, always sold separately","The motherboard is the chassis; the system is the CPU"],a:1,e:"SYS-221HE-FTNR is the complete system (chassis+board). X13DEM is the motherboard inside it, also used in other Supermicro systems."},
+  {s:"Hardware",q:"What is the relationship between QPI and UPI?",o:["They are completely different technologies","UPI is the current-generation successor to QPI for Intel Xeon","QPI is newer and faster than UPI","They both run simultaneously on modern Xeon platforms"],a:1,e:"QPI was Intel's older socket interconnect. UPI replaced it starting with Skylake-SP. Same concept, newer generation."},
+  {s:"Hardware",q:"What does 'coherent' mean in UPI coherent interconnect?",o:["Data is encrypted between sockets","Cache state is kept consistent between both CPUs","All data is stored in the chipset","Both CPUs share one unified cache pool"],a:1,e:"Cache coherency means both CPUs see a consistent view of memory — updated values are visible across the UPI link."},
+  {s:"Hardware",q:"What is the NVMe bandwidth per drive at PCIe 5.0 x8?",o:["~8 GB/s","~16 GB/s","~32 GB/s","~64 GB/s"],a:2,e:"PCIe 5.0 x8 = 32 GT/s × 8 lanes = ~32 GB/s, dramatically faster than SATA's 600 MB/s."},
+  {s:"Hardware",q:"How many hot-swap front bays does the SYS-221HE-FTNR have?",o:["4 bays","6 bays","8 bays","12 bays"],a:1,e:"6× 2.5\" hot-swap front bays supporting NVMe or SATA via direct-attached backplane."},
+  {s:"Hardware",q:"What is the SPI flash used for on this platform?",o:["NVMe boot drive interface","Storing the UEFI BIOS firmware","BMC network traffic","PCIe lane configuration at runtime"],a:1,e:"SPI flash connected through C741 stores the AMI UEFI BIOS firmware."},
+  {s:"Hardware",q:"What is the dedicated BMC RJ45 port used for?",o:["Production network data traffic","Out-of-band management network only","Connecting to SAS storage","NVMe over Fabric"],a:1,e:"The dedicated BMC RJ45 is for out-of-band management only — separate from production data traffic."},
+
+  // ── LINUX ──────────────────────────────────────────────
+  {s:"Linux",q:"What command shows your current working directory?",o:["cd","ls","pwd","dir"],a:2,e:"pwd (print working directory) shows the absolute path of your current location in the filesystem."},
+  {s:"Linux",q:"Which command shows hidden files in a directory?",o:["ls -l","ls -a","ls -h","ls -r"],a:1,e:"ls -a (or ls -la) shows all files including hidden ones that start with a dot."},
+  {s:"Linux",q:"What command watches a log file update in real time?",o:["tail -n 100","tail -f","less +F","watch cat"],a:1,e:"tail -f follows the file and continuously outputs new lines — the standard tool for live log monitoring."},
+  {s:"Linux",q:"What does `grep -i` do?",o:["Inverts the match","Case-insensitive search","Searches only binary files","Shows line numbers only"],a:1,e:"-i makes grep case-insensitive. grep -i 'error' matches ERROR, Error, error, etc."},
+  {s:"Linux",q:"What is the purpose of the /etc directory?",o:["Temporary files","System configuration files","User home directories","Running process state"],a:1,e:"/etc contains system-wide configuration files — network config, service configs, user accounts, etc."},
+  {s:"Linux",q:"What is stored in /var/log?",o:["Binary executables","System log files","Kernel modules","User configuration files"],a:1,e:"/var/log contains log files that grow over time — syslog, auth.log, application logs, etc."},
+  {s:"Linux",q:"What does `chmod 755 script.sh` set?",o:["rwx for owner, r-- for group and others","rwx for owner, r-x for group and others","rw- for owner, r-x for group and others","rwx for everyone"],a:1,e:"755 = 7(rwx) owner, 5(r-x) group, 5(r-x) others. Owner can read/write/execute; others can read/execute."},
+  {s:"Linux",q:"What does `chmod +x script.sh` do?",o:["Removes execute permission","Adds execute permission for all","Adds execute permission for owner only","Sets the sticky bit"],a:1,e:"+x adds execute permission for owner, group, and others — the quick way to make a script runnable."},
+  {s:"Linux",q:"What does `chown user1:user1 file.txt` do?",o:["Changes permissions to 711","Changes both owner and group to user1","Creates a new user named user1","Copies file.txt to user1's home"],a:1,e:"chown changes the owner (and group with :group syntax). Here both owner and group are set to user1."},
+  {s:"Linux",q:"What does `ps aux` do?",o:["Shows disk partition usage","Lists all running processes with details","Shows network connections","Displays authenticated users"],a:1,e:"ps aux shows all processes: a=all users, u=user-oriented format, x=include processes without a terminal."},
+  {s:"Linux",q:"What signal does `kill -9` send?",o:["SIGTERM","SIGINT","SIGKILL","SIGHUP"],a:2,e:"kill -9 sends SIGKILL — cannot be caught or ignored. The kernel forces immediate termination."},
+  {s:"Linux",q:"What is the difference between SIGTERM and SIGKILL?",o:["They are identical signals","SIGTERM asks the process to clean up and exit; SIGKILL forces immediate termination","SIGTERM is for terminals only; SIGKILL is for all processes","SIGKILL is the default signal"],a:1,e:"SIGTERM is polite — the process can handle it and clean up. SIGKILL is forced by the kernel and cannot be intercepted."},
+  {s:"Linux",q:"What command checks if a systemd service is running?",o:["service status <n>","systemctl status <n>","ps -e <n>","journalctl <n>"],a:1,e:"systemctl status <service> shows whether it's active/inactive/failed, plus recent log output."},
+  {s:"Linux",q:"What command enables a service to start at boot?",o:["systemctl start","systemctl activate","systemctl enable","systemctl boot"],a:2,e:"systemctl enable creates symlinks for the service to start automatically at boot."},
+  {s:"Linux",q:"How do you view logs for a specific systemd service?",o:["cat /var/log/<service>.log","journalctl -u <service>","dmesg | grep <service>","tail /etc/<service>/log"],a:1,e:"journalctl -u <service> shows all journal logs for that specific unit. Add -n 50 to limit output."},
+  {s:"Linux",q:"What does `ss -tulpn` show?",o:["Running systemd services","Listening TCP/UDP ports with process names","System resource usage","Scheduled cron jobs"],a:1,e:"ss -tulpn: TCP(-t) UDP(-u) listening(-l) with process info(-p) and numeric ports(-n)."},
+  {s:"Linux",q:"What command checks disk filesystem usage?",o:["du -sh","df -h","lsblk","fdisk -l"],a:1,e:"df -h shows filesystem disk space usage in human-readable format (df = disk free)."},
+  {s:"Linux",q:"What does `du -sh /var/log` tell you?",o:["Number of log files in /var/log","Total disk space used by /var/log","Disk free space on /var partition","Inode count for /var/log"],a:1,e:"du -sh gives total size of a directory in human-readable format — useful for finding what's eating disk space."},
+  {s:"Linux",q:"What command lists block storage devices?",o:["fdisk -l","mount","lsblk","blkid"],a:2,e:"lsblk lists all block devices (disks, partitions, LVM) in a tree showing sizes and mount points."},
+  {s:"Linux",q:"What does `ip addr` show?",o:["Routing table only","IP addresses and network interface info","Open network connections","DNS resolver config"],a:1,e:"ip addr (ip a) shows all network interfaces with IP addresses, MAC addresses, and state."},
+  {s:"Linux",q:"What command tests basic network connectivity?",o:["traceroute","nslookup","ping","ss"],a:2,e:"ping sends ICMP echo requests to test whether a host is reachable and measures round-trip time."},
+  {s:"Linux",q:"What command resolves a DNS name?",o:["ping","nslookup or dig","ip addr","ss -tulpn"],a:1,e:"nslookup and dig query DNS servers to resolve hostnames and diagnose DNS issues."},
+  {s:"Linux",q:"What does `find /var/log -name '*.log'` do?",o:["Searches for the text '*.log' inside files","Finds all files ending in .log under /var/log","Lists all log services in systemd","Moves log files to /var/log"],a:1,e:"find searches the filesystem recursively. -name '*.log' matches filenames ending in .log."},
+  {s:"Linux",q:"What numeric value does 'r' (read) represent in permissions?",o:["1","2","4","8"],a:2,e:"r=4, w=2, x=1. So rwx=7, rw-=6, r-x=5, r--=4 in octal notation."},
+  {s:"Linux",q:"What does permission '644' mean?",o:["rwx r-- r--","rw- rw- rw-","rw- r-- r--","r-- r-- r--"],a:2,e:"644 = 6(rw-) owner, 4(r--) group, 4(r--) others. Standard for config files — owner edits, others read-only."},
+  {s:"Linux",q:"What is the shebang line in a bash script?",o:["#!/bin/bash — tells the OS which interpreter to use","#! comment — ignored by bash","## bash — marks start of script","#!/usr/bin/env — sets environment variables"],a:0,e:"#!/bin/bash is the shebang. It must be the first line and tells the OS to use bash as the interpreter."},
+  {s:"Linux",q:"What does $1 represent in a bash script?",o:["The script's PID","The first positional argument passed to the script","The exit code of the last command","The current user's home directory"],a:1,e:"$1 is the first command-line argument. $2 is the second, $@ contains all arguments."},
+  {s:"Linux",q:"What does a return code of 0 mean in bash?",o:["An error occurred","Command not found","Success","A warning condition"],a:2,e:"Exit code 0 = success. Any non-zero code indicates an error. Check with $? after a command."},
+  {s:"Linux",q:"What does the pipe `|` character do in Linux?",o:["Redirects output to a file","Sends stdout of one command as stdin to the next","Runs two commands simultaneously","Appends output to a file"],a:1,e:"The pipe connects commands — output of the left becomes input of the right. e.g., `ps aux | grep python`"},
+  {s:"Linux",q:"What does `grep -v error app.log` do?",o:["Shows only lines containing 'error'","Shows all lines NOT containing 'error'","Counts lines with 'error'","Replaces 'error' with nothing"],a:1,e:"-v inverts the match — shows lines that do NOT match the pattern."},
+  {s:"Linux",q:"What does `awk '{print $1}'` print?",o:["The last column","The first column/field of each line","A count of lines","Removes whitespace"],a:1,e:"awk processes text by field. $1 is the first whitespace-delimited field, $2 is the second, etc."},
+  {s:"Linux",q:"What is `xargs` used for?",o:["Setting environment variables","Converting stdin lines into command-line arguments","Comparing two files","Compressing files"],a:1,e:"xargs converts stdin input to arguments for another command. e.g., `find . -name '*.log' | xargs rm`"},
+  {s:"Linux",q:"Which directory contains virtual files about running processes?",o:["/var","/proc","/dev","/run"],a:1,e:"/proc is a virtual filesystem provided by the kernel with real-time process and system state information."},
+  {s:"Linux",q:"What command shows the current logged-in username?",o:["id","who","whoami","hostname"],a:2,e:"whoami prints the current effective username. id gives more detail including uid, gid, and groups."},
+  {s:"Linux",q:"How do you check which user a running process belongs to?",o:["systemctl status","ps aux (shows user in first column)","ls -la /proc","cat /etc/passwd"],a:1,e:"ps aux shows the username in the first column for every running process — key for permission troubleshooting."},
+  {s:"Linux",q:"What is the purpose of `sudo`?",o:["Switches to another user permanently","Runs a command with superuser privileges temporarily","Lists sudo-eligible users","Sets file ownership"],a:1,e:"sudo executes a single command with elevated (root) privileges, based on /etc/sudoers configuration."},
+  {s:"Linux",q:"What does `journalctl -xe` show?",o:["Only error-level entries","Recent journal entries with extra context, useful for startup failures","All logs for a specific service","Logs from the last 10 minutes only"],a:1,e:"journalctl -xe shows recent entries with extra context (explanations for common errors) — great for startup failures."},
+  {s:"Linux",q:"What is the standard troubleshooting order for a service that won't start?",o:["Check hardware, reinstall, restart","Check status → logs → config → port → permissions","Reboot first, then check logs","Delete logs, restart service, check status"],a:1,e:"Standard flow: systemctl status → journalctl logs → config file → ss -tulpn for port → permissions and dependencies."},
+  {s:"Linux",q:"What does `curl http://localhost:8080/health` do?",o:["Opens a browser to localhost","Tests an HTTP endpoint and shows the response","Checks if port 8080 is open via TCP only","Configures the local HTTP proxy"],a:1,e:"curl makes an HTTP GET request and shows the response — good for testing web service health endpoints."},
+  {s:"Linux",q:"What is the difference between `>` and `>>` in bash?",o:["They are identical","'>' overwrites a file; '>>' appends to a file","'>' appends; '>>' overwrites","'>' is for stderr; '>>' is for stdout"],a:1,e:"'>' overwrites the file with stdout. '>>' appends stdout to the file without destroying existing content."},
+  {s:"Linux",q:"In the permission string `-rwxr-xr--`, what can 'others' do?",o:["Read, write, execute","Read and execute only","Read only","Nothing"],a:2,e:"Last 3 chars are 'others': r-- = read only (4). Cannot write or execute."},
+  {s:"Linux",q:"What command counts lines in a file?",o:["grep -c","wc -l","count -l","lines file.txt"],a:1,e:"wc -l counts the number of newline characters (lines) in a file or stdin."},
+  {s:"Linux",q:"What does `sort names.txt | uniq` accomplish?",o:["Sorts alphabetically and removes adjacent duplicate lines","Finds unique files in a directory","Compares two sorted files","Sorts by file size"],a:0,e:"sort puts lines in order, then uniq removes consecutive duplicate lines — together they remove all duplicates."},
+  {s:"Linux",q:"What does `2>/dev/null` do in a bash command?",o:["Redirects stdout to nowhere","Redirects stderr to /dev/null (discards error messages)","Duplicates stderr to stdout","Reads input from /dev/null"],a:1,e:"2> redirects file descriptor 2 (stderr). /dev/null discards data. This suppresses error messages."},
+  {s:"Linux",q:"Which Linux directory is appropriate for third-party software?",o:["/usr/local or /opt","/bin","/etc","/proc"],a:0,e:"/opt is for standalone third-party software. /usr/local is for software compiled/installed outside the package manager."},
+  {s:"Linux",q:"What does `pgrep -a ssh` do?",o:["Kills all SSH processes","Lists PIDs and command lines of processes matching 'ssh'","Checks SSH port connectivity","Restarts the SSH daemon"],a:1,e:"pgrep searches for processes by name. -a shows the full command line. Useful for quickly finding a PID."},
+  {s:"Linux",q:"What's the difference between `find` and `grep`?",o:["They do the same thing","find locates files by name/attributes; grep searches for content within files","grep finds files; find searches content","find is for binary files; grep is for text"],a:1,e:"find navigates the filesystem to locate files. grep reads file content to find matching lines."},
+  {s:"Linux",q:"What happens when disk space hits 100% on a Linux server?",o:["Server reboots automatically","Applications may crash or fail to write logs","Performance degrades by 50% only","Kernel kills the largest process automatically"],a:1,e:"A full disk causes write failures. Services that write logs, databases, or temp files will crash or malfunction."},
+  {s:"Linux",q:"What does `ip route` show?",o:["All active network connections","The routing table — how the system routes packets","DNS server configuration","Firewall rules"],a:1,e:"ip route shows the kernel routing table — which interface and gateway are used for different destinations."},
+  {s:"Linux",q:"What is a process's PID?",o:["Process Interface Descriptor","Process ID — a unique number assigned to each running process","Private Instruction Data","Parallel Instruction Domain"],a:1,e:"PID (Process ID) is a unique integer assigned by the kernel to each running process."},
+  {s:"Linux",q:"What does `systemctl restart nginx` do?",o:["Reloads nginx config without interruption","Stops then starts nginx — connections may drop briefly","Only starts nginx if stopped","Sends SIGTERM to nginx"],a:1,e:"restart performs stop then start. Connections are dropped. Use 'reload' for graceful config reload if supported."},
+  {s:"Linux",q:"What is a for loop in bash used for?",o:["Defining functions","Iterating over a list of items or files","Error handling only","Variable declaration"],a:1,e:"for loops iterate over items — files, output lines, or a range. e.g., `for file in *.log; do echo $file; done`"},
+];
+
+// ─── STATE ───
+let questions = [];
+let idx = 0, score = 0, answered = 0;
+let hwCorrect = 0, hwTotal = 0, linuxCorrect = 0, linuxTotal = 0;
+let history = []; // {q, chosen, status: 'correct'|'wrong'|'skip'}
+
+// ─── SHUFFLE ───
+function shuffle(arr) {
+  let a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    let j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  let hw = shuffle(ALL_Q.filter(q => q.s === "Hardware")).slice(0, 50);
+  let lin = shuffle(ALL_Q.filter(q => q.s === "Linux")).slice(0, 50);
+  questions = shuffle([...hw, ...lin]);
+  idx = 0; score = 0; answered = 0;
+  hwCorrect = 0; hwTotal = 0; linuxCorrect = 0; linuxTotal = 0;
+  history = [];
+  document.getElementById('header-score').style.display = 'flex';
+  document.getElementById('h-total').textContent = questions.length;
+  showScreen('screen-q');
+  renderQ();
+}
+
+function renderQ() {
+  if (idx >= questions.length) { showResults(); return; }
+  const q = questions[idx];
+  const total = questions.length;
+
+  document.getElementById('prog').style.width = Math.round((idx/total)*100) + '%';
+  document.getElementById('q-num').textContent = String(idx+1).padStart(2,'0') + ' / ' + total;
+  document.getElementById('h-score').textContent = score;
+
+  const tag = document.getElementById('q-tag');
+  tag.textContent = q.s;
+  tag.className = 'q-tag ' + (q.s === 'Hardware' ? 'hw' : 'linux');
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+  let shuffled = q.o.map((o,i) => ({o, i}));
+  q._shuffled = shuffled;
+
+  shuffled.forEach(({o, i}, pos) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.dataset.orig = i;
+    b.innerHTML = '<span class="opt-letter">' + LETTERS[pos] + '</span><span>' + o + '</span>';
+    b.onclick = () => answerQ(i, q);
+    opts.appendChild(b);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('skip-btn').style.display = '';
+}
+
+function answerQ(chosen, q) {
+  const btns = document.querySelectorAll('.opt');
+  btns.forEach(b => { b.disabled = true; });
+
+  const isCorrect = chosen === q.a;
+
+  btns.forEach(b => {
+    const orig = parseInt(b.dataset.orig);
+    if (orig === q.a) b.classList.add('reveal');
+    if (orig === chosen && !isCorrect) b.classList.add('wrong');
+    if (orig === chosen && isCorrect) { b.classList.remove('reveal'); b.classList.add('correct'); }
+  });
+
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    score++;
+    fb.className = 'feedback correct show';
+    fb.innerHTML = '<span class="feedback-icon">✓</span>' + q.e;
+  } else {
+    fb.className = 'feedback wrong show';
+    fb.innerHTML = '<span class="feedback-icon">✗</span>' + q.e;
+  }
+
+  if (q.s === 'Hardware') { hwTotal++; if (isCorrect) hwCorrect++; }
+  else { linuxTotal++; if (isCorrect) linuxCorrect++; }
+  answered++;
+
+  history.push({ q, chosen, status: isCorrect ? 'correct' : 'wrong' });
+
+  document.getElementById('h-score').textContent = score;
+  document.getElementById('next-btn').style.display = '';
+  document.getElementById('skip-btn').style.display = 'none';
+}
+
+function nextQ() { idx++; renderQ(); }
+
+function skipQ() {
+  const q = questions[idx];
+  if (q.s === 'Hardware') hwTotal++;
+  else linuxTotal++;
+  answered++;
+  history.push({ q, chosen: -1, status: 'skip' });
+  idx++;
+  renderQ();
+}
+
+function showResults() {
+  showScreen('screen-results');
+  document.getElementById('prog').style.width = '100%';
+
+  const total = questions.length;
+  const correct = history.filter(h => h.status === 'correct').length;
+  const wrong = history.filter(h => h.status === 'wrong').length;
+  const skipped = history.filter(h => h.status === 'skip').length;
+  const pct = Math.round((correct/total)*100);
+
+  document.getElementById('r-pct').textContent = pct + '%';
+  document.getElementById('r-pct').style.color = pct >= 70 ? 'var(--accent)' : pct >= 50 ? 'var(--blue)' : 'var(--red)';
+
+  const grades = [[90,'Excellent — ready to interview.'],[70,'Good work — review the misses.'],[50,'Getting there — keep drilling.'],[0,'More review needed.']];
+  const grade = grades.find(g => pct >= g[0]);
+  document.getElementById('r-grade').textContent = grade[1];
+
+  document.getElementById('r-correct').textContent = correct;
+  document.getElementById('r-wrong').textContent = wrong;
+  document.getElementById('r-skip').textContent = skipped;
+
+  const hwPct = hwTotal > 0 ? Math.round((hwCorrect/hwTotal)*100) : 0;
+  const linuxPct = linuxTotal > 0 ? Math.round((linuxCorrect/linuxTotal)*100) : 0;
+
+  document.getElementById('r-hw-pct').textContent = hwPct + '%';
+  document.getElementById('r-hw-sub').textContent = hwCorrect + ' / ' + hwTotal + ' correct';
+  document.getElementById('r-linux-pct').textContent = linuxPct + '%';
+  document.getElementById('r-linux-sub').textContent = linuxCorrect + ' / ' + linuxTotal + ' correct';
+
+  setTimeout(() => {
+    document.getElementById('bar-hw').style.width = hwPct + '%';
+    document.getElementById('bar-linux').style.width = linuxPct + '%';
+  }, 100);
+}
+
+function showReview() {
+  renderReview('all');
+  showScreen('screen-review');
+}
+
+let activeFilter = 'all';
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReview(f);
+}
+
+function renderReview(filter) {
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+
+  const items = filter === 'all' ? history : history.filter(h => h.status === filter);
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty-state">no items in this category</div>';
+    return;
+  }
+
+  items.forEach((h, i) => {
+    const { q, chosen, status } = h;
+    const div = document.createElement('div');
+    div.className = 'review-item r-' + status;
+
+    const correctText = q.o[q.a];
+    const chosenText = chosen >= 0 ? q.o[chosen] : '—';
+
+    let ansHTML = '';
+    if (status === 'correct') {
+      ansHTML = '<span class="correct-ans">✓ ' + correctText + '</span>';
+    } else if (status === 'wrong') {
+      ansHTML = '<span class="wrong-ans">' + chosenText + '</span> → <span class="correct-ans">' + correctText + '</span>';
+    } else {
+      ansHTML = 'Skipped — correct answer: <span class="correct-ans">' + correctText + '</span>';
+    }
+
+    div.innerHTML =
+      '<div class="review-item-meta">' +
+        '<span class="review-status ' + status + '">' + status + '</span>' +
+        '<span class="q-tag ' + (q.s === 'Hardware' ? 'hw' : 'linux') + '" style="font-size:10px;padding:2px 8px;">' + q.s + '</span>' +
+      '</div>' +
+      '<div class="review-item-q">' + q.q + '</div>' +
+      '<div class="review-item-ans">' + ansHTML + '</div>' +
+      '<div class="review-item-explain">' + q.e + '</div>';
+
+    list.appendChild(div);
+  });
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// keyboard shortcuts
+document.addEventListener('keydown', e => {
+  const screen = document.querySelector('.screen.active');
+  if (!screen) return;
+  const id = screen.id;
+
+  if (id === 'screen-q') {
+    const btns = document.querySelectorAll('.opt');
+    const nextBtn = document.getElementById('next-btn');
+    const skipBtn = document.getElementById('skip-btn');
+
+    if (['a','b','c','d'].includes(e.key.toLowerCase())) {
+      const pos = ['a','b','c','d'].indexOf(e.key.toLowerCase());
+      const btn = btns[pos];
+      if (btn && !btn.disabled) btn.click();
+    }
+    if ((e.key === 'Enter' || e.key === ' ') && nextBtn.style.display !== 'none') {
+      e.preventDefault();
+      nextBtn.click();
+    }
+    if (e.key === 's' && skipBtn.style.display !== 'none') {
+      skipBtn.click();
+    }
+  }
+});
+</script>
+</body>
+</html>
