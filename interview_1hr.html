@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1-Hour Interview Prep — Hardware / Linux / Python</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e1014;
+  --surface: #161a22;
+  --surface2: #1e2330;
+  --border: #252c3a;
+  --border2: #333d52;
+  --text: #dde2ef;
+  --text2: #8892aa;
+  --text3: #4e5a72;
+  --accent: #5eead4;
+  --accent-dim: #0d2e2a;
+  --gold: #fbbf24;
+  --gold-dim: #2a2010;
+  --red: #f87171;
+  --red-dim: #2e1414;
+  --blue: #7dd3fc;
+  --blue-dim: #0d2038;
+  --purple: #c4b5fd;
+  --purple-dim: #1e1838;
+  --green: #86efac;
+  --green-dim: #0d2818;
+  --orange: #fb923c;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ─── LAYOUT ─── */
+.shell { display: flex; min-height: 100vh; }
+
+/* ─── SIDEBAR ─── */
+nav {
+  width: 260px;
+  min-width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.5rem 0;
+  flex-shrink: 0;
+}
+
+.nav-logo {
+  padding: 0 1.25rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+.nav-logo .title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.nav-logo .sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+.nav-section {
+  padding: 0.5rem 1.25rem 0.25rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.nav-item {
+  display: block;
+  padding: 6px 1.25rem;
+  font-size: 13px;
+  color: var(--text2);
+  text-decoration: none;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+  line-height: 1.4;
+}
+.nav-item:hover { color: var(--text); background: var(--surface2); }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-dim); }
+
+/* priority badges in nav */
+.nav-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.badge-must { background: #2e1414; color: var(--red); }
+.badge-key  { background: #2a2010; color: var(--gold); }
+
+/* ─── CONTENT ─── */
+main { flex: 1; padding: 3rem 3rem 5rem; max-width: 900px; }
+
+.section { display: none; animation: fadeIn 0.2s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── TYPOGRAPHY ─── */
+h1 {
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+  color: var(--text);
+}
+h1 em { font-style: normal; color: var(--accent); }
+
+.section-desc {
+  font-size: 14px;
+  color: var(--text2);
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.6;
+}
+
+h2 {
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+h2:first-of-type { margin-top: 0; }
+
+h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 1.25rem 0 0.5rem;
+}
+
+/* ─── PRIORITY TAGS ─── */
+.priority-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+.must  { background: var(--red-dim);    color: var(--red);    border: 1px solid #5a2020; }
+.high  { background: var(--gold-dim);   color: var(--gold);   border: 1px solid #4a3510; }
+.med   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid #0d3060; }
+
+/* ─── QA CARDS ─── */
+.qa-list { display: flex; flex-direction: column; gap: 14px; margin-top: 1rem; }
+
+.qa-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.qa-card.priority-must  { border-left: 3px solid var(--red); }
+.qa-card.priority-high  { border-left: 3px solid var(--gold); }
+.qa-card.priority-med   { border-left: 3px solid var(--blue); }
+
+.qa-q {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  transition: background 0.12s;
+  user-select: none;
+}
+.qa-q:hover { background: var(--surface2); }
+
+.q-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gold);
+  background: var(--gold-dim);
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.q-text { flex: 1; line-height: 1.5; }
+.q-arrow { font-size: 11px; color: var(--text3); transition: transform 0.2s; margin-top: 2px; flex-shrink: 0; }
+.qa-card.open .q-arrow { transform: rotate(90deg); }
+
+.qa-a {
+  display: none;
+  padding: 0 16px 14px;
+  border-top: 1px solid var(--border);
+}
+.qa-card.open .qa-a { display: block; }
+
+.ans-en {
+  margin-top: 12px;
+  background: var(--accent-dim);
+  border: 1px solid #1a4a42;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  color: var(--accent);
+  line-height: 1.65;
+}
+.ans-en::before {
+  content: 'EN ›  ';
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.ans-zh {
+  margin-top: 8px;
+  background: var(--blue-dim);
+  border: 1px solid #0d3060;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  color: var(--blue);
+  line-height: 1.7;
+}
+.ans-zh::before {
+  content: '中文 ›  ';
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ─── TIP / ZH / WARN BLOCKS ─── */
+.tip {
+  background: var(--green-dim);
+  border-left: 3px solid var(--green);
+  padding: 11px 14px;
+  border-radius: 0 8px 8px 0;
+  margin: 10px 0 16px;
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.tip::before { content: "TIP  "; font-weight: 700; color: var(--green); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; }
+
+.warn {
+  background: var(--gold-dim);
+  border-left: 3px solid var(--gold);
+  padding: 11px 14px;
+  border-radius: 0 8px 8px 0;
+  margin: 10px 0 16px;
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.warn::before { content: "MUST KNOW  "; font-weight: 700; color: var(--gold); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; }
+
+/* ─── CODE ─── */
+pre {
+  background: #0a0d12;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 10px 0 16px;
+  font-size: 13px;
+  line-height: 1.65;
+  font-family: var(--mono);
+}
+code { font-family: var(--mono); font-size: 13px; background: var(--surface2); padding: 2px 6px; border-radius: 3px; color: var(--green); }
+pre code { background: none; padding: 0; color: var(--text); }
+
+.c-kw   { color: #c4b5fd; }  /* keyword */
+.c-fn   { color: #7dd3fc; }  /* function */
+.c-str  { color: #86efac; }  /* string */
+.c-num  { color: #fb923c; }  /* number */
+.c-cm   { color: #4e5a72; font-style: italic; } /* comment */
+.c-cls  { color: #fbbf24; }  /* class */
+.c-dec  { color: #5eead4; }  /* decorator */
+
+/* ─── TIMELINE ─── */
+.timeline { display: flex; flex-direction: column; gap: 8px; margin: 1rem 0; }
+.tl-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.tl-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.tl-label { font-size: 14px; font-weight: 500; color: var(--text); }
+.tl-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.tl-item.tl-must { border-left: 3px solid var(--red); }
+.tl-item.tl-high { border-left: 3px solid var(--gold); }
+
+/* ─── TABLE ─── */
+.kv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 0.75rem 0 1rem;
+}
+.kv-table th {
+  background: var(--surface2);
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border2);
+}
+.kv-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  vertical-align: top;
+}
+.kv-table tr:last-child td { border-bottom: none; }
+.kv-table td:first-child { color: var(--text); font-weight: 500; }
+.kv-table tr:hover td { background: var(--surface2); }
+
+/* ─── MOBILE BAR ─── */
+.mobile-bar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  align-items: center;
+  padding: 0 1rem;
+  gap: 0.75rem;
+}
+.mobile-bar-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--accent);
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mobile-bar-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: 0.06em;
+}
+.nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 40;
+}
+
+@media (max-width: 768px) {
+  .mobile-bar { display: flex; }
+  nav {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+  nav.open { transform: translateX(0); }
+  .nav-overlay.open { display: block; }
+  main { padding: 4rem 1rem 4rem; margin-top: 52px; }
+}
+</style>
+</head>
+<body>
+
+<div class="mobile-bar">
+  <button class="mobile-bar-btn" id="menuBtn">&#9776;</button>
+  <span class="mobile-bar-title">1-Hour Interview Prep</span>
+</div>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<div class="shell">
+
+<!-- ─── SIDEBAR ─── -->
+<nav id="sideNav">
+  <div class="nav-logo">
+    <div class="title">1-Hour Prep</div>
+    <div class="sub">Hardware · Linux · Python</div>
+  </div>
+
+  <div class="nav-section">Plan</div>
+  <a class="nav-item" onclick="show('plan')">60-Min Game Plan 时间规划</a>
+
+  <div class="nav-section" style="margin-top:1rem">Hardware <span class="nav-badge badge-must">MUST</span></div>
+  <a class="nav-item" onclick="show('hw-core')">Core Questions 核心题</a>
+  <a class="nav-item" onclick="show('hw-followup')">Deep Follow-ups 追问</a>
+
+  <div class="nav-section" style="margin-top:1rem">Linux <span class="nav-badge badge-key">KEY</span></div>
+  <a class="nav-item" onclick="show('linux-core')">Core Questions 核心题</a>
+
+  <div class="nav-section" style="margin-top:1rem">IPMI / Redfish <span class="nav-badge badge-key">KEY</span></div>
+  <a class="nav-item" onclick="show('mgmt-core')">Core Questions 核心题</a>
+
+  <div class="nav-section" style="margin-top:1rem">Coding <span class="nav-badge badge-must">MUST</span></div>
+  <a class="nav-item" onclick="show('code-a')">题 A — Parse Sensor File</a>
+  <a class="nav-item" onclick="show('code-b')">题 B — Log Error Aggregation</a>
+  <a class="nav-item" onclick="show('code-c')">题 C — Redfish Poller (bonus)</a>
+
+  <div class="nav-section" style="margin-top:1rem">Wrap-up</div>
+  <a class="nav-item" onclick="show('behavioral')">Behavioral 行为题</a>
+  <a class="nav-item" onclick="show('rapid-fire')">⚡ 速记卡片</a>
+</nav>
+
+<!-- ─── MAIN ─── -->
+<main>
+
+<!-- ════════ PLAN ════════ -->
+<div class="section active" id="plan">
+  <h1>60-Min <em>Game Plan</em></h1>
+  <p class="section-desc">
+    面试设计 90–120 分钟，但如果只有 60 分钟，优先级明确：先硬件、再 Python Coding，其他按剩余时间分配。<br>
+    The full interview is 90–120 min. For a 60-min version, protect Hardware and Coding time above all else.
+  </p>
+
+  <h2>60-Min Timeline / 时间分配</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div>
+        <div class="tl-time">0–5 min</div>
+      </div>
+      <div>
+        <div class="tl-label">Intro & Resume Warm-up / 自我介绍</div>
+        <div class="tl-sub">Keep it tight. 30 sec background → current role → what you bring. No storytelling.</div>
+        <div class="tl-sub" style="color:var(--blue)">简短介绍：背景 → 当前工作 → 你能带来什么。控制在 30 秒，不展开。</div>
+      </div>
+    </div>
+    <div class="tl-item tl-must">
+      <div>
+        <div class="tl-time">5–20 min</div>
+      </div>
+      <div>
+        <div class="tl-label">⭐ Hardware Platform / 硬件平台 <span class="priority-tag must">MUST</span></div>
+        <div class="tl-sub">System vs board, dual-socket dimensions, CPU/memory controller/BMC roles, UPI, storage paths.</div>
+        <div class="tl-sub" style="color:var(--blue)">系统 vs 主板、双路三维度、各芯片职责、UPI、存储路径。这是考察最集中的一块，准备最充分。</div>
+      </div>
+    </div>
+    <div class="tl-item tl-high">
+      <div>
+        <div class="tl-time">20–30 min</div>
+      </div>
+      <div>
+        <div class="tl-label">🔥 Linux Troubleshooting / Linux 排障 <span class="priority-tag high">HIGH</span></div>
+        <div class="tl-sub">Hardware topology, service failure sequence, log analysis. Show methodology, not just commands.</div>
+        <div class="tl-sub" style="color:var(--blue)">展示排障方法论：先拓扑 → 再日志 → 再缩小范围。不只是背命令。</div>
+      </div>
+    </div>
+    <div class="tl-item tl-high">
+      <div>
+        <div class="tl-time">30–38 min</div>
+      </div>
+      <div>
+        <div class="tl-label">🔥 IPMI / Redfish Quick-fire / 管理接口 <span class="priority-tag high">HIGH</span></div>
+        <div class="tl-sub">SDR/SEL/PEF/PET chain, @odata.type, Sensor vs TelemetryService. One sentence per concept.</div>
+        <div class="tl-sub" style="color:var(--blue)">每个概念一句话。SDR→SEL→PEF→PET，@odata.type 的作用，Sensor vs Telemetry 选哪个。</div>
+      </div>
+    </div>
+    <div class="tl-item tl-must">
+      <div>
+        <div class="tl-time">38–58 min</div>
+      </div>
+      <div>
+        <div class="tl-label">⭐ Python Coding Round / 编程题 <span class="priority-tag must">MUST</span></div>
+        <div class="tl-sub">题 A (parse sensor, 12 min) + 题 B (log aggregation, 8 min). Code out loud, explain as you type.</div>
+        <div class="tl-sub" style="color:var(--blue)">题 A 先做（文件解析），题 B 跟上（日志统计）。边写边说思路，写完主动讲追问答案。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div>
+        <div class="tl-time">58–60 min</div>
+      </div>
+      <div>
+        <div class="tl-label">Wrap-up / 收尾</div>
+        <div class="tl-sub">Ask one specific question about the team's tooling or challenges. Shows interest.</div>
+        <div class="tl-sub" style="color:var(--blue)">提一个具体问题（不是"你们文化怎么样"，而是"你们现在的自动化测试痛点是什么"）。</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>What the Interviewers Are Actually Scoring / 面试官真正在打分的维度</h2>
+  <table class="kv-table">
+    <tr><th>Dimension / 维度</th><th>What it means / 含义</th><th>How to show it / 怎么体现</th></tr>
+    <tr>
+      <td>Terminology accuracy<br><span style="color:var(--blue);font-size:12px">术语准确</span></td>
+      <td>Don't mix up UPI/QPI, BMC/memory controller, NVMe/SATA</td>
+      <td>Always say the right term, then contrast with the wrong one proactively</td>
+    </tr>
+    <tr>
+      <td>Troubleshooting method<br><span style="color:var(--blue);font-size:12px">排障方法论</span></td>
+      <td>Evidence-based ordering, not random guessing</td>
+      <td>Always give a sequence: "First I'd check X, because…, then Y"</td>
+    </tr>
+    <tr>
+      <td>Code quality<br><span style="color:var(--blue);font-size:12px">代码质量</span></td>
+      <td>Readable, handles edge cases, doesn't crash on bad input</td>
+      <td>Strip whitespace, check field count, use try/except on type conversions</td>
+    </tr>
+    <tr>
+      <td>Engineering awareness<br><span style="color:var(--blue);font-size:12px">工程意识</span></td>
+      <td>Logging, retries, performance, maintainability</td>
+      <td>Mention these unprompted in coding answers</td>
+    </tr>
+    <tr>
+      <td>Communication<br><span style="color:var(--blue);font-size:12px">沟通</span></td>
+      <td>Lead with conclusion, then expand</td>
+      <td>Start every answer with 1 sentence summary, then detail</td>
+    </tr>
+  </table>
+
+  <div class="warn">面试里最常失分的点：说了 QPI 没更正（应该是 UPI）、说 BMC 是 memory controller、代码没处理空行和字段缺失、答题没有顺序只是列命令。</div>
+</div>
+
+<!-- ════════ HARDWARE CORE ════════ -->
+<div class="section" id="hw-core">
+  <h1>Hardware — <em>Core Questions</em></h1>
+  <p class="section-desc">
+    8 questions most likely to be asked. Each has a one-sentence answer first, then details. Practice saying the EN answer out loud.<br>
+    最可能被问的 8 道题。每题先给结论句，再展开。把英文答案大声说出来练习。
+  </p>
+
+  <div class="warn">这一块是 Supermicro 面试最集中考查的区域。8 题全部要熟。面试时先说结论，再展开细节。</div>
+
+  <div class="qa-list">
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">SYS-221HE-FTNR 和 X13DEM 是什么关系？<br><span style="font-weight:400;color:var(--text2)">What is the relationship between SYS-221HE-FTNR and X13DEM?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">SYS-221HE-FTNR is the complete 2U short-depth server system — it defines the chassis layout, drive bays, front I/O, and external interfaces. X13DEM is the motherboard inside it, which defines all the core compute capabilities: CPU sockets, memory slots, PCIe lanes, NVMe ports, chipset, and BMC. The same X13DEM board is also used in other Supermicro systems like SYS-121H and SYS-621H.</div>
+        <div class="ans-zh">SYS-221HE-FTNR 是完整的 2U 服务器系统，定义机箱布局、硬盘仓、前置 I/O 和外部接口。X13DEM 是里面的主板，定义所有核心计算能力：CPU Socket、内存槽、PCIe 通道、NVMe 端口、芯片组和 BMC。同一块 X13DEM 主板也用于 Supermicro 其他型号如 SYS-121H。记住：型号 = 系统，X13DEM = 主板，主板定义能力上限。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">为什么这类平台需要双路？单路会在哪些维度受限？<br><span style="font-weight:400;color:var(--text2)">Why dual-socket? What dimensions does a single CPU fall short on?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">A dual-socket design is chosen when a single CPU cannot simultaneously provide enough compute, memory capacity, and PCIe I/O bandwidth. For this platform: a single Xeon maxes out at roughly 64 cores, 4 TB memory, and 80 PCIe lanes. Dual-socket doubles all three: 128 cores, 8 TB memory, and ~160 PCIe 5.0 lanes. The key word is "simultaneously" — you need all three at once for workloads like NFV, AI inference, or in-memory databases.</div>
+        <div class="ans-zh">当单颗 CPU 无法同时满足算力、内存容量、PCIe I/O 三个维度的需求时，就选双路。三个维度：1）算力：单路最多 64C → 双路 128C；2）内存：单路 4TB → 双路 8TB；3）PCIe：单路约 80 通道 → 双路约 160 通道。关键词是"同时"——NFV、AI 推理、内存数据库这类 workload 三个维度都需要扩展。面试时从这三个维度展开，不要只说"更快"。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">CPU、Memory Controller、PCIe Root Port、PCH（芯片组）、BMC 各自的职责是什么？<br><span style="font-weight:400;color:var(--text2)">Explain the role of CPU, memory controller, PCIe root port, PCH, and BMC.</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">The CPU executes instructions and contains the memory controller and PCIe root ports built-in. The memory controller, integrated inside the CPU, directly drives the DDR5 channels. PCIe root ports, also inside the CPU, directly connect to high-bandwidth devices like NVMe SSDs and GPUs. The PCH (Intel C741 chipset) is a southbridge-style chip handling SATA ports, USB, BMC interface, and lower-speed I/O. The BMC (AST2600 on this board) is an independent microcontroller for out-of-band management — it runs even when the host is off, providing IPMI and Redfish access.</div>
+        <div class="ans-zh">CPU：执行指令，内部集成 Memory Controller 和 PCIe Root Port。Memory Controller：在 CPU 内部，直接驱动 DDR5 通道，不是独立芯片，不是 BMC，不是 PCH（这是最常混淆的点）。PCIe Root Port：在 CPU 内部，NVMe 和 GPU 直接连到 CPU 的 Root Port。PCH（Intel C741）：南桥芯片，管 SATA、USB、BMC 接口等低速 I/O。BMC（AST2600）：独立微控制器，做带外管理，主机关机也能运行，提供 IPMI 和 Redfish 访问。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">UPI 是什么？和 QPI 是什么关系？它引出了什么概念？<br><span style="font-weight:400;color:var(--text2)">What is UPI? How does it relate to QPI? What does it introduce?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">UPI — Ultra Path Interconnect — is Intel's high-speed cache-coherent socket-to-socket interconnect, running at 16 GT/s with 3–4 links on this platform. QPI was the previous generation, used up through Haswell. The key difference is speed: QPI topped at 9.6 GT/s, UPI 2.0 runs at 16 GT/s. UPI's existence introduces NUMA: because each CPU has its own local memory, accessing the other socket's memory requires crossing UPI, which adds 40–80 ns of latency. The OS scheduler tries to keep processes on their local NUMA node.</div>
+        <div class="ans-zh">UPI（Ultra Path Interconnect）是 Intel 两颗 CPU 之间的高速缓存一致性互联，16 GT/s，3–4 条链路。QPI 是上一代（Haswell 及以前），速率只有 9.6 GT/s。面试时主动说"正确叫法是 UPI，QPI 是老一代"——这体现你知道细节。UPI 引出了 NUMA：每颗 CPU 有自己的本地内存，访问对方内存要跨 UPI，多 40–80ns 延迟。OS 调度器会尽量把进程和内存放在同一 NUMA 节点。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q5</span>
+        <span class="q-text">SATA / SAS / NVMe 的关键差异是什么？<br><span style="font-weight:400;color:var(--text2)">What are the key differences between SATA, SAS, and NVMe?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">NVMe connects directly to CPU PCIe lanes via MCIO connectors, delivering up to ~32 GB/s per drive over PCIe 5.0 x4. SATA connects through the PCH chipset, limited to 6 Gbps (~550 MB/s) and further bottlenecked by the DMI link. SAS is not native to this platform — it requires a SAS HBA or RAID controller in a PCIe slot, which acts as a protocol bridge. NVMe is the high-performance path for storage, SATA is for boot media and lower-cost drives, and SAS is for large external JBOD or hardware RAID configurations.</div>
+        <div class="ans-zh">NVMe：直接走 CPU PCIe 通道（MCIO 连接器），PCIe 5.0 x4 每块盘最高约 32 GB/s，延迟极低。SATA：走 PCH 芯片组，限速 6 Gbps（约 550 MB/s），还要经过 DMI link，带宽瓶颈明显。SAS：本平台不原生支持，需要额外装 SAS HBA 卡（占一个 PCIe slot 做协议桥接），适合外部大容量 JBOD 和硬件 RAID。选择逻辑：高性能存储选 NVMe，启动盘/低成本选 SATA，大容量外部存储/RAID 选 SAS。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q6</span>
+        <span class="q-text">什么是 NUMA？对 NIC / NVMe 性能调优有什么影响？<br><span style="font-weight:400;color:var(--text2)">What is NUMA? How does it affect NIC and NVMe performance tuning?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">NUMA means each CPU socket has its own local memory bank. Accesses to local memory are fast (one hop), while accessing the other socket's memory requires crossing UPI, adding significant latency. For NICs and NVMe drives, NUMA locality matters because PCIe devices are directly attached to one specific CPU's root complex. For maximum throughput, the application thread, its memory allocations, and the PCIe device should all be on the same NUMA node. Tools like <code>numactl</code> and CPU affinity settings can pin workloads to the correct node.</div>
+        <div class="ans-zh">NUMA：每颗 CPU Socket 有自己的本地内存，访问本地快，跨 Socket 要过 UPI，延迟高约 40–80ns。NIC 和 NVMe 各自直连到某一颗 CPU 的 PCIe Root Port，属于某个 NUMA 节点。调优时要把应用线程、内存分配、PCIe 设备三者都放在同一个 NUMA 节点，避免跨 Socket 访问。工具：<code>numactl --membind</code> 绑内存，<code>taskset</code> 绑 CPU，<code>lscpu</code>/<code>numactl --hardware</code> 查节点拓扑。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q7</span>
+        <span class="q-text">32 DIMM slots 和 2DPC 的性能权衡是什么？<br><span style="font-weight:400;color:var(--text2)">What is the performance trade-off with 32 DIMM slots and 2DPC?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">1DPC (1 DIMM per channel) runs at DDR5-5600 with higher memory bandwidth but lower total capacity. 2DPC (2 DIMMs per channel) doubles the DIMM count to 32 slots and enables up to 8 TB total capacity, but the speed drops to DDR5-4400 because the additional DIMM increases electrical load on the channel, forcing a lower clock frequency for signal integrity. Choose 2DPC when the workload is memory-capacity bound (large databases, in-memory analytics); choose 1DPC when memory bandwidth is the bottleneck.</div>
+        <div class="ans-zh">1DPC（每通道 1 根）：速率 DDR5-5600，带宽高，容量低。2DPC（每通道 2 根）：32 个 DIMM 槽，最大 8TB，但速率降至 DDR5-4400。速率下降原因：多一根 DIMM 增加通道电气负载，信号完整性变差，必须降频。选择逻辑：workload 内存容量受限 → 选 2DPC；workload 内存带宽受限 → 选 1DPC。面试时主动说出"速率下降的根本原因是信号完整性"，加分。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q8</span>
+        <span class="q-text">BMC 和 Host OS 分别挂掉时，各自还能做什么？不能做什么？<br><span style="font-weight:400;color:var(--text2)">If the BMC fails vs. if the host OS fails — what can and can't you do?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">If the host OS crashes: the BMC remains fully operational. You can still read sensor data via IPMI or Redfish, view the SEL event log, access the remote console (IPMI KVM), power-cycle the host, and update BIOS or BMC firmware — all out-of-band. If the BMC itself fails: you lose all out-of-band management. You can no longer read sensor data remotely, trigger alerts, or access the system if the OS is also down. You'd need physical console access. This is why BMC health monitoring is critical.</div>
+        <div class="ans-zh">Host OS 挂掉时 BMC 仍正常：可以远程读传感器、查 SEL 日志、用 IPMI KVM 访问控制台、远程重启/关机、升级 BIOS/BMC 固件——带外管理全部可用。BMC 挂掉时：失去所有带外管理能力，无法远程读传感器，无法触发告警，如果 OS 也挂了只能物理访问。这就是为什么 BMC 健康监控本身非常重要——BMC 是管理平面的最后防线。</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ HARDWARE FOLLOW-UPS ════════ -->
+<div class="section" id="hw-followup">
+  <h1>Hardware — <em>Deep Follow-ups</em></h1>
+  <p class="section-desc">
+    追问题不一定会问，但如果你主动展开这些，会拉开差距。<br>
+    These deep-dives may not be asked, but volunteering them signals real depth.
+  </p>
+
+  <div class="qa-list">
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">追1</span>
+        <span class="q-text">某块 NVMe 性能异常，你会先看链路层还是文件系统层？给出排查顺序。<br><span style="font-weight:400;color:var(--text2)">An NVMe drive is underperforming. Link layer first or filesystem first?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">Start from the bottom of the stack. 1) Check PCIe link status first: <code>lspci -vv</code> to confirm the NVMe is running at the expected PCIe generation and width (e.g., PCIe 5.0 x4 — if it shows x1 or Gen 3, the link trained down). 2) Check drive health: <code>nvme smart-log /dev/nvme0</code> for media errors, wear level, and temperature. 3) Check kernel errors: <code>dmesg | grep nvme</code> for PCIe errors, resets, or timeouts. 4) Only then test filesystem or benchmark performance with <code>fio</code>. Reasoning: link problems are hardware-level and explain performance loss more definitively.</div>
+        <div class="ans-zh">从底往上排查，不要先跑 benchmark。1）先查 PCIe 链路：<code>lspci -vv</code> 确认 NVMe 链路速率和宽度是否符合预期（比如 PCIe 5.0 x4，如果显示 x1 或 Gen3 说明 link 降级了）。2）查盘健康：<code>nvme smart-log /dev/nvme0</code> 看 media errors、wear level、温度。3）查内核报错：<code>dmesg | grep nvme</code> 看有没有 PCIe error、reset、timeout。4）最后才用 <code>fio</code> 测性能。排查逻辑：链路层问题是硬件级的，能更明确解释性能下降的根因。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">追2</span>
+        <span class="q-text">你怎么判断是硬件故障、固件问题，还是 OS 驱动问题？<br><span style="font-weight:400;color:var(--text2)">How do you distinguish hardware failure vs. firmware bug vs. OS driver issue?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">Hardware failure: IPMI or Redfish sensor shows abnormal readings (temperature, voltage, error counters); the issue persists across different OS installs or even before the OS boots; you see correctable or uncorrectable PCIe/memory errors in SEL or dmesg. Firmware bug: issue only appears on specific firmware versions; no physical degradation in sensors; may be reproducible with a specific command sequence; often resolved by update. OS/driver issue: issue only appears with a specific kernel version or driver; hardware passes POST and BMC sensors are clean; rolling back the kernel or driver resolves it.</div>
+        <div class="ans-zh">硬件故障：IPMI/Redfish 传感器数值异常（温度、电压、错误计数）；换系统也复现，甚至 POST 前就有；SEL 或 dmesg 有 uncorrectable PCIe/内存错误。固件问题：只在特定固件版本复现；传感器无物理异常；特定操作序列触发；升级固件可解决。OS/驱动问题：只在特定内核版本或驱动复现；硬件 POST 通过，BMC 传感器干净；回滚内核或驱动可解决。区分关键：先看 BMC 传感器（硬件视角），再看是否跨系统复现（固件视角），最后看版本相关性（驱动视角）。</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ LINUX CORE ════════ -->
+<div class="section" id="linux-core">
+  <h1>Linux — <em>Core Questions</em></h1>
+  <p class="section-desc">
+    7 questions. Focus on showing methodology, not just listing commands.<br>
+    7 道题。重点展示方法论，不只是列出命令清单。
+  </p>
+
+  <div class="tip">面试官想看的是：你有没有顺序？你知不知道为什么这么做？不要一上来就列 10 个命令，先说"我会先看X，因为Y"。</div>
+
+  <div class="qa-list">
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">你怎么快速确认 CPU / 内存 / 存储 / PCIe 设备拓扑？<br><span style="font-weight:400;color:var(--text2)">How do you quickly confirm hardware topology on a Linux system?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en"><code>lscpu</code> for CPU cores, sockets, NUMA topology. <code>dmidecode -t memory</code> for DIMM population and speeds. <code>lspci -tv</code> for the PCIe device tree and link widths. <code>lsblk</code> for block devices and their sizes. <code>ip link show</code> for network interfaces. For a comprehensive hardware report: <code>hwinfo</code> or <code>inxi -Fxz</code>. Check NUMA topology with <code>numactl --hardware</code>.</div>
+        <div class="ans-zh">CPU 拓扑：<code>lscpu</code>（核心数、Socket 数、NUMA 节点）。内存配置：<code>dmidecode -t memory</code>（每个 DIMM 槽位置、速率、容量）。PCIe 设备：<code>lspci -tv</code>（设备树和链路宽度）。存储：<code>lsblk</code>（块设备列表和大小）。网络：<code>ip link show</code>。NUMA 拓扑：<code>numactl --hardware</code>。全量硬件报告：<code>hwinfo</code> 或 <code>inxi -Fxz</code>。记忆口诀：CPU用lscpu，内存用dmidecode，PCIe用lspci，磁盘用lsblk。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">服务启动失败，你会按什么顺序排查？<br><span style="font-weight:400;color:var(--text2)">A service fails to start. Walk me through your troubleshooting sequence.</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">Step 1: <code>systemctl status service-name</code> — get the last error message and exit code immediately. Step 2: <code>journalctl -u service-name -n 50 --no-pager</code> — see the last 50 log lines including startup errors. Step 3: check the unit file <code>systemctl cat service-name</code> — look for ExecStart path, missing dependencies, wrong user. Step 4: check if dependencies are running — <code>systemctl list-dependencies service-name</code>. Step 5: run the binary manually as the service user to see the raw error output. Step 6: check permissions on config files and log directories.</div>
+        <div class="ans-zh">第一步：<code>systemctl status 服务名</code>——立刻看最后一条错误和退出码。第二步：<code>journalctl -u 服务名 -n 50 --no-pager</code>——看完整启动日志。第三步：<code>systemctl cat 服务名</code>——检查 unit file 的 ExecStart 路径、依赖、运行用户。第四步：<code>systemctl list-dependencies 服务名</code>——确认依赖服务都在运行。第五步：手动以服务用户身份运行二进制，看原始错误输出。第六步：检查配置文件和日志目录的权限。顺序逻辑：先看结果（status），再看过程（journal），再看配置（unit），再看依赖，最后动手复现。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">如何定位"端口被占用但应用起不来"的问题？<br><span style="font-weight:400;color:var(--text2)">How do you debug "port already in use but app won't start"?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en"><code>ss -tlnp | grep :8080</code> or <code>lsof -i :8080</code> to find which process is holding the port and its PID. Check if it's a zombie of the same app that didn't clean up. If it's the same app (crashed without releasing the socket), wait for TIME_WAIT to expire or use <code>SO_REUSEADDR</code>. If it's a different process, decide whether to stop it or change the app's port. Always confirm with <code>ss -s</code> for a socket summary.</div>
+        <div class="ans-zh">用 <code>ss -tlnp | grep :端口号</code> 或 <code>lsof -i :端口号</code> 找是哪个进程占用了端口，记下 PID。常见情况：1）同一个应用上次崩溃没释放 socket，处于 TIME_WAIT 状态 → 等待超时或设置 SO_REUSEADDR。2）是另一个不相关的进程 → 决定是停掉它还是改应用端口。3）权限问题：绑定 1024 以下端口需要 root 权限 → 用 <code>setcap</code> 或调高端口。<code>ss -s</code> 查套接字整体统计。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">系统突然变慢：CPU 高、IO wait 高、内存抖动分别看什么？<br><span style="font-weight:400;color:var(--text2)">System is slow. CPU high vs IO wait vs memory pressure — what do you check for each?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">High CPU: <code>top</code> or <code>htop</code> to find the process, <code>perf top</code> for call stack profiling. High IO wait: <code>iostat -xz 1</code> to see which device is saturated, <code>iotop</code> to find which process is doing the I/O. Memory pressure: <code>free -h</code> for overall, <code>vmstat 1</code> for swap activity (si/so columns), <code>cat /proc/meminfo</code> for detailed breakdown including cached and available. If OOM killer is active: <code>dmesg | grep -i oom</code>.</div>
+        <div class="ans-zh">CPU 高：<code>top</code>/<code>htop</code> 找耗 CPU 的进程，<code>perf top</code> 看调用栈。IO wait 高（CPU 空转等磁盘）：<code>iostat -xz 1</code> 看哪块磁盘饱和（util 接近 100%），<code>iotop</code> 找哪个进程在大量 I/O。内存压力：<code>free -h</code> 看整体，<code>vmstat 1</code> 看 swap 换入/换出（si/so 列有值说明在用 swap），<code>dmesg | grep -i oom</code> 看有没有 OOM killer 杀进程。三种情况的根因不同，不要用同一套命令混查。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q5</span>
+        <span class="q-text">journalctl 和 dmesg 分别适合看什么问题？systemctl enable 和 start 的区别？<br><span style="font-weight:400;color:var(--text2)">journalctl vs dmesg use cases. enable vs start difference.</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en"><code>dmesg</code> shows the kernel ring buffer — hardware events, driver loading, PCIe errors, NVMe resets, memory errors. Best for hardware-level issues and boot-time events. <code>journalctl</code> aggregates logs from systemd and all services with structured metadata (timestamps, service names). Use <code>journalctl -u service -f</code> for service-specific tailing. <br>For systemctl: <code>start</code> starts the service right now but doesn't survive reboots. <code>enable</code> creates symlinks in the systemd target directories so the service starts automatically on boot, but doesn't start it now. Most of the time you want both: <code>systemctl enable --now service</code>.</div>
+        <div class="ans-zh"><code>dmesg</code>：内核环形缓冲区，看硬件事件、驱动加载、PCIe 错误、NVMe 重置、内存错误。适合硬件级问题和启动时事件。<code>journalctl</code>：聚合 systemd 和所有服务的日志，有结构化元数据（时间戳、服务名）。<code>journalctl -u 服务名 -f</code> 实时跟踪某服务日志。systemctl enable vs start：<code>start</code> = 立刻启动，重启后不自动恢复。<code>enable</code> = 注册开机自启（创建软链接），但现在不启动。通常两个都要：<code>systemctl enable --now 服务名</code>。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q6</span>
+        <span class="q-text">给你一段日志，找过去 30 分钟内所有 ERROR 并按模块计数，怎么做？<br><span style="font-weight:400;color:var(--text2)">From a log file, count all ERRORs in the last 30 minutes grouped by module.</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">If timestamps are ISO-8601: <code>journalctl --since "30 minutes ago" | grep -i ERROR | awk '{print $5}' | sort | uniq -c | sort -rn</code>. For a raw log file with <code>[module] ERROR</code> format: <code>grep -i ERROR app.log | grep -E "$(date -d '30 min ago' +%H:%M)" | awk -F'[][]' '{print $2}' | sort | uniq -c | sort -rn</code>. The interviewer is testing whether you can combine grep, awk, sort, uniq in a pipeline. Show the pipeline, explain each stage.</div>
+        <div class="ans-zh">如果是 journalctl：<code>journalctl --since "30 minutes ago" | grep -i ERROR | awk '{print $5}' | sort | uniq -c | sort -rn</code>。如果是原始日志文件（格式：<code>[模块] ERROR</code>）：<code>grep -i ERROR app.log | awk -F'[][]' '{print $2}' | sort | uniq -c | sort -rn</code>。管道逻辑：grep 过滤 → awk 提取字段 → sort 排序（uniq 需要相邻行） → uniq -c 计数 → sort -rn 按数量降序。面试官考查的是管道组合能力，解释每一步的作用。</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ MGMT CORE ════════ -->
+<div class="section" id="mgmt-core">
+  <h1>IPMI / Redfish — <em>Core Questions</em></h1>
+  <p class="section-desc">
+    6 questions. One sentence per concept — don't over-explain. Know the event chain cold.<br>
+    6 道题。每个概念一句话，不要过度展开。SDR→SEL→PEF→PET 必须背熟。
+  </p>
+
+  <div class="warn">SDR / SEL / PEF / PET 链是面试必考。 @odata.type 的用途必须能一句话说清楚。Sensor vs TelemetryService 的选择要能解释。</div>
+
+  <div class="qa-list">
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">SDR / SEL / PEF / PET 分别是什么？关系是什么？<br><span style="font-weight:400;color:var(--text2)">What are SDR, SEL, PEF, PET? What is the relationship?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">SDR (Sensor Data Record) defines what sensors exist and their thresholds — it's the catalog. SEL (System Event Log) records events when sensor thresholds are crossed — it's the history log. PEF (Platform Event Filter) is a rule engine: when an SEL event matches a rule, PEF decides what action to take (alert, power off, reset). PET (Platform Event Trap) is the delivery mechanism — it sends the alert as an SNMP trap to a remote management system. The chain is: SDR defines → SEL records → PEF decides → PET delivers.</div>
+        <div class="ans-zh">SDR（Sensor Data Record）：定义哪些传感器存在、阈值是多少——是传感器目录。SEL（System Event Log）：当传感器触发阈值时记录事件——是历史日志。PEF（Platform Event Filter）：规则引擎，当 SEL 事件匹配规则时决定做什么（告警/关机/重启）。PET（Platform Event Trap）：交付机制，把告警以 SNMP trap 形式发到远端管理系统。链式关系：SDR 定义 → SEL 记录 → PEF 决策 → PET 外送。这个链条必须能顺口说出来。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">BMC 传感器读值可能经过哪些硬件接口？<br><span style="font-weight:400;color:var(--text2)">What hardware interfaces does the BMC use to collect sensor readings?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">The BMC collects sensor data through multiple sideband interfaces: I2C/SMBus for temperature sensors and VRMs, PMBus for power rails and voltage regulators, PECI (Platform Environment Control Interface) for CPU-internal data like die temperature and energy counters, and GPIO for simple on/off signals like fan presence or power button state. These are all out-of-band — they are independent of the PCIe/memory bus that the host CPU uses.</div>
+        <div class="ans-zh">BMC 通过多个 sideband 接口采集传感器数据：I2C/SMBus：温度传感器、VRM（电压调节模块）。PMBus：电源轨电压和功耗数据。PECI（Platform Environment Control Interface）：CPU 内部数据，如 die 温度和能耗计数器，只有 Intel CPU 才有。GPIO：简单开关信号，如风扇存在检测、电源按钮状态。这些都是 out-of-band 接口，独立于主 CPU 使用的 PCIe/内存总线。关键点：BMC 传感器数据来自多种接口，不是单一来源。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">Redfish 的 @odata.type 用来干什么？和 RedfishVersion 有什么区别？<br><span style="font-weight:400;color:var(--text2)">What does @odata.type do in Redfish? How does it differ from RedfishVersion?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en"><code>@odata.type</code> identifies the schema type and version of a specific resource — for example <code>#Thermal.v1_7_0.Thermal</code> tells you this is a Thermal resource conforming to schema version 1.7.0. It's on every resource. RedfishVersion (from /redfish/v1) tells you the version of the Redfish protocol/specification the service implements, such as "1.16.0". The difference: @odata.type is per-resource schema versioning (each resource type evolves independently), while RedfishVersion is the service-level protocol version. Use @odata.type to know which properties are available on a specific resource.</div>
+        <div class="ans-zh"><code>@odata.type</code>：标识某个具体资源的 schema 类型和版本，例如 <code>#Thermal.v1_7_0.Thermal</code> 表示这是 Thermal 资源，符合 schema v1.7.0。每个资源都有。用途：知道这个资源有哪些属性可用。RedfishVersion（来自 /redfish/v1）：整个 Redfish 服务实现的协议/规范版本，如 "1.16.0"。区别：@odata.type 是资源级 schema 版本（每种资源类型独立演进），RedfishVersion 是服务级协议版本。面试一句话：@odata.type 告诉你这个资源"是什么版本的什么类型"，RedfishVersion 告诉你这个 Redfish 服务"支持哪个版本的协议"。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-must">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">拉温度/电压/风扇数据并告警，选 Sensor 还是 Telemetry schemas？为什么？<br><span style="font-weight:400;color:var(--text2)">To pull temperature/voltage/fan data and trigger alerts — Sensor or TelemetryService?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">For direct real-time readings and threshold-based alerts: use the Sensor schema under <code>/redfish/v1/Chassis/{ChassisId}/Sensors/{SensorId}</code>. Each sensor has Reading, ReadingType, ReadingRangeMin, ReadingRangeMax, and health status. Good for polling and immediate checks. For scheduled bulk collection, historical aggregation, or building a monitoring pipeline: use TelemetryService schemas — MetricDefinition defines what to collect, MetricReportDefinition schedules the collection, MetricReport delivers the data, and Triggers can fire on thresholds. In modern BMC implementations you'd use both: Sensor for on-demand checks, TelemetryService for continuous monitoring.</div>
+        <div class="ans-zh">Sensor（直接读值）：<code>/redfish/v1/Chassis/{id}/Sensors/{id}</code>，每个传感器有 Reading、ReadingType、阈值范围和健康状态。适合直接 polling 和即时告警检查。TelemetryService（监控管道）：MetricDefinition 定义采集什么，MetricReportDefinition 定义采集计划，MetricReport 交付数据，Triggers 定义阈值触发告警。适合周期性批量采集、历史数据和监控系统集成。现代 BMC 两者都实现：Sensor 用于按需查询，TelemetryService 用于持续监控管道。</div>
+      </div>
+    </div>
+
+    <div class="qa-card priority-high">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">Q5</span>
+        <span class="q-text">IPMI 和 Redfish 在自动化和可扩展性上的权衡是什么？<br><span style="font-weight:400;color:var(--text2)">IPMI vs Redfish for automation and scalability — trade-offs?</span></span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">IPMI uses a binary command protocol (KCS/SSIF/LAN) with raw command codes. It's widely supported and works on virtually all servers, but it's not human-readable, hard to extend, and the tooling (<code>ipmitool</code>) uses command-specific syntax that doesn't compose well into modern automation pipelines. Redfish is REST+JSON, which integrates naturally with HTTP clients, Python requests, Ansible, and CI/CD pipelines. It's schema-documented, versioned, and supports richer data models. Trade-off: IPMI has universal hardware support and lower overhead; Redfish is the modern standard for automation and is where new features are being developed.</div>
+        <div class="ans-zh">IPMI：二进制命令协议（KCS/SSIF/LAN），用 raw command code，基本所有服务器都支持，但不可读、难扩展，ipmitool 命令格式各异，不适合现代自动化管道。Redfish：REST+JSON，自然集成到 HTTP 客户端、Python requests、Ansible、CI/CD，schema 有文档、有版本、数据模型更丰富。权衡：IPMI 硬件覆盖更广，开销更小；Redfish 是现代自动化标准，新功能只在 Redfish 上开发。实际工作中两者共存：IPMI 做兼容性保障，Redfish 做新自动化工具。</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ CODING A ════════ -->
+<div class="section" id="code-a">
+  <h1>Coding A — <em>Parse Sensor File</em></h1>
+  <p class="section-desc">
+    必做题。给定格式为 <code>名称 | 值 | 状态</code> 的文本文件，解析并生成摘要。考查文件读取、数据清洗、异常处理。<br>
+    Required. Parse a pipe-delimited sensor file and produce a summary. Tests file I/O, data cleaning, and error handling.
+  </p>
+
+  <div class="warn">面试官会追问：大文件怎么处理？大小写混写怎么处理？能不能导出 CSV/JSON？提前准备好这些答案。</div>
+
+  <h2>题目 / Problem</h2>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:1rem;font-size:13.5px;color:var(--text2);line-height:1.8">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">Input format</div>
+    <pre style="margin:0;border:none;padding:0;background:none;font-size:13px">CPU Temp     | 72    | ok
+Fan1         | N/A   | cr
+             |       |          ← 空行/坏行
+Voltage Rail | 12.1  | ok
+Fan2         | 3200  | ok
+             | 55    |          ← 字段不完整</pre>
+    <div style="margin-top:12px">Write <code>parse_sensor_file(path)</code> → <code>list[dict]</code> with fields name/value/status.<br>Write <code>summarize(records, invalid_count)</code> → dict with total_count, bad_count, bad_items, invalid_line_count.</div>
+  </div>
+
+  <h2>完整参考答案 / Reference Solution</h2>
+<pre><code><span class="c-cm"># ── 题 A: 传感器文件解析 ──────────────────────────────────────────</span>
+<span class="c-cm"># EN: Parse a pipe-delimited sensor file, clean bad data, return records + summary</span>
+<span class="c-cm"># 中: 解析管道分隔的传感器文件，清洗坏数据，返回记录列表和摘要</span>
+
+<span class="c-kw">def</span> <span class="c-fn">parse_sensor_file</span>(path: <span class="c-cls">str</span>) -> <span class="c-cls">tuple</span>[<span class="c-cls">list</span>[<span class="c-cls">dict</span>], <span class="c-cls">int</span>]:
+    <span class="c-str">"""
+    Returns (records, invalid_line_count).
+    records: list of {'name': str, 'value': str, 'status': str}
+    中文: 返回 (有效记录列表, 无效行数)
+    """</span>
+    records = []
+    invalid_count = <span class="c-num">0</span>
+
+    <span class="c-kw">with</span> <span class="c-fn">open</span>(path, <span class="c-str">'r'</span>, encoding=<span class="c-str">'utf-8'</span>) <span class="c-kw">as</span> f:
+        <span class="c-kw">for</span> line <span class="c-kw">in</span> f:                        <span class="c-cm"># 逐行读 — 不把整个文件加载到内存</span>
+            line = line.strip()              <span class="c-cm"># 去首尾空白 / strip whitespace</span>
+            <span class="c-kw">if not</span> line:                     <span class="c-cm"># 跳过空行 / skip blank lines</span>
+                <span class="c-kw">continue</span>
+
+            parts = [p.strip() <span class="c-kw">for</span> p <span class="c-kw">in</span> line.split(<span class="c-str">'|'</span>)]
+
+            <span class="c-kw">if</span> <span class="c-fn">len</span>(parts) != <span class="c-num">3</span>:            <span class="c-cm"># 必须有 3 个字段 / must have exactly 3 fields</span>
+                invalid_count += <span class="c-num">1</span>
+                <span class="c-kw">continue</span>
+
+            name, value, status = parts
+
+            <span class="c-kw">if not</span> name:                     <span class="c-cm"># 名称不能为空 / name must not be empty</span>
+                invalid_count += <span class="c-num">1</span>
+                <span class="c-kw">continue</span>
+
+            records.append({
+                <span class="c-str">'name'</span>: name,
+                <span class="c-str">'value'</span>: value,
+                <span class="c-str">'status'</span>: status
+            })
+
+    <span class="c-kw">return</span> records, invalid_count
+
+
+<span class="c-kw">def</span> <span class="c-fn">summarize</span>(records: <span class="c-cls">list</span>[<span class="c-cls">dict</span>], invalid_line_count: <span class="c-cls">int</span> = <span class="c-num">0</span>) -> <span class="c-cls">dict</span>:
+    <span class="c-str">"""
+    Produce a summary of the parsed records.
+    中文: 对解析结果生成摘要
+    """</span>
+    <span class="c-cm"># 大小写无关匹配 / case-insensitive status check</span>
+    bad_items = [
+        r[<span class="c-str">'name'</span>] <span class="c-kw">for</span> r <span class="c-kw">in</span> records
+        <span class="c-kw">if</span> r[<span class="c-str">'status'</span>].lower() != <span class="c-str">'ok'</span>
+    ]
+
+    <span class="c-kw">return</span> {
+        <span class="c-str">'total_count'</span>: <span class="c-fn">len</span>(records),
+        <span class="c-str">'bad_count'</span>: <span class="c-fn">len</span>(bad_items),
+        <span class="c-str">'bad_items'</span>: bad_items,
+        <span class="c-str">'invalid_line_count'</span>: invalid_line_count
+    }
+
+
+<span class="c-cm"># ── 使用示例 / Usage ──────────────────────────────────────────────</span>
+<span class="c-kw">if</span> __name__ == <span class="c-str">'__main__'</span>:
+    records, invalid = <span class="c-fn">parse_sensor_file</span>(<span class="c-str">'sensors.txt'</span>)
+    result = <span class="c-fn">summarize</span>(records, invalid)
+    <span class="c-fn">print</span>(result)
+</code></pre>
+
+  <h2>追问答案 / Follow-up Answers</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">追1</span><span class="q-text">文件 5GB，如何避免内存爆？/ Large file handling?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">The solution above already handles this: it uses <code>for line in f</code> which is a generator — Python only loads one line at a time, not the entire file. Never use <code>f.readlines()</code> or <code>f.read()</code> for large files. If you also need to stream the output, yield records instead of appending to a list, making the function a generator itself.</div>
+        <div class="ans-zh">上面的代码已经处理了这个问题：<code>for line in f</code> 是生成器，Python 每次只加载一行，不会把整个文件读入内存。绝对不要用 <code>f.readlines()</code> 或 <code>f.read()</code> 处理大文件。如果还需要流式输出，可以把函数改成 generator（用 <code>yield</code> 代替 append），调用方按需消费。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">追2</span><span class="q-text">导出 CSV / JSON 怎么设计？/ How to export CSV/JSON?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">For JSON: <code>import json; json.dump(records, open('out.json','w'), indent=2)</code>. For CSV: use the <code>csv</code> module with <code>csv.DictWriter</code>, specifying fieldnames=['name','value','status']. Both are simple additions. I'd design the pipeline as: parse → validate → summarize → export, keeping each step separate for testability.</div>
+        <div class="ans-zh">JSON 导出：<code>import json; json.dump(records, open('out.json','w'), indent=2)</code>。CSV 导出：用 <code>csv.DictWriter</code>，指定 fieldnames=['name','value','status']，调用 writer.writeheader() 然后 writer.writerows(records)。设计思路：把 parse → validate → summarize → export 分成独立步骤，每步单独可测。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ CODING B ════════ -->
+<div class="section" id="code-b">
+  <h1>Coding B — <em>Log Error Aggregation</em></h1>
+  <p class="section-desc">
+    必做题。给定日志行列表，统计每个模块的 ERROR 次数并返回 Top N。考查文本解析、字典计数、排序、边界处理。<br>
+    Required. Count ERRORs per module from log lines, return Top N. Tests text parsing, dict counting, sorting, edge cases.
+  </p>
+
+  <h2>题目 / Problem</h2>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:1rem;font-size:13.5px;color:var(--text2);line-height:1.8">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em">Input format</div>
+<pre style="margin:0;border:none;padding:0;background:none;font-size:13px">2026-03-24T10:15:02Z [network] ERROR link down
+2026-03-24T10:15:05Z [sensor]  WARN  high temp
+2026-03-24T10:15:10Z [network] ERROR packet loss
+2026-03-24T10:15:12Z [disk]    ERROR read timeout
+this line is malformed and should be skipped</pre>
+    <div style="margin-top:12px">Write: <code>top_error_modules(lines: list[str], n: int = 3) -> list[tuple[str, int]]</code></div>
+  </div>
+
+  <h2>完整参考答案 / Reference Solution</h2>
+<pre><code><span class="c-cm"># ── 题 B: 日志 ERROR 聚合 ─────────────────────────────────────────</span>
+<span class="c-cm"># EN: Count ERROR occurrences per module, return top N by count</span>
+<span class="c-cm"># 中: 统计每个模块的 ERROR 次数，返回 Top N</span>
+
+<span class="c-kw">import</span> re
+<span class="c-kw">from</span> collections <span class="c-kw">import</span> defaultdict
+
+<span class="c-cm"># 匹配 [模块名] 后跟 ERROR（大小写无关）</span>
+<span class="c-cm"># EN: matches [module_name] followed by ERROR (case-insensitive)</span>
+_PATTERN = re.<span class="c-fn">compile</span>(<span class="c-str">r'\[(\w+)\]\s+ERROR'</span>, re.IGNORECASE)
+
+
+<span class="c-kw">def</span> <span class="c-fn">top_error_modules</span>(lines: <span class="c-cls">list</span>[<span class="c-cls">str</span>], n: <span class="c-cls">int</span> = <span class="c-num">3</span>) -> <span class="c-cls">list</span>[<span class="c-cls">tuple</span>[<span class="c-cls">str</span>, <span class="c-cls">int</span>]]:
+    <span class="c-str">"""
+    Returns list of (module_name, error_count) sorted by count descending.
+    Skips malformed lines silently.
+    中文: 返回 (模块名, 错误数) 列表，按错误数降序，跳过格式错误的行
+    """</span>
+    counts: <span class="c-cls">dict</span>[<span class="c-cls">str</span>, <span class="c-cls">int</span>] = defaultdict(<span class="c-cls">int</span>)
+
+    <span class="c-kw">for</span> line <span class="c-kw">in</span> lines:
+        m = _PATTERN.<span class="c-fn">search</span>(line)   <span class="c-cm"># search 比 match 更灵活 — 可在行中任意位置匹配</span>
+        <span class="c-kw">if</span> m:                         <span class="c-cm"># 没匹配到就跳过（坏行、WARN 行等）</span>
+            counts[m.<span class="c-fn">group</span>(<span class="c-num">1</span>)] += <span class="c-num">1</span>  <span class="c-cm"># group(1) 是 (\w+) 捕获的模块名</span>
+
+    <span class="c-cm"># 排序：按 count 降序，取前 n 个</span>
+    <span class="c-cm"># EN: sort by count descending, take top n</span>
+    <span class="c-kw">return</span> <span class="c-fn">sorted</span>(counts.items(), key=<span class="c-kw">lambda</span> x: -x[<span class="c-num">1</span>])[:n]
+
+
+<span class="c-cm"># ── 使用示例 / Usage ──────────────────────────────────────────────</span>
+<span class="c-kw">if</span> __name__ == <span class="c-str">'__main__'</span>:
+    sample = [
+        <span class="c-str">"2026-03-24T10:15:02Z [network] ERROR link down"</span>,
+        <span class="c-str">"2026-03-24T10:15:05Z [sensor]  WARN  high temp"</span>,
+        <span class="c-str">"2026-03-24T10:15:10Z [network] ERROR packet loss"</span>,
+        <span class="c-str">"2026-03-24T10:15:12Z [disk]    ERROR read timeout"</span>,
+        <span class="c-str">"malformed line"</span>,
+    ]
+    <span class="c-fn">print</span>(<span class="c-fn">top_error_modules</span>(sample, n=<span class="c-num">3</span>))
+    <span class="c-cm"># → [('network', 2), ('disk', 1)]</span>
+</code></pre>
+
+  <h2>追问答案 / Follow-up Answers</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">追1</span><span class="q-text">如何把时间窗口限制到最近 1 小时？/ Filter to last 1 hour?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">Parse the timestamp from each line (ISO-8601 format, use <code>datetime.fromisoformat()</code>), compare against <code>datetime.now(timezone.utc) - timedelta(hours=1)</code>, and skip lines outside the window. Add this check before the pattern match. Consider what to do with lines that don't have a parseable timestamp — skip them or treat as in-window depending on requirements.</div>
+        <div class="ans-zh">从每行解析时间戳（ISO-8601 格式用 <code>datetime.fromisoformat()</code>），与 <code>datetime.now(timezone.utc) - timedelta(hours=1)</code> 比较，窗口外的跳过。把这个检查放在 pattern 匹配之前。对于没有时间戳的行，根据需求决定是跳过还是当作在窗口内处理。用 <code>try/except ValueError</code> 保护时间戳解析，防止坏行导致崩溃。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">追2</span><span class="q-text">如何改造成实时流处理？/ Convert to real-time stream processing?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">Change the function to accept a generator/iterator instead of a list — no code change needed since we already iterate. For a real stream (e.g., <code>tail -f</code>), use a sliding window with a deque or time-bucketed counters. Reset counts periodically or use a rolling window. For production: route logs to a message queue (Kafka), consume with a stream processor (Flink, Spark Streaming, or a simple Python consumer), and maintain per-window counts in memory or Redis.</div>
+        <div class="ans-zh">把参数类型从 list 改成接受 iterator/generator 就够了——当前代码已经是迭代的，不需要改。真实流（如 <code>tail -f</code>）场景：用 deque 做滑动窗口，或按时间桶统计，定期重置计数。生产级：日志发到消息队列（Kafka），消费者（Python consumer 或 Flink/Spark Streaming）维护内存或 Redis 中的时间窗口计数。关键设计点：窗口大小、计数重置策略、背压处理。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ CODING C ════════ -->
+<div class="section" id="code-c">
+  <h1>Coding C — <em>Redfish Poller</em> (bonus)</h1>
+  <p class="section-desc">
+    加分题，时间够再做。给定 mock Redfish JSON，提取温度传感器并过滤超阈值项。<br>
+    Bonus only. Extract temperature readings from a mock Redfish JSON response and flag items above threshold.
+  </p>
+
+  <div class="tip">如果时间不够，口头讲思路也算分：说清楚"用 .get() 防 KeyError，类型转换加 try/except，返回结构化 dict 方便后续接告警系统"。</div>
+
+  <h2>完整参考答案 / Reference Solution</h2>
+<pre><code><span class="c-cm"># ── 题 C: Redfish 温度告警过滤 ───────────────────────────────────</span>
+<span class="c-cm"># EN: Extract overheat sensors from a Redfish JSON response</span>
+<span class="c-cm"># 中: 从 Redfish JSON 提取超温传感器列表</span>
+
+<span class="c-kw">from</span> datetime <span class="c-kw">import</span> datetime, timezone
+<span class="c-kw">from</span> typing <span class="c-kw">import</span> Any
+
+
+<span class="c-kw">def</span> <span class="c-fn">find_overheat</span>(
+    readings: <span class="c-cls">list</span>[<span class="c-cls">dict</span>[<span class="c-cls">str</span>, <span class="c-cls">Any</span>]],
+    threshold: <span class="c-cls">float</span> = <span class="c-num">80.0</span>
+) -> <span class="c-cls">list</span>[<span class="c-cls">dict</span>]:
+    <span class="c-str">"""
+    Filter sensor readings above threshold.
+    Returns list of {sensor_name, reading_celsius, severity, timestamp}.
+    中文: 过滤超过阈值的传感器读值，返回结构化告警列表
+    """</span>
+    alerts = []
+    now = datetime.<span class="c-fn">now</span>(timezone.utc).<span class="c-fn">isoformat</span>()
+
+    <span class="c-kw">for</span> sensor <span class="c-kw">in</span> readings:
+        <span class="c-cm"># .get() 防 KeyError — Redfish JSON 字段不一定都存在</span>
+        name = sensor.<span class="c-fn">get</span>(<span class="c-str">'Name'</span>, <span class="c-str">'unknown'</span>)
+        raw_reading = sensor.<span class="c-fn">get</span>(<span class="c-str">'ReadingCelsius'</span>)
+
+        <span class="c-kw">if</span> raw_reading <span class="c-kw">is None</span>:        <span class="c-cm"># 没有读值，跳过 / skip missing readings</span>
+            <span class="c-kw">continue</span>
+
+        <span class="c-kw">try</span>:
+            reading = <span class="c-cls">float</span>(raw_reading)  <span class="c-cm"># 类型转换加保护 / guarded type conversion</span>
+        <span class="c-kw">except</span> (<span class="c-cls">ValueError</span>, <span class="c-cls">TypeError</span>):
+            <span class="c-kw">continue</span>                      <span class="c-cm"># 坏数据静默跳过 / skip bad data</span>
+
+        <span class="c-kw">if</span> reading > threshold:
+            <span class="c-cm"># 严重程度：> threshold+15 = critical，否则 warning</span>
+            severity = <span class="c-str">'critical'</span> <span class="c-kw">if</span> reading > threshold + <span class="c-num">15</span> <span class="c-kw">else</span> <span class="c-str">'warning'</span>
+            alerts.append({
+                <span class="c-str">'sensor_name'</span>: name,
+                <span class="c-str">'reading_celsius'</span>: reading,
+                <span class="c-str">'severity'</span>: severity,
+                <span class="c-str">'timestamp'</span>: now
+            })
+
+    <span class="c-kw">return</span> alerts
+
+
+<span class="c-cm"># ── Mock 数据示例 / Mock data ─────────────────────────────────────</span>
+<span class="c-kw">if</span> __name__ == <span class="c-str">'__main__'</span>:
+    mock_readings = [
+        {<span class="c-str">'Name'</span>: <span class="c-str">'CPU1 Temp'</span>,  <span class="c-str">'ReadingCelsius'</span>: <span class="c-num">92.5</span>},  <span class="c-cm"># critical</span>
+        {<span class="c-str">'Name'</span>: <span class="c-str">'CPU2 Temp'</span>,  <span class="c-str">'ReadingCelsius'</span>: <span class="c-num">83.0</span>},  <span class="c-cm"># warning</span>
+        {<span class="c-str">'Name'</span>: <span class="c-str">'Inlet Temp'</span>, <span class="c-str">'ReadingCelsius'</span>: <span class="c-num">35.0</span>},  <span class="c-cm"># ok</span>
+        {<span class="c-str">'Name'</span>: <span class="c-str">'Disk Temp'</span>,  <span class="c-str">'ReadingCelsius'</span>: <span class="c-str">'N/A'</span>}, <span class="c-cm"># bad data — skipped</span>
+        {<span class="c-str">'Name'</span>: <span class="c-str">'Fan Sensor'</span>},                           <span class="c-cm"># missing field — skipped</span>
+    ]
+    <span class="c-kw">for</span> alert <span class="c-kw">in</span> <span class="c-fn">find_overheat</span>(mock_readings, threshold=<span class="c-num">80.0</span>):
+        <span class="c-fn">print</span>(alert)
+</code></pre>
+
+  <h2>追问答案 / Follow-up Answers</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">追</span><span class="q-text">API 超时 / 重试 / 防止频繁 polling 压垮 BMC？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">For timeout/retry: use <code>requests</code> with a timeout parameter (<code>requests.get(url, timeout=5)</code>), wrap in a retry loop with exponential backoff (or use the <code>tenacity</code> library). To avoid overloading the BMC: poll at a reasonable interval (30–60s for sensors, not sub-second), implement circuit breaking (stop polling if BMC is consistently unresponsive), and prefer TelemetryService push/subscription over aggressive polling where supported.</div>
+        <div class="ans-zh">超时/重试：<code>requests.get(url, timeout=5)</code> 设超时，用指数退避重试（手写循环或用 <code>tenacity</code> 库）。防止打垮 BMC：传感器 polling 间隔 30–60 秒（不是毫秒级），实现 circuit breaker（BMC 持续不响应时停止 polling），在 BMC 支持的情况下优先用 TelemetryService 的 push/subscription 模式代替主动 polling。生产级加分点：指数退避、抖动（jitter）防止多台服务器同时 polling。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ BEHAVIORAL ════════ -->
+<div class="section" id="behavioral">
+  <h1>Behavioral — <em>Quick Answers</em></h1>
+  <p class="section-desc">
+    4 most likely behavioral questions with answer frameworks. Lead with the conclusion, then story.<br>
+    最可能问的 4 道行为题 + 答题框架。先结论，再故事，控制在 90 秒内。
+  </p>
+
+  <div class="qa-list">
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">B1</span>
+        <span class="q-text">遇到不确定的问题你怎么处理？/ How do you handle something you don't know?</span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">I state clearly what I know and what I don't, then describe how I'd find the answer: check the spec/datasheet first, try to reproduce the issue in a minimal test, escalate with a clear reproduction case rather than vague questions. I'd also timebox my own research — if I'm not making progress in 30 minutes, I ask rather than spin.</div>
+        <div class="ans-zh">我会先说清楚我知道什么、不知道什么，然后说怎么找答案：先查规格书/数据手册，尝试在最小可复现环境里重现问题，带复现步骤而不是带模糊问题去找人。我也会给自己设时间限制——30 分钟没进展就提问，不会一直转圈。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">B2</span>
+        <span class="q-text">你如何与硬件/BIOS/BMC/软件团队协作定位跨域问题？/ Cross-team diagnosis?</span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">I try to narrow the problem to a layer before involving another team — "this is a hardware-level issue because the sensor reading is abnormal even before OS boots" versus "this is a driver issue because it only appears on kernel 6.x." Bringing a clear hypothesis rather than symptoms saves everyone time. I also document findings as we go so the next person doesn't repeat the same investigation.</div>
+        <div class="ans-zh">我会在找人之前先把问题缩小到某个层——"这是硬件层面的问题，因为 OS 启动前传感器读值就异常了" vs "这是驱动问题，因为只在内核 6.x 上复现"。带假设而不是带症状去找人，能节省所有人的时间。过程中我会边排查边记文档，避免下一个人重复同样的调查。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">B3</span>
+        <span class="q-text">说一次你发现方案不对并及时调整的经历。/ A time you changed course mid-way?</span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">Prepare a specific story: what was the original plan, what signal told you it was wrong (data, feedback, test result), what you changed, and what the outcome was. The key is showing you respond to evidence, not ego. Keep it to 60–90 seconds.</div>
+        <div class="ans-zh">准备一个具体故事：原来的方案是什么 → 什么信号告诉你方向不对（数据、反馈、测试结果）→ 你改了什么 → 结果如何。关键是体现你根据证据调整，不是因为面子坚持。控制在 60–90 秒，不要跑题。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-num">B4</span>
+        <span class="q-text">如何在"快交付"和"高可靠"之间权衡？/ Speed vs reliability trade-off?</span>
+        <span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <div class="ans-en">I treat it as a risk-management question: what's the cost of being wrong? For a monitoring script used internally, shipping fast with clear known limitations is fine. For code that controls physical hardware or triggers alerts, reliability is non-negotiable — shortcuts create incident risk. I try to make the trade-off explicit: "I can ship v1 in 3 days with these known gaps, or a complete version in 2 weeks — which fits the current risk tolerance?"</div>
+        <div class="ans-zh">我把它当成风险管理问题：出错的代价是什么？内部用的监控脚本，快速交付 + 明确说明已知局限是合理的。控制物理硬件或触发告警的代码，可靠性不可妥协，走捷径等于埋故障。我会把权衡说清楚："v1 版本 3 天可以交付，有这些已知缺口；完整版 2 周，你们当前的风险接受度是什么？"</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ RAPID FIRE ════════ -->
+<div class="section" id="rapid-fire">
+  <h1>⚡ <em>速记卡片</em></h1>
+  <p class="section-desc">
+    Walk in knowing these cold. One sentence each. / 进考场前这些必须能脱口而出，每条一句话。
+  </p>
+
+  <h2>术语不能说错 / Terminology — Never Mix These Up</h2>
+  <table class="kv-table">
+    <tr><th>Wrong / 错误</th><th>Right / 正确</th><th>Why it matters / 为什么重要</th></tr>
+    <tr><td style="color:var(--red)">QPI</td><td style="color:var(--green)">UPI (Ultra Path Interconnect)</td><td>QPI 是老一代，说错会被扣分</td></tr>
+    <tr><td style="color:var(--red)">BMC 是 memory controller</td><td style="color:var(--green)">Memory controller 在 CPU 内部</td><td>两者完全不同，BMC 是带外管理芯片</td></tr>
+    <tr><td style="color:var(--red)">NVMe 走 SATA</td><td style="color:var(--green)">NVMe 走 PCIe (direct to CPU)</td><td>协议和物理路径都不同</td></tr>
+    <tr><td style="color:var(--red)">RedfishVersion 是资源版本</td><td style="color:var(--green)">@odata.type 是资源 schema 版本</td><td>RedfishVersion 是服务级协议版本</td></tr>
+  </table>
+
+  <h2>必背链条 / Must-Know Chains</h2>
+  <div class="tip"><strong>IPMI Event Chain：</strong> SDR 定义传感器 → SEL 记录事件 → PEF 决策（过滤规则）→ PET 外送告警（SNMP trap）</div>
+  <div class="tip"><strong>NVMe Path：</strong> NVMe SSD → MCIO → CPU PCIe Root Port → PCIe 5.0 bus → CPU → RAM。高带宽，低延迟，不经 PCH。</div>
+  <div class="tip"><strong>SATA Path：</strong> SATA SSD → PCH → DMI link → CPU。经过南桥，带宽有限（6 Gbps max，DMI 约 16 GB/s 共享）。</div>
+  <div class="tip"><strong>BMC Sensor Path：</strong> 硬件传感器 → I2C/SMBus/PECI/GPIO → BMC（AST2600）→ IPMI / Redfish API。</div>
+
+  <h2>Python 一句话速记 / Python One-liners</h2>
+  <div class="tip"><strong>大文件：</strong> 用 <code>for line in f</code>（逐行生成器），不用 readlines() / read()。</div>
+  <div class="tip"><strong>大小写无关：</strong> <code>.lower()</code> 统一后再比较，或正则用 <code>re.IGNORECASE</code>。</div>
+  <div class="tip"><strong>安全取值：</strong> JSON 字段用 <code>.get(key, default)</code>，类型转换用 <code>try/except</code>。</div>
+  <div class="tip"><strong>计数排序：</strong> <code>defaultdict(int)</code> 计数，<code>sorted(..., key=lambda x: -x[1])</code> 降序，切片 <code>[:n]</code> 取 Top N。</div>
+
+  <h2>15-Min Last Review Order / 进场前 15 分钟顺序</h2>
+  <ol style="display:flex;flex-direction:column;gap:0.5rem;font-size:14px;color:var(--text2);padding-left:1.5rem;margin-top:0.5rem;line-height:1.7">
+    <li>Hardware: SYS-221HE-FTNR vs X13DEM → dual-socket 三维度 → UPI (not QPI) → NUMA → BMC = AST2600 = out-of-band</li>
+    <li>IPMI: SDR → SEL → PEF → PET 链条</li>
+    <li>Redfish: @odata.type 用途 → Sensor vs TelemetryService 选择逻辑</li>
+    <li>Python A: parse_sensor_file 逻辑（open → strip → split → validate → append）</li>
+    <li>Python B: top_error_modules 逻辑（regex → defaultdict → sorted → slice）</li>
+  </ol>
+</div>
+
+</main>
+</div>
+
+<script>
+var sidebar = document.getElementById('sideNav');
+var overlay = document.getElementById('navOverlay');
+var hamburger = document.getElementById('menuBtn');
+
+function openNav() {
+  sidebar.classList.add('open');
+  overlay.classList.add('open');
+  hamburger.textContent = '\u2715';
+}
+function closeNav() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+  hamburger.textContent = '\u2630';
+}
+
+hamburger.addEventListener('click', function() {
+  sidebar.classList.contains('open') ? closeNav() : openNav();
+});
+overlay.addEventListener('click', closeNav);
+
+function show(id) {
+  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(a) { a.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  closeNav();
+}
+
+function toggle(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+document.querySelector('.nav-item').classList.add('active');
+</script>
+</body>
+</html>
