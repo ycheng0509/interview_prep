@@ -27,6 +27,12 @@
     --tag-hw-dim: #2d1f4a;
     --tag-linux: #38bdf8;
     --tag-linux-dim: #1a3040;
+    --tag-python: #fb923c;
+    --tag-python-dim: #3d2010;
+    --tag-ipmi: #facc15;
+    --tag-ipmi-dim: #3d3310;
+    --tag-redfish: #2dd4bf;
+    --tag-redfish-dim: #0d3030;
     --mono: 'IBM Plex Mono', monospace;
     --sans: 'IBM Plex Sans', sans-serif;
     --radius: 6px;
@@ -236,6 +242,24 @@
     border: 1px solid #1a4a60;
   }
 
+  .q-tag.python {
+    color: var(--tag-python);
+    background: var(--tag-python-dim);
+    border: 1px solid #5a2a08;
+  }
+
+  .q-tag.ipmi {
+    color: var(--tag-ipmi);
+    background: var(--tag-ipmi-dim);
+    border: 1px solid #5a4a08;
+  }
+
+  .q-tag.redfish {
+    color: var(--tag-redfish);
+    background: var(--tag-redfish-dim);
+    border: 1px solid #0a4a40;
+  }
+
   .q-num {
     font-family: var(--mono);
     font-size: 12px;
@@ -434,7 +458,7 @@
 
   .section-scores {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 1px;
     background: var(--border);
     border: 1px solid var(--border);
@@ -466,6 +490,9 @@
 
   .s-val.hw-color { color: var(--tag-hw); }
   .s-val.linux-color { color: var(--tag-linux); }
+  .s-val.python-color { color: var(--tag-python); }
+  .s-val.ipmi-color { color: var(--tag-ipmi); }
+  .s-val.redfish-color { color: var(--tag-redfish); }
 
   .section-cell .s-sub {
     font-size: 12px;
@@ -494,6 +521,9 @@
 
   .bar-hw { background: var(--tag-hw); }
   .bar-linux { background: var(--tag-linux); }
+  .bar-python { background: var(--tag-python); }
+  .bar-ipmi { background: var(--tag-ipmi); }
+  .bar-redfish { background: var(--tag-redfish); }
 
   .results-actions {
     display: flex;
@@ -670,7 +700,7 @@
     .results-pct { font-size: 52px; }
     .results-header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
     .results-breakdown { text-align: left; }
-    .section-scores { grid-template-columns: 1fr; }
+    .section-scores { grid-template-columns: 1fr 1fr; }
     .stat-grid { grid-template-columns: 1fr; }
   }
 </style>
@@ -681,7 +711,7 @@
   <div class="logo">quiz<span>.</span>sh</div>
   <div class="header-right">
     <div class="score-display" id="header-score" style="display:none">
-      <b id="h-score">0</b> / <span id="h-total">100</span>
+      <b id="h-score">0</b> / <span id="h-total">85</span>
     </div>
   </div>
 </header>
@@ -699,20 +729,28 @@
         <div class="start-badge">Interview Prep</div>
         <h1 class="start-title">Hardware &amp; <em>Linux</em><br>Quiz</h1>
         <p class="start-desc">
-          100 questions covering Supermicro SYS-221HE-FTNR / X13DEM hardware architecture and Linux system administration essentials.
+          85 randomized questions covering hardware architecture, Linux, Python, IPMI, and Redfish management.
         </p>
         <div class="stat-grid">
           <div class="stat-cell">
-            <div class="val">50</div>
-            <div class="lbl">Hardware Qs</div>
+            <div class="val">25</div>
+            <div class="lbl">Hardware</div>
           </div>
           <div class="stat-cell">
-            <div class="val">50</div>
-            <div class="lbl">Linux Qs</div>
+            <div class="val">25</div>
+            <div class="lbl">Linux</div>
           </div>
           <div class="stat-cell">
-            <div class="val">100</div>
-            <div class="lbl">Total</div>
+            <div class="val">15</div>
+            <div class="lbl">Python</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val">10</div>
+            <div class="lbl">IPMI</div>
+          </div>
+          <div class="stat-cell">
+            <div class="val">10</div>
+            <div class="lbl">Redfish</div>
           </div>
         </div>
         <button class="start-btn" onclick="startQuiz()">START QUIZ →</button>
@@ -767,6 +805,30 @@
             <div class="s-sub" id="r-linux-sub"></div>
             <div class="bar-row">
               <div class="bar-bg"><div class="bar-fg bar-linux" id="bar-linux" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div class="section-cell">
+            <div class="s-label">Python</div>
+            <div class="s-val python-color" id="r-py-pct">—</div>
+            <div class="s-sub" id="r-py-sub"></div>
+            <div class="bar-row">
+              <div class="bar-bg"><div class="bar-fg bar-python" id="bar-py" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div class="section-cell">
+            <div class="s-label">IPMI</div>
+            <div class="s-val ipmi-color" id="r-ipmi-pct">—</div>
+            <div class="s-sub" id="r-ipmi-sub"></div>
+            <div class="bar-row">
+              <div class="bar-bg"><div class="bar-fg bar-ipmi" id="bar-ipmi" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div class="section-cell">
+            <div class="s-label">Redfish</div>
+            <div class="s-val redfish-color" id="r-rf-pct">—</div>
+            <div class="s-sub" id="r-rf-sub"></div>
+            <div class="bar-row">
+              <div class="bar-bg"><div class="bar-fg bar-redfish" id="bar-rf" style="width:0%"></div></div>
             </div>
           </div>
         </div>
@@ -905,12 +967,63 @@ const ALL_Q = [
   {s:"Linux",q:"What is a process's PID?",o:["Process Interface Descriptor","Process ID — a unique number assigned to each running process","Private Instruction Data","Parallel Instruction Domain"],a:1,e:"PID (Process ID) is a unique integer assigned by the kernel to each running process."},
   {s:"Linux",q:"What does `systemctl restart nginx` do?",o:["Reloads nginx config without interruption","Stops then starts nginx — connections may drop briefly","Only starts nginx if stopped","Sends SIGTERM to nginx"],a:1,e:"restart performs stop then start. Connections are dropped. Use 'reload' for graceful config reload if supported."},
   {s:"Linux",q:"What is a for loop in bash used for?",o:["Defining functions","Iterating over a list of items or files","Error handling only","Variable declaration"],a:1,e:"for loops iterate over items — files, output lines, or a range. e.g., `for file in *.log; do echo $file; done`"},
+
+  // ── PYTHON ──────────────────────────────────────────────
+  {s:"Python",q:"What does `len([1,2,3])` return?",o:["0","2","3","4"],a:2,e:"len() returns the number of items in a sequence. A 3-element list returns 3."},
+  {s:"Python",q:"What does `dict.get('key', 'default')` do when 'key' is missing?",o:["Raises KeyError","Returns None","Returns 'default'","Creates the key with 'default'"],a:2,e:".get() returns the default value when the key is absent — avoids KeyError, essential when parsing JSON where fields may be missing."},
+  {s:"Python",q:"What is the difference between a list `[]` and a tuple `()`?",o:["No difference","Lists are immutable; tuples are mutable","Lists are mutable; tuples are immutable","Tuples support indexing; lists don't"],a:2,e:"Lists are mutable (can change after creation). Tuples are immutable (fixed). Use tuples for fixed data, lists for collections you modify."},
+  {s:"Python",q:"What does `str.strip()` do?",o:["Splits the string on whitespace","Removes leading and trailing whitespace","Reverses the string","Converts to lowercase"],a:1,e:".strip() removes leading and trailing whitespace (spaces, tabs, newlines) — essential before splitting or comparing a parsed line."},
+  {s:"Python",q:"What does `'CPU1 Temp | 72 C'.split('|')` return?",o:["['CPU1 Temp ', ' 72 C']","['CPU1','Temp','72','C']","'CPU1 Temp 72 C'","Raises ValueError"],a:0,e:".split('|') splits on the pipe character, returning ['CPU1 Temp ', ' 72 C']. Each part still has surrounding whitespace — use .strip() on each element."},
+  {s:"Python",q:"What does `for line in f` do when `f` is a file object?",o:["Loads all lines into memory first then iterates","Yields one line at a time lazily — memory efficient","Reads only the first line","Requires f.readlines() to work"],a:1,e:"Iterating directly over a file object is a lazy generator — reads one line at a time. Ideal for large files; avoids loading everything into memory."},
+  {s:"Python",q:"What does `try/except ValueError` protect against in a parser?",o:["File not found errors","HTTP request failures","Type conversion errors like int('bad_line')","Division by zero only"],a:2,e:"ValueError is raised when type conversion fails (e.g., int('bad')). Wrapping conversions in try/except lets you skip malformed lines safely."},
+  {s:"Python",q:"What is a list comprehension in Python?",o:["A way to define a class","A compact expression that builds a list from a loop","A special type of dictionary","A method to sort lists in place"],a:1,e:"List comprehension: [expr for item in iterable if condition]. More concise than a for loop for building filtered or transformed lists."},
+  {s:"Python",q:"What does `enumerate(items)` yield?",o:["Only the values","Only the indices","(index, value) tuples for each item","A count of total items"],a:2,e:"enumerate yields (index, value) pairs — useful when you need both position and item in a loop without a manual counter."},
+  {s:"Python",q:"What module do you use for JSON in Python?",o:["csv","json","struct","pickle"],a:1,e:"The built-in `json` module handles JSON. json.loads() parses a JSON string to a Python dict; json.dumps() serializes a dict to a JSON string."},
+  {s:"Python",q:"What does `json.loads(text)` do?",o:["Writes JSON to a file","Parses a JSON string and returns a Python object","Loads a JSON schema file from disk","Counts JSON keys"],a:1,e:"json.loads() deserializes a JSON string to a Python dict/list. json.dumps() does the reverse (Python object → JSON string)."},
+  {s:"Python",q:"What does `collections.defaultdict(int)` do?",o:["Creates a dict that raises no errors on any access","Auto-initializes missing keys to 0, enabling += without pre-initialization","Creates an ordered dict","Limits dict values to integers only"],a:1,e:"defaultdict(int) returns 0 for missing keys automatically. Perfect for counting: counts[module] += 1 works even on first occurrence."},
+  {s:"Python",q:"What does `with open('file.txt') as f` guarantee?",o:["The file is opened read-only","The file is closed automatically even if an exception occurs","The file is loaded into memory","The file is locked for exclusive writing"],a:1,e:"The `with` statement (context manager) ensures the file is properly closed when the block exits, even on exceptions — best practice for file I/O."},
+  {s:"Python",q:"How do you skip empty lines when parsing a file?",o:["Use try/except on every line","Check `if not line.strip(): continue`","Open the file in binary mode","csv.reader skips them automatically"],a:1,e:"After stripping, an empty line becomes an empty string which is falsy. `if not line.strip(): continue` skips blank lines cleanly."},
+  {s:"Python",q:"What is `self` in a Python class method?",o:["A keyword for global variables","A reference to the current instance of the class","A static method decorator","A reference to the parent class"],a:1,e:"`self` refers to the specific object instance the method is called on — it's how methods access and modify the object's own attributes."},
+  {s:"Python",q:"What is `__init__` in a Python class?",o:["A destructor called when the object is deleted","The initializer (constructor) — called when an object is created to set up attributes","A class-level static method","A method that defines string representation"],a:1,e:"`__init__` is Python's initializer. It runs automatically when you create a new object and sets up the instance's attributes via self."},
+  {s:"Python",q:"Why use a class instead of a plain dictionary for sensor readings?",o:["Classes are always faster than dicts","A class groups data and behavior together, enabling validation, methods, and extension","Dictionaries can't store non-string keys","Python requires classes for JSON output"],a:1,e:"A class bundles data (name, value, status) with methods (validate, to_dict). Easier to reuse, extend, and enforce structure vs. raw dicts."},
+  {s:"Python",q:"What does `re.compile(r'pattern', re.IGNORECASE)` do?",o:["Compiles Python bytecode","Creates a reusable regex object with case-insensitive matching","Converts a string to uppercase","Sets the global regex mode for all scripts"],a:1,e:"re.compile pre-compiles a regex for reuse (efficient in loops). re.IGNORECASE makes it match ERROR, Error, error, etc. equally."},
+  {s:"Python",q:"What does `import csv; csv.writer(f)` enable?",o:["Reading CSV files only","Writing rows as properly quoted and escaped CSV lines","Parsing JSON in CSV format","Connecting to a spreadsheet API"],a:1,e:"csv.writer handles quoting and escaping automatically. Call writer.writerow([...]) or writerows([...]) to write each row as a valid CSV line."},
+  {s:"Python",q:"What is the purpose of `if __name__ == '__main__':` in Python?",o:["It marks the start of a class definition","It runs the block only when the file is executed directly, not when imported as a module","It defines the script's main thread","It sets the module version number"],a:1,e:"This guard lets you write runnable code that only executes when the script is run directly. Prevents side effects when the file is imported."},
+
+  // ── IPMI ──────────────────────────────────────────────
+  {s:"IPMI",q:"What does IPMI stand for?",o:["Integrated Platform Management Interface","Intelligent Platform Management Interface","Internal Protocol Management Interface","Intel Platform Monitor Interface"],a:1,e:"IPMI = Intelligent Platform Management Interface — an industry standard for out-of-band server management, independent of the OS or CPU."},
+  {s:"IPMI",q:"What does SEL stand for in IPMI?",o:["System Error Log","System Event Log","Sensor Event Level","Status Entry List"],a:1,e:"SEL = System Event Log. The BMC records hardware events (sensor threshold crossings, power events, errors) in the SEL."},
+  {s:"IPMI",q:"What does SDR stand for in IPMI?",o:["Sensor Data Register","System Device Repository","Sensor Data Record","Storage Device Report"],a:2,e:"SDR = Sensor Data Record. SDRs define sensor metadata — type, units, thresholds, and how to interpret raw sensor readings."},
+  {s:"IPMI",q:"What does PEF stand for in IPMI?",o:["Platform Event Filter","Processor Error Flag","Protocol Event Framework","Power Error Fault"],a:0,e:"PEF = Platform Event Filter. Rules that map events to actions (send alert, power cycle, log) when specific conditions are met."},
+  {s:"IPMI",q:"What does PET stand for in IPMI?",o:["Platform Event Trap","Power Event Threshold","Platform Error Type","Processor Event Timer"],a:0,e:"PET = Platform Event Trap. An SNMP trap sent by the BMC (triggered by a PEF rule) to alert a remote management station."},
+  {s:"IPMI",q:"What is the correct IPMI event flow when a sensor crosses a threshold?",o:["SDR → SEL → PEF → PET","SEL → SDR → PET → PEF","PEF → SDR → SEL → PET","PET → PEF → SDR → SEL"],a:0,e:"Sensor metadata described by SDR. Threshold crossing logged in SEL. PEF rules evaluate the event. If matched, BMC sends a PET alert."},
+  {s:"IPMI",q:"What is KCS in IPMI?",o:["Keyboard Controller Style — a host-side interface for OS-to-BMC communication","Key Certificate Store — stores IPMI credentials","Kernel Cache System — speeds up sensor reads","Kerberos Control System — IPMI authentication"],a:0,e:"KCS (Keyboard Controller Style) is an IPMI host interface. The OS uses it to send IPMI requests to the BMC over the system bus."},
+  {s:"IPMI",q:"What hardware interface do temperature sensors typically use to reach the BMC?",o:["PCIe sideband","I2C / SMBus","KCS","DMI"],a:1,e:"Temperature sensors connect via I2C or SMBus. The BMC polls them through these low-speed serial buses integrated on the motherboard."},
+  {s:"IPMI",q:"What is PECI used for in server platforms?",o:["PCIe configuration interface","CPU thermal data interface from Intel CPUs to the BMC","Power supply monitoring bus","Fan PWM control signal"],a:1,e:"PECI (Platform Environment Control Interface) is Intel's interface for reading CPU thermal and power data. The BMC uses PECI to read CPU temp."},
+  {s:"IPMI",q:"What hardware interfaces do fan sensors typically use?",o:["I2C and PMBus","Tachometer (tach) input for speed, PWM for control","KCS and SSIF","PCIe sideband and PECI"],a:1,e:"Fan sensors report speed via tachometer (tach) input signal. BMC controls fan speed via PWM. Both are direct hardware GPIO-level connections."},
+  {s:"IPMI",q:"What is PMBus used for in server management?",o:["PCIe management bus","Power supply monitoring over SMBus — voltage, current, power, and faults","BMC firmware updates","CPU microcode delivery path"],a:1,e:"PMBus is a power management protocol over SMBus. It lets the BMC monitor voltage, current, temperature, and faults from PSUs and VRMs."},
+  {s:"IPMI",q:"How do OS-originated events like watchdog timeouts reach the BMC?",o:["Via PCIe interrupt","Via host interfaces such as KCS, BT, SMIC, or SSIF","Via PECI thermal signals","Via the SATA management bus"],a:1,e:"OS/firmware events reach the BMC through software host interfaces (KCS, BT, SMIC, SSIF) — memory-mapped or I/O-port registers on the system bus."},
+
+  // ── REDFISH ──────────────────────────────────────────────
+  {s:"Redfish",q:"What is Redfish?",o:["A BMC hardware chip by ASPEED","A RESTful API standard for server management over HTTPS with JSON payloads","An IPMI protocol extension for PCIe devices","A Supermicro-specific management tool"],a:1,e:"Redfish is a DMTF-standard RESTful management API. It uses HTTPS + JSON and provides a modern, scalable alternative to IPMI."},
+  {s:"Redfish",q:"What is `@odata.type` in a Redfish resource payload?",o:["The Redfish service protocol version","The schema type and version identifier for that specific resource","The HTTP Content-Type header value","The BMC firmware version"],a:1,e:"`@odata.type` identifies the schema name and version for a resource (e.g., `#Sensor.v1_2_0.Sensor`). Use it to determine the data structure."},
+  {s:"Redfish",q:"What is `RedfishVersion` in the Redfish service root?",o:["The schema version for a specific resource","The overall Redfish protocol version supported by this BMC service","The server firmware version","The OData spec version"],a:1,e:"`RedfishVersion` (e.g., '1.16.0') is the top-level Redfish protocol version for the whole service — found at the `/redfish/v1` root endpoint."},
+  {s:"Redfish",q:"What is the key difference between `RedfishVersion` and `@odata.type`?",o:["They are the same thing with different names","RedfishVersion is the service protocol version; @odata.type is the schema/type version for a specific resource","@odata.type is the protocol version; RedfishVersion is per-resource","Both identify BMC firmware version"],a:1,e:"`RedfishVersion` = whole service protocol version. `@odata.type` = per-resource schema identifier. Do not confuse the two in an interview."},
+  {s:"Redfish",q:"Which Redfish schema directly represents a single current sensor reading?",o:["TelemetryService","MetricReport","Sensor","MetricDefinition"],a:2,e:"The `Sensor` schema is a single sensor resource with current reading, units, status, and thresholds. It is the direct answer for 'current BMC sensor value'."},
+  {s:"Redfish",q:"What is TelemetryService used for in Redfish?",o:["Reading a single sensor's live current value","Providing a framework for defining, collecting, and reporting metrics over time","Managing BIOS settings remotely","Translating IPMI commands to Redfish"],a:1,e:"TelemetryService provides the metric pipeline framework — MetricDefinitions, MetricReportDefinitions, and MetricReports. Not for direct live readings."},
+  {s:"Redfish",q:"What is a `MetricReportDefinition` in Redfish?",o:["A current sensor reading","A definition specifying what metrics to collect, the interval, and report format","The BMC firmware changelog","A historical log of hardware errors"],a:1,e:"`MetricReportDefinition` acts as a template — it specifies which metrics to collect, the collection interval, and how reports should be generated."},
+  {s:"Redfish",q:"What is a `MetricReport` in Redfish?",o:["A sensor threshold crossing alert","A generated report containing metric values collected per a MetricReportDefinition","The Redfish equivalent of the IPMI SDR","A list of all connected devices"],a:1,e:"`MetricReport` is the output — a snapshot or periodic collection of actual metric values, produced according to a MetricReportDefinition."},
+  {s:"Redfish",q:"If asked 'where in Redfish do you get the current BMC sensor reading?', what is the best answer?",o:["TelemetryService and MetricReport","The Sensor resource under the relevant Chassis or Thermal collection","MetricDefinition resources","EventService subscription alerts"],a:1,e:"For direct current readings, navigate to Sensor resources under Chassis/Thermal. `Sensor` objects expose current reading, units, and status directly."},
+  {s:"Redfish",q:"How do you check the Redfish schema version of a specific resource?",o:["Read the RedfishVersion at the service root","Check the @odata.type field in the resource's JSON payload","Look at the HTTP ETag response header","Check the X-Auth-Token header"],a:1,e:"`@odata.type` in the resource payload tells you the schema name and version. e.g., `#Thermal.v1_7_2.Thermal` — the version is embedded in the type."},
+  {s:"Redfish",q:"What HTTP method is used to read a Redfish resource?",o:["POST","PUT","GET","PATCH"],a:2,e:"GET retrieves a resource. POST creates or triggers actions. PATCH modifies a resource. DELETE removes it. Standard REST semantics over HTTPS."},
+  {s:"Redfish",q:"What does a `MetricDefinition` describe in the Redfish TelemetryService?",o:["A live sensor value","The metadata about a metric — name, units, type, and calibration info","A scheduled reporting job","An alert trigger rule"],a:1,e:"`MetricDefinition` is the catalog entry for a metric — its name, units, precision, and measurement type. Describes what a metric is, not its current value."},
 ];
 
 // ─── STATE ───
 let questions = [];
 let idx = 0, score = 0, answered = 0;
 let hwCorrect = 0, hwTotal = 0, linuxCorrect = 0, linuxTotal = 0;
+let pyCorrect = 0, pyTotal = 0, ipmiCorrect = 0, ipmiTotal = 0, rfCorrect = 0, rfTotal = 0;
 let history = []; // {q, chosen, status: 'correct'|'wrong'|'skip'}
 
 // ─── SHUFFLE ───
@@ -923,12 +1036,20 @@ function shuffle(arr) {
   return a;
 }
 
+function tagClass(s) {
+  return {Hardware:'hw', Linux:'linux', Python:'python', IPMI:'ipmi', Redfish:'redfish'}[s] || 'linux';
+}
+
 function startQuiz() {
-  let hw = shuffle(ALL_Q.filter(q => q.s === "Hardware")).slice(0, 50);
-  let lin = shuffle(ALL_Q.filter(q => q.s === "Linux")).slice(0, 50);
-  questions = shuffle([...hw, ...lin]);
+  let hw   = shuffle(ALL_Q.filter(q => q.s === "Hardware")).slice(0, 25);
+  let lin  = shuffle(ALL_Q.filter(q => q.s === "Linux")).slice(0, 25);
+  let py   = shuffle(ALL_Q.filter(q => q.s === "Python")).slice(0, 15);
+  let ipmi = shuffle(ALL_Q.filter(q => q.s === "IPMI")).slice(0, 10);
+  let rf   = shuffle(ALL_Q.filter(q => q.s === "Redfish")).slice(0, 10);
+  questions = shuffle([...hw, ...lin, ...py, ...ipmi, ...rf]);
   idx = 0; score = 0; answered = 0;
   hwCorrect = 0; hwTotal = 0; linuxCorrect = 0; linuxTotal = 0;
+  pyCorrect = 0; pyTotal = 0; ipmiCorrect = 0; ipmiTotal = 0; rfCorrect = 0; rfTotal = 0;
   history = [];
   document.getElementById('header-score').style.display = 'flex';
   document.getElementById('h-total').textContent = questions.length;
@@ -947,7 +1068,7 @@ function renderQ() {
 
   const tag = document.getElementById('q-tag');
   tag.textContent = q.s;
-  tag.className = 'q-tag ' + (q.s === 'Hardware' ? 'hw' : 'linux');
+  tag.className = 'q-tag ' + tagClass(q.s);
 
   document.getElementById('q-text').textContent = q.q;
 
@@ -994,8 +1115,11 @@ function answerQ(chosen, q) {
     fb.innerHTML = '<span class="feedback-icon">✗</span>' + q.e;
   }
 
-  if (q.s === 'Hardware') { hwTotal++; if (isCorrect) hwCorrect++; }
-  else { linuxTotal++; if (isCorrect) linuxCorrect++; }
+  if      (q.s === 'Hardware') { hwTotal++;   if (isCorrect) hwCorrect++;   }
+  else if (q.s === 'Linux')    { linuxTotal++; if (isCorrect) linuxCorrect++; }
+  else if (q.s === 'Python')   { pyTotal++;   if (isCorrect) pyCorrect++;   }
+  else if (q.s === 'IPMI')     { ipmiTotal++; if (isCorrect) ipmiCorrect++; }
+  else if (q.s === 'Redfish')  { rfTotal++;   if (isCorrect) rfCorrect++;   }
   answered++;
 
   history.push({ q, chosen, status: isCorrect ? 'correct' : 'wrong' });
@@ -1009,8 +1133,11 @@ function nextQ() { idx++; renderQ(); }
 
 function skipQ() {
   const q = questions[idx];
-  if (q.s === 'Hardware') hwTotal++;
-  else linuxTotal++;
+  if      (q.s === 'Hardware') hwTotal++;
+  else if (q.s === 'Linux')    linuxTotal++;
+  else if (q.s === 'Python')   pyTotal++;
+  else if (q.s === 'IPMI')     ipmiTotal++;
+  else if (q.s === 'Redfish')  rfTotal++;
   answered++;
   history.push({ q, chosen: -1, status: 'skip' });
   idx++;
@@ -1038,17 +1165,29 @@ function showResults() {
   document.getElementById('r-wrong').textContent = wrong;
   document.getElementById('r-skip').textContent = skipped;
 
-  const hwPct = hwTotal > 0 ? Math.round((hwCorrect/hwTotal)*100) : 0;
+  const hwPct    = hwTotal > 0    ? Math.round((hwCorrect/hwTotal)*100)       : 0;
   const linuxPct = linuxTotal > 0 ? Math.round((linuxCorrect/linuxTotal)*100) : 0;
+  const pyPct    = pyTotal > 0    ? Math.round((pyCorrect/pyTotal)*100)       : 0;
+  const ipmiPct  = ipmiTotal > 0  ? Math.round((ipmiCorrect/ipmiTotal)*100)   : 0;
+  const rfPct    = rfTotal > 0    ? Math.round((rfCorrect/rfTotal)*100)       : 0;
 
-  document.getElementById('r-hw-pct').textContent = hwPct + '%';
-  document.getElementById('r-hw-sub').textContent = hwCorrect + ' / ' + hwTotal + ' correct';
+  document.getElementById('r-hw-pct').textContent    = hwPct    + '%';
+  document.getElementById('r-hw-sub').textContent    = hwCorrect    + ' / ' + hwTotal    + ' correct';
   document.getElementById('r-linux-pct').textContent = linuxPct + '%';
   document.getElementById('r-linux-sub').textContent = linuxCorrect + ' / ' + linuxTotal + ' correct';
+  document.getElementById('r-py-pct').textContent    = pyPct    + '%';
+  document.getElementById('r-py-sub').textContent    = pyCorrect    + ' / ' + pyTotal    + ' correct';
+  document.getElementById('r-ipmi-pct').textContent  = ipmiPct  + '%';
+  document.getElementById('r-ipmi-sub').textContent  = ipmiCorrect  + ' / ' + ipmiTotal  + ' correct';
+  document.getElementById('r-rf-pct').textContent    = rfPct    + '%';
+  document.getElementById('r-rf-sub').textContent    = rfCorrect    + ' / ' + rfTotal    + ' correct';
 
   setTimeout(() => {
-    document.getElementById('bar-hw').style.width = hwPct + '%';
-    document.getElementById('bar-linux').style.width = linuxPct + '%';
+    document.getElementById('bar-hw').style.width      = hwPct    + '%';
+    document.getElementById('bar-linux').style.width   = linuxPct + '%';
+    document.getElementById('bar-py').style.width      = pyPct    + '%';
+    document.getElementById('bar-ipmi').style.width    = ipmiPct  + '%';
+    document.getElementById('bar-rf').style.width      = rfPct    + '%';
   }, 100);
 }
 
@@ -1097,7 +1236,7 @@ function renderReview(filter) {
     div.innerHTML =
       '<div class="review-item-meta">' +
         '<span class="review-status ' + status + '">' + status + '</span>' +
-        '<span class="q-tag ' + (q.s === 'Hardware' ? 'hw' : 'linux') + '" style="font-size:10px;padding:2px 8px;">' + q.s + '</span>' +
+        '<span class="q-tag ' + tagClass(q.s) + '" style="font-size:10px;padding:2px 8px;">' + q.s + '</span>' +
       '</div>' +
       '<div class="review-item-q">' + q.q + '</div>' +
       '<div class="review-item-ans">' + ansHTML + '</div>' +
