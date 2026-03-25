@@ -462,6 +462,44 @@ pre .c-comment { color: var(--text3); }
   main { padding: 4rem 1rem 4rem; margin-top: 52px; }
   .concept-grid { grid-template-columns: 1fr; }
 }
+
+/* ─── CROSS-TOPIC / REFERENCE HELPERS ─── */
+.tip {
+  background: var(--green-dim);
+  border-left: 3px solid var(--green);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0 20px;
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.tip::before { content: "TIP  "; font-weight: 700; color: var(--green); font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; }
+
+.zh {
+  color: var(--blue);
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin: 6px 0 16px;
+  padding: 8px 14px;
+  border-left: 2px solid rgba(125,211,252,0.3);
+  background: rgba(125,211,252,0.05);
+  border-radius: 0 6px 6px 0;
+}
+
+.doc-link {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 12px;
+  margin: 2px 4px 2px 0;
+  font-size: 13px;
+  color: var(--accent);
+  text-decoration: none;
+  transition: background .15s;
+}
+.doc-link:hover { background: var(--surface2); }
 </style>
 </head>
 <body>
@@ -519,6 +557,17 @@ pre .c-comment { color: var(--text3); }
   <a class="nav-item" onclick="show('ipmi-flowchart')">PEF / PET / SEL / SDR</a>
   <a class="nav-item" onclick="show('redfish-schema')">Redfish Schema Versions</a>
   <a class="nav-item" onclick="show('redfish-telemetry')">Redfish Telemetry Service</a>
+
+  <div class="nav-section" style="margin-top:1rem">Cross-Topic</div>
+  <a class="nav-item" onclick="show('cross-hw-mgmt')">HW + IPMI + Redfish</a>
+  <a class="nav-item" onclick="show('cross-linux')">Linux + Management</a>
+  <a class="nav-item" onclick="show('cross-python')">Python + Management</a>
+
+  <div class="nav-section" style="margin-top:1rem">Reference</div>
+  <a class="nav-item" onclick="show('ref-rapid')">Quick Patterns / 速记</a>
+  <a class="nav-item" onclick="show('ref-10lines')">10 Key Sentences</a>
+  <a class="nav-item" onclick="show('ref-docs')">Python Docs Links</a>
+  <a class="nav-item" onclick="show('ref-links')">External References</a>
 </nav>
 
 <!-- ─── MAIN CONTENT ─── -->
@@ -2266,6 +2315,148 @@ result = subprocess.run(
       </div>
     </div>
   </div>
+</div>
+
+<!-- ─── CROSS-TOPIC ─── -->
+<div class="section" id="cross-hw-mgmt">
+  <h1>HW + IPMI + <em>Redfish</em></h1>
+  <p class="section-desc">Cross-topic: how hardware, IPMI, and Redfish connect end-to-end.</p>
+  <div class="zh">面试到后面可能会问你怎么把这些知识串起来。这是第一条主线：硬件信号 → BMC → 管理接口。</div>
+  <h2>Signal Flow</h2>
+  <ul>
+    <li>Hardware sensors come from board-level components</li>
+    <li>BMC collects readings through sideband interfaces (I2C, SMBus, PMBus, PECI, GPIO)</li>
+    <li>IPMI exposes them in a traditional server management model</li>
+    <li>Redfish exposes them through modern RESTful schemas (<code>Sensor</code>, telemetry resources)</li>
+  </ul>
+  <div class="qa-list" style="margin-top:1.5rem">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">How do hardware, IPMI, and Redfish relate to each other?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="answer-text">The hardware provides the raw signals, the BMC collects and interprets them, IPMI is the traditional management interface, and Redfish is the modern RESTful management interface.</div>
+        <div class="interview-box">Hardware provides raw signals → BMC collects via sideband (I2C, SMBus, PECI) → IPMI exposes via legacy command set → Redfish exposes via REST JSON schemas (Sensor, TelemetryService). All three are views into the same underlying BMC data.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="cross-linux">
+  <h1>Linux + <em>Management</em></h1>
+  <p class="section-desc">Cross-topic: using Linux tools alongside IPMI/Redfish for cross-validation.</p>
+  <div class="zh">把 BMC 视角和 OS 视角互相对照，是实际工作中最常用的排查技巧。</div>
+  <h2>Correlation Approach</h2>
+  <ul>
+    <li>Linux 上用 <code>ipmitool</code> 查 IPMI 传感器和事件日志</li>
+    <li>Linux 上用 <code>curl</code> 或 Redfish client 调 Redfish API</li>
+    <li>Linux 上用 <code>lspci</code>, <code>dmidecode</code>, <code>lsblk</code> 对照硬件拓扑</li>
+    <li>做验证时把 BMC 视角和 OS 视角互相对照</li>
+  </ul>
+  <div class="qa-list" style="margin-top:1.5rem">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">How would you cross-validate BMC sensor data with OS-level information?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">I would correlate the BMC view and the OS view. For example, compare IPMI or Redfish sensor data with Linux commands such as lspci, dmidecode, lsblk, and system logs. If IPMI shows a drive as offline but lsblk still shows it, that points to a driver or OS-level issue rather than a hardware failure.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="cross-python">
+  <h1>Python + <em>Management</em></h1>
+  <p class="section-desc">Cross-topic: using Python to parse IPMI output and process Redfish JSON.</p>
+  <div class="zh">Python 是把原始命令输出或 Redfish API 响应转换成结构化报告的工具。</div>
+  <h2>Use Cases</h2>
+  <ul>
+    <li>Python 读取 <code>ipmitool</code> 输出并解析传感器字段</li>
+    <li>Python 请求 Redfish API 的 JSON 并处理响应结构</li>
+    <li>Python 把测试输出结构化，生成 summary / CSV / JSON / report</li>
+  </ul>
+  <div class="qa-list" style="margin-top:1.5rem">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">How would Python fit into a hardware validation workflow?</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">Answer</span>
+        <div class="interview-box">Python is useful for turning raw command output or Redfish responses into structured validation results and summaries. For example: parse ipmitool SDR output line by line, flag sensors out of threshold, then output a JSON summary. Or call a Redfish MetricReport endpoint and compare readings against expected ranges automatically.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── REFERENCE ─── -->
+<div class="section" id="ref-rapid">
+  <h1>Quick Patterns / <em>速记模式</em></h1>
+  <p class="section-desc">One-line summaries for key patterns. Review before the interview.</p>
+  <div class="tip"><strong>Parsing pattern:</strong> Open file → read line by line → strip → validate → split into fields → store as objects → summarize.</div>
+  <div class="tip"><strong>OOP one-liner:</strong> A class groups data and behavior together. In automation, this keeps parsing logic and state organized and reusable.</div>
+  <div class="tip"><strong>Error handling:</strong> Validate format before parsing; use <code>try/except</code> for type conversion; skip or log bad data — never crash silently.</div>
+  <div class="tip"><strong>Cross-topic:</strong> Python is useful for turning raw command output (ipmitool, lspci) or Redfish JSON responses into structured validation results and summaries.</div>
+  <div class="tip"><strong>IPMI event chain:</strong> SDR defines → SEL records → PEF decides → PET alerts.</div>
+  <div class="tip"><strong>Redfish version:</strong> Check <code>@odata.type</code> for resource schema version. <code>Sensor</code> for real-time readings, telemetry schemas for collection pipelines.</div>
+</div>
+
+<div class="section" id="ref-10lines">
+  <h1>10 Key Sentences / <em>面试必记</em></h1>
+  <p class="section-desc">The 10 sentences to have ready before walking in.</p>
+  <ol style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem;font-size:14px;color:var(--text2);line-height:1.7;padding-left:1.5rem">
+    <li><code>SYS-221HE-FTNR</code> 是完整 2U 服务器，<code>X13DEM</code> 是定义能力边界的主板。</li>
+    <li>双路的核心价值是同时扩展 compute、memory、PCIe / I/O。</li>
+    <li>每颗 CPU 都有自己的 memory controller 和 PCIe root ports。</li>
+    <li>双路之间通过 <strong style="color:var(--accent)">UPI</strong> 互连，不是 QPI（QPI 是老一代）。</li>
+    <li>32 DIMM slots 来自双路 × 16 channels × 2DPC。</li>
+    <li><strong style="color:var(--accent)">NVMe</strong> 直接走 CPU PCIe lanes；SATA 走 chipset DMI，带宽差距很大。</li>
+    <li><strong style="color:var(--accent)">BMC</strong> 是 AST2600，负责 out-of-band management，独立于主 CPU。</li>
+    <li><strong style="color:var(--accent)">SDR</strong> 定义 → <strong style="color:var(--accent)">SEL</strong> 记录 → <strong style="color:var(--accent)">PEF</strong> 决策 → <strong style="color:var(--accent)">PET</strong> 外送告警。</li>
+    <li><code>@odata.type</code> 用来判断 Redfish resource schema version。</li>
+    <li><code>Sensor</code> 看即时读值；<code>TelemetryService</code> 一组 schema 看采集与报告管道。</li>
+  </ol>
+  <h2 style="margin-top:2rem">15-Minute Review Order</h2>
+  <ol style="display:flex;flex-direction:column;gap:0.5rem;font-size:14px;color:var(--text2);padding-left:1.5rem;margin-top:0.5rem">
+    <li>Hardware: dual-socket、UPI、PCIe root port、BMC</li>
+    <li>IPMI: SDR / SEL / PEF / PET</li>
+    <li>Redfish: <code>@odata.type</code>、TelemetryService、Sensor</li>
+    <li>Linux commands and Python parsing example</li>
+  </ol>
+</div>
+
+<div class="section" id="ref-docs">
+  <h1>Python Docs / <em>文档书签</em></h1>
+  <p class="section-desc">Bookmark these before the interview. Open them before you start.</p>
+  <h2>Basics</h2>
+  <a class="doc-link" href="https://docs.python.org/3/library/stdtypes.html" target="_blank">stdtypes (list, dict, set, str)</a>
+  <a class="doc-link" href="https://docs.python.org/3/library/functions.html" target="_blank">Built-in Functions</a>
+  <a class="doc-link" href="https://docs.python.org/3/tutorial/errors.html" target="_blank">Errors &amp; Exceptions</a>
+  <h2 style="margin-top:1.5rem">OOP</h2>
+  <a class="doc-link" href="https://docs.python.org/3/tutorial/classes.html" target="_blank">Classes Tutorial</a>
+  <h2 style="margin-top:1.5rem">File &amp; Parsing</h2>
+  <a class="doc-link" href="https://docs.python.org/3/tutorial/inputoutput.html" target="_blank">Input / Output</a>
+  <a class="doc-link" href="https://docs.python.org/3/library/csv.html" target="_blank">csv module</a>
+  <a class="doc-link" href="https://docs.python.org/3/library/json.html" target="_blank">json module</a>
+  <a class="doc-link" href="https://docs.python.org/3/library/re.html" target="_blank">re (regex)</a>
+</div>
+
+<div class="section" id="ref-links">
+  <h1>External References / <em>外部资料</em></h1>
+  <p class="section-desc">Official product pages and standards references.</p>
+  <h2>Supermicro</h2>
+  <a class="doc-link" href="https://www.supermicro.com/en/products/system/iot/2u/sys-221he-ftnr" target="_blank">SYS-221HE-FTNR Product Page</a>
+  <a class="doc-link" href="https://www.supermicro.com/en/products/motherboard/X13DEM" target="_blank">X13DEM Motherboard Page</a>
+  <h2 style="margin-top:1.5rem">Redfish / DMTF</h2>
+  <a class="doc-link" href="https://redfish.dmtf.org/schemas/DSP2046_2024.1.html" target="_blank">DMTF Redfish Schema Guide</a>
+  <a class="doc-link" href="https://redfish.dmtf.org/schemas/v1/DSP2053_2024.1.html" target="_blank">DMTF Redfish Property Guide</a>
+  <h2 style="margin-top:1.5rem">Local Manuals</h2>
+  <div class="zh">Downloads 里的 PDF 手册：</div>
+  <ul style="margin-top:0.5rem;font-size:14px;color:var(--text2)">
+    <li><code>MNL-2626.pdf</code> — SYS-221HE-FTNR system manual</li>
+    <li><code>MNL-2407.pdf</code> — X13DEM motherboard manual</li>
+  </ul>
 </div>
 
 </main>
