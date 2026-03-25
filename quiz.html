@@ -711,7 +711,7 @@
   <div class="logo">quiz<span>.</span>sh</div>
   <div class="header-right">
     <div class="score-display" id="header-score" style="display:none">
-      <b id="h-score">0</b> / <span id="h-total">85</span>
+      <b id="h-score">0</b> / <span id="h-total">135</span>
     </div>
   </div>
 </header>
@@ -729,15 +729,15 @@
         <div class="start-badge">Interview Prep</div>
         <h1 class="start-title">Hardware &amp; <em>Linux</em><br>Quiz</h1>
         <p class="start-desc">
-          85 randomized questions covering hardware architecture, Linux, Python, IPMI, and Redfish management.
+          135 randomized questions covering hardware architecture, Linux, Python, IPMI, and Redfish management.
         </p>
         <div class="stat-grid">
           <div class="stat-cell">
-            <div class="val">25</div>
+            <div class="val">50</div>
             <div class="lbl">Hardware</div>
           </div>
           <div class="stat-cell">
-            <div class="val">25</div>
+            <div class="val">50</div>
             <div class="lbl">Linux</div>
           </div>
           <div class="stat-cell">
@@ -1041,8 +1041,8 @@ function tagClass(s) {
 }
 
 function startQuiz() {
-  let hw   = shuffle(ALL_Q.filter(q => q.s === "Hardware")).slice(0, 25);
-  let lin  = shuffle(ALL_Q.filter(q => q.s === "Linux")).slice(0, 25);
+  let hw   = shuffle(ALL_Q.filter(q => q.s === "Hardware")).slice(0, 50);
+  let lin  = shuffle(ALL_Q.filter(q => q.s === "Linux")).slice(0, 50);
   let py   = shuffle(ALL_Q.filter(q => q.s === "Python")).slice(0, 15);
   let ipmi = shuffle(ALL_Q.filter(q => q.s === "IPMI")).slice(0, 10);
   let rf   = shuffle(ALL_Q.filter(q => q.s === "Redfish")).slice(0, 10);
