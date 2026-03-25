@@ -556,6 +556,13 @@ pre .c-comment { color: var(--text3); }
   <a class="nav-item" onclick="show('sysdesign')">🏗 System Design</a>
   <a class="nav-item" onclick="show('behavioral')">🗣 Behavioral 行为题</a>
 
+  <div class="nav-section" style="margin-top:1rem">Quick Ref</div>
+  <a class="nav-item" onclick="show('spoken-answers')">⚡ 30-Second Answers</a>
+  <a class="nav-item" onclick="show('followup-bank')">追问题库 Follow-Ups</a>
+  <a class="nav-item" onclick="show('coding-drills')">💻 Coding Drills</a>
+  <a class="nav-item" onclick="show('resume-bridge')">🗣 Self-Intro &amp; Why Role</a>
+  <a class="nav-item" onclick="show('weakpoint-checklist')">✅ Pre-Interview Checklist</a>
+
   <div class="nav-section" style="margin-top:1rem">Research</div>
   <a class="nav-item" onclick="show('ipmi-overview')">IPMI Overview</a>
   <a class="nav-item" onclick="show('ipmi-sensors')">Sensor Types & Interfaces</a>
@@ -2452,6 +2459,50 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
         <div class="zh">中文：我把它当成风险管理问题：出错的代价是什么？内部用的监控脚本，快速交付加上说清楚已知局限是合理的。控制物理硬件或触发生产告警的代码，可靠性不可妥协。我会把权衡说清楚、说可见："v1 版本 3 天可以交付，有这些已知缺口；完整版 2 周——你们当前的风险接受度是什么？"这样决策是共同承担的，不是我单方面拍的。</div>
       </div>
     </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">B5</span><span class="q-text">说一次你需要快速学习一个新技术领域的经历。<br><span style="font-weight:400;color:var(--text2)">Tell me about a time you had to learn a new technical area quickly.</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">STAR 结构 / Story Framework</span>
+        <div class="interview-box">Structure: 1) What was the context and why did you need to learn fast? 2) How did you break down the material and prioritize what to understand first? 3) How did you validate your understanding (tests, hands-on, asking questions)? 4) What was the outcome? Key point: show that you have a learning process, not just that you "figured it out."</div>
+        <div class="zh">中文答法结构：1）场景是什么，为什么必须快速学？2）你怎么拆解材料，优先搞懂哪些部分？3）你怎么验证自己真的学懂了（实操、测试、提问）？4）最后结果怎样？重点：体现你有学习方法论，不只是说"我就学懂了"。快速学习不是靠记性好，而是靠拆分优先级 + 及时验证。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">B6</span><span class="q-text">说一次你调试一个不明原因问题的经历。<br><span style="font-weight:400;color:var(--text2)">Tell me about a time you debugged something unclear or hard to reproduce.</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">STAR 结构 / Story Framework</span>
+        <div class="interview-box">Structure: 1) What did the problem look like at first? 2) How did you narrow the scope — what did you rule out and why? 3) What wrong directions did you go down, and how did you correct them? 4) What was the root cause? 5) What did you change afterward to prevent recurrence? Key point: show systematic elimination, not lucky guessing.</div>
+        <div class="zh">中文答法结构：1）问题最初表现是什么（症状）？2）你怎么缩小范围，排除了哪些方向？3）你走过哪些弯路，怎么发现并纠正？4）根因是什么？5）事后做了什么防止再发生？重点：展示系统性排除法，不是靠运气猜中答案。面试官想看到的是"我先排除了X层，因为证据显示不是X层的问题"这类有依据的推理。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">B7</span><span class="q-text">说一次你把重复性任务自动化的经历。<br><span style="font-weight:400;color:var(--text2)">Tell me about a time you automated a repetitive task.</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">STAR 结构 / Story Framework</span>
+        <div class="interview-box">Structure: 1) What was being done manually, and what made it slow or error-prone? 2) Why did you decide to automate it (trigger — volume, errors, team pain point)? 3) How did you design the script or tool (inputs, outputs, edge cases you handled)? 4) What did it save (time, error rate, cognitive load)? Key point: include a technical detail about how you handled edge cases or made it reliable — that separates a real answer from a vague one.</div>
+        <div class="zh">中文答法结构：1）原来是怎么手工做的，为什么低效或容易出错？2）你为什么决定自动化（触发点：量太大、出错率高、团队痛点）？3）你怎么设计这个脚本/工具（输入输出是什么，处理了哪些边界情况）？4）节省了什么（时间/错误率/认知负担）？重点：包含一个技术细节说明你怎么处理边界情况——这是让答案真实可信的关键，泛泛说"我写了个脚本"不够。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">B8</span><span class="q-text">说一次你跨团队协作解决问题的经历。<br><span style="font-weight:400;color:var(--text2)">Tell me about a time you worked across teams to solve a problem.</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">STAR 结构 / Story Framework</span>
+        <div class="interview-box">Structure: 1) What teams were involved, and which layers did the problem span? 2) What evidence did you gather on your side before involving others? 3) How did you communicate — what did you share, and how did you frame the handoff? 4) How was it resolved? Key point: show that you came to other teams with a hypothesis and evidence, not just a vague complaint. Cross-team collaboration is most effective when each person has done their homework first.</div>
+        <div class="zh">中文答法结构：1）问题跨了哪几个层，涉及哪些团队？2）你在找别人之前，自己收集了哪些证据？3）你怎么沟通——分享了什么，交接时说清楚了什么？4）最终怎么解决的？重点：体现你带着假设和证据去找别人，而不是带着模糊的"有问题"。跨团队协作效率最高的方式是每个人先做好自己的分析——"我已经排除了X层，现在需要你们帮我看Y层的Z部分"。</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2530,6 +2581,22 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
     <tr><td><strong style="color:var(--gold)">BT</strong></td><td>Block Transfer</td><td>Similar to KCS but with larger buffer size and supports full duplex. Uses 3 I/O registers. Allows sending/receiving bigger payloads in one transaction.</td><td>Less common; seen in some older server platforms.</td></tr>
     <tr><td><strong style="color:var(--purple)">SSIF</strong></td><td>SMBus System Interface</td><td>Uses the SMBus (I2C-based) to communicate with BMC. Host acts as SMBus master, BMC as slave. Address 0x10 by default.</td><td>Used in some embedded/ATCA systems. Also common in BMC-less designs using a dedicated management microcontroller.</td></tr>
   </table>
+
+  <h2>Sensor Group → Hardware Interface Quick Map / 传感器分组速查表</h2>
+  <div class="zh">面试追问"传感器读值来自哪里"时，用这张表回答。关键结论：Temperature 主要靠 I2C/SMBus 和 PECI，Voltage/Current 靠 ADC 和 PMBus，Fan/GPIO 状态靠 GPIO，OS 和固件事件靠 KCS/BT/SSIF 这类 host 接口。</div>
+  <table class="kv-table">
+    <tr><th>Sensor Group / 传感器类别</th><th>Common Hardware Interfaces / 常见硬件接口</th></tr>
+    <tr><td>Temperature / 温度</td><td>I2C / SMBus, PECI (CPU internal), ADC</td></tr>
+    <tr><td>Voltage / Current / 电压电流</td><td>ADC, PMBus, SMBus</td></tr>
+    <tr><td>Fan / Cooling / 风扇冷却</td><td>Tach (fan speed), PWM (fan control), GPIO</td></tr>
+    <tr><td>Power Supply / 电源</td><td>PMBus, SMBus, GPIO (fault / present signals)</td></tr>
+    <tr><td>Chassis / Button / Presence / 机箱状态</td><td>GPIO, CPLD</td></tr>
+    <tr><td>Drive / Slot / Backplane / 盘位背板</td><td>SMBus, sideband signals, CPLD</td></tr>
+    <tr><td>CPU / Thermal events / CPU 事件</td><td>PECI, firmware event path</td></tr>
+    <tr><td>Boot / OS / Watchdog events / 启动和OS事件</td><td>KCS, BT, SMIC, SSIF (host-to-BMC interfaces)</td></tr>
+  </table>
+  <div class="tip">面试一句话答法 / Interview one-liner: Threshold sensors typically come from I2C, SMBus, PMBus, ADC, or PECI. Discrete state sensors often come from GPIO or CPLD logic. Firmware and OS-originated events reach the BMC through host interfaces such as KCS, BT, SMIC, or SSIF.</div>
+  <div class="zh">中文：数值型传感器（温度/电压/风扇转速）主要来自 I2C、SMBus、PMBus、ADC 或 PECI。状态型传感器（机箱入侵、电源存在检测）主要来自 GPIO 或 CPLD 逻辑。固件和 OS 产生的事件则通过 KCS、BT、SMIC、SSIF 等 host 接口到达 BMC。</div>
 </div>
 
 <!-- IPMI FLOWCHART -->
@@ -2714,6 +2781,360 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
       </div>
     </div>
   </div>
+
+  <h2>Sensor vs TelemetryService — 对比速查 / Comparison Table</h2>
+  <div class="zh">这张表是面试里"选哪个"问题的直接答案。记住：问即时读值 → Sensor；问采集管道/定时报告 → TelemetryService。</div>
+  <table class="kv-table">
+    <tr><th>Topic / 维度</th><th>Sensor</th><th>TelemetryService</th></tr>
+    <tr><td>主要用途</td><td>单个传感器的直接读值资源</td><td>遥测采集与报告框架</td></tr>
+    <tr><td>Typical usage</td><td>Read current value of one sensor</td><td>Define / schedule / report many metrics</td></tr>
+    <tr><td>Data style</td><td>Per-sensor object: Reading, ReadingType, thresholds, health</td><td>MetricDefinition, MetricReport, MetricReportDefinition, Triggers</td></tr>
+    <tr><td>"当前 BMC 传感器读值" → 答哪个？</td><td style="color:var(--green)">✓ Sensor 是第一答案</td><td>不是第一答案</td></tr>
+    <tr><td>"定时采集 / 报告管道" → 答哪个？</td><td>不是第一答案</td><td style="color:var(--green)">✓ TelemetryService 是第一答案</td></tr>
+    <tr><td>Path example</td><td><code>/redfish/v1/Chassis/{id}/Sensors/{id}</code></td><td><code>/redfish/v1/TelemetryService/MetricReports/{id}</code></td></tr>
+  </table>
+  <div class="tip">面试答法 / Interview version: For direct current sensor readings, answer with <strong>Sensor</strong>. For collection pipelines, scheduled reporting, or metric triggers, answer with <strong>TelemetryService</strong>, MetricDefinition, MetricReportDefinition, and MetricReport. Modern BMC implementations support both.</div>
+</div>
+
+<!-- ─── SPOKEN ANSWERS ─── -->
+<div class="section" id="spoken-answers">
+  <h1>⚡ 30-Second <em>Spoken Answers</em></h1>
+  <p class="section-desc">面试第一句话最重要。每道题先背这个极短版本，再展开细节。大声说出来练习。<br>The first sentence of every answer matters most. Memorize these short versions, then expand. Practice saying them out loud.</p>
+
+  <div class="callout warn"><span class="callout-icon">!</span>先结论，再细节。永远不要用"so..."开场——直接说答案。Always lead with the conclusion. Never open with "so..." — state the answer directly.</div>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">Q1</span><span class="q-text">Why dual-socket? / 为什么双路？</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="ans-en" style="background:var(--accent-dim);border:1px solid #1a4a42;border-radius:6px;padding:12px 14px;font-size:14px;color:var(--accent);line-height:1.65;margin-top:10px">A dual-socket design is used when a single CPU cannot provide enough compute, memory capacity, and PCIe expansion at the same time. This platform uses two processors to scale all three together.</div>
+        <div class="zh" style="margin-top:8px">中文：当单颗 CPU 无法同时满足算力、内存容量、PCIe 扩展三个维度时，就选双路。这个平台用两颗处理器同时扩展这三个维度。关键词：同时（simultaneously）+ 三个维度。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">Q2</span><span class="q-text">What is UPI? / UPI 是什么？</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="ans-en" style="background:var(--accent-dim);border:1px solid #1a4a42;border-radius:6px;padding:12px 14px;font-size:14px;color:var(--accent);line-height:1.65;margin-top:10px">UPI is the coherent interconnect between the two CPUs. It allows cross-socket memory and I/O access, and is the reason dual-socket systems have NUMA behavior. It replaced QPI on this generation.</div>
+        <div class="zh" style="margin-top:8px">中文：UPI 是两颗 CPU 之间的缓存一致性互联，16 GT/s，允许跨 socket 的内存和 I/O 访问，是双路系统产生 NUMA 行为的原因。它取代了上一代的 QPI。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">Q3</span><span class="q-text">BMC vs Memory Controller? / BMC 和内存控制器的区别？</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="ans-en" style="background:var(--accent-dim);border:1px solid #1a4a42;border-radius:6px;padding:12px 14px;font-size:14px;color:var(--accent);line-height:1.65;margin-top:10px">The memory controller is inside the CPU and handles DRAM access. The BMC is a separate management controller for monitoring, logging, remote power control, IPMI, and Redfish. One is a data path component, the other is a management plane.</div>
+        <div class="zh" style="margin-top:8px">中文：Memory Controller 在 CPU 内部，负责 DRAM 读写。BMC 是独立的管理芯片，负责监控、日志、远程开关机、IPMI 和 Redfish。前者是数据通路，后者是管理平面。这是面试最常混淆的一对概念。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">Q4</span><span class="q-text">What is a PCIe root port? / PCIe Root Port 是什么？</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="ans-en" style="background:var(--accent-dim);border:1px solid #1a4a42;border-radius:6px;padding:12px 14px;font-size:14px;color:var(--accent);line-height:1.65;margin-top:10px">A PCIe root port is the host-side starting point of the PCIe hierarchy. Devices like NVMe SSDs, NICs, and GPUs connect into the system through these root ports, which are built into the CPU.</div>
+        <div class="zh" style="margin-top:8px">中文：PCIe Root Port 是 PCIe 层级树的主机侧起始点，内置在 CPU 里。NVMe SSD、网卡、GPU 都通过 Root Port 连入系统。Root Port 产生实际的 PCIe lanes，物理 slot 只是 lanes 的物理表现。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">Q5</span><span class="q-text">SATA vs SAS vs NVMe? / 三种存储接口的区别？</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="ans-en" style="background:var(--accent-dim);border:1px solid #1a4a42;border-radius:6px;padding:12px 14px;font-size:14px;color:var(--accent);line-height:1.65;margin-top:10px">SATA is a traditional storage interface limited to 6 Gbps via the chipset. SAS is an enterprise interface with stronger management and expansion features. NVMe uses PCIe directly from the CPU for the lowest latency and highest bandwidth.</div>
+        <div class="zh" style="margin-top:8px">中文：SATA 是传统存储接口，限速 6 Gbps，走 chipset。SAS 是企业级接口，支持 expander 和更强的管理特性。NVMe 直接走 CPU PCIe，延迟最低、带宽最高。选型原则：高性能 → NVMe，成本敏感 → SATA，大容量企业存储 → SAS。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">Q6</span><span class="q-text">IPMI vs Redfish? / 两者关系？</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="ans-en" style="background:var(--accent-dim);border:1px solid #1a4a42;border-radius:6px;padding:12px 14px;font-size:14px;color:var(--accent);line-height:1.65;margin-top:10px">Both expose management information from the BMC. IPMI is the traditional binary command-based interface. Redfish is the modern RESTful JSON-based interface. Both are supported on this platform — Redfish is where new features are developed.</div>
+        <div class="zh" style="margin-top:8px">中文：两者都暴露 BMC 的管理信息。IPMI 是传统二进制命令接口，Redfish 是现代 RESTful JSON 接口。这个平台两者都支持，新功能只在 Redfish 上开发。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">Q7</span><span class="q-text">How to identify Redfish schema version? / 怎么判断 Redfish schema 版本？</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="ans-en" style="background:var(--accent-dim);border:1px solid #1a4a42;border-radius:6px;padding:12px 14px;font-size:14px;color:var(--accent);line-height:1.65;margin-top:10px">I check <code>@odata.type</code> in the resource payload. That field identifies the schema name and version for that specific resource, for example <code>#Thermal.v1_7_0.Thermal</code>.</div>
+        <div class="zh" style="margin-top:8px">中文：看资源 payload 里的 <code>@odata.type</code> 字段，它标识该资源的 schema 名称和版本，例如 <code>#Thermal.v1_7_0.Thermal</code>。注意：这和 /redfish/v1 里的 RedfishVersion（服务级协议版本）不同。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">Q8</span><span class="q-text">How does Python fit this role? / Python 在这个岗位有什么用？</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="ans-en" style="background:var(--accent-dim);border:1px solid #1a4a42;border-radius:6px;padding:12px 14px;font-size:14px;color:var(--accent);line-height:1.65;margin-top:10px">Python is useful for parsing command output, calling Redfish APIs, structuring validation results, and generating summaries or reports — turning raw data into actionable information.</div>
+        <div class="zh" style="margin-top:8px">中文：Python 在这个岗位的用途：解析命令输出（ipmitool、lspci）、调用 Redfish API 处理 JSON、把验证结果结构化、生成摘要或报告——把原始数据转化为可操作的信息。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOLLOW-UP BANK ─── -->
+<div class="section" id="followup-bank">
+  <h1>追问题库 — <em>Follow-Up Questions</em></h1>
+  <p class="section-desc">面试官在主问题之后常问的追问。每题都有 EN + 中文答案。<br>Questions interviewers ask after your main answer. Knowing these prevents getting caught off guard.</p>
+
+  <h2>Hardware Follow-Ups / 硬件追问</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">H1</span><span class="q-text">NVMe 更快，为什么还要用 SATA 或 SAS？<br><span style="font-weight:400;color:var(--text2)">If NVMe is faster, why still use SATA or SAS?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">NVMe is better for performance, but SATA and SAS are still useful for cost, compatibility, and specific topologies. SATA drives are cheaper and fine for boot media or archival. SAS is especially common where backplane management, expanders, or large-drive environments matter — the SAS protocol has stronger management features for enterprise storage.</div>
+        <div class="zh">中文：NVMe 性能最好，但 SATA 和 SAS 仍有用武之地。SATA 盘更便宜，适合启动盘或归档存储。SAS 在需要 backplane 管理、expander、大容量外部存储的企业环境中很常见——SAS 协议的管理特性比 SATA 更强。选型不只看速度，还要看成本、兼容性和存储拓扑。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">H2</span><span class="q-text">为什么双路系统产生 NUMA 行为？<br><span style="font-weight:400;color:var(--text2)">Why does dual-socket create NUMA?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">Because each CPU owns its own local memory banks. Accessing memory attached to the other CPU requires crossing the inter-socket link (UPI), which adds latency. That asymmetry is exactly what NUMA describes — memory access time is non-uniform depending on which socket the memory is on.</div>
+        <div class="zh">中文：因为每颗 CPU 有自己的本地内存。访问挂在另一颗 CPU 上的内存，必须跨 UPI 互联，增加延迟。这种"访问时间不均等"正是 NUMA（Non-Uniform Memory Access）的定义。本地内存快（约 60–80 ns），远端内存慢（多 40–80 ns）。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">H3</span><span class="q-text">为什么不把所有设备都放在 chipset 后面？<br><span style="font-weight:400;color:var(--text2)">Why not put everything behind the chipset?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">High-bandwidth devices like NVMe drives, high-speed NICs, and GPUs need to connect directly to CPU PCIe root ports because the DMI link to the chipset is a shared bottleneck (~16 GB/s). If you put NVMe drives behind the chipset, they all share that limited DMI bandwidth. Keeping them on CPU-side PCIe gives each device direct, full-bandwidth access.</div>
+        <div class="zh">中文：NVMe、高速网卡、GPU 这类高带宽设备需要直连 CPU PCIe Root Port，因为 CPU 到 chipset 的 DMI 链路只有约 16 GB/s，是共享瓶颈。如果把 NVMe 放在 chipset 后面，所有盘都要挤过这条 DMI 总线。放在 CPU 侧 PCIe 就能让每个设备独享直连带宽。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">H4</span><span class="q-text">进程在 CPU1 运行但内存在 CPU2 — 会怎样？<br><span style="font-weight:400;color:var(--text2)">A process runs on CPU1 but its memory is on CPU2 — what happens?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">That creates remote memory access across UPI, which increases memory latency by roughly 40–80 ns per access. For memory-intensive workloads, this adds up significantly. The OS scheduler tries to avoid this by keeping processes on the NUMA node where their memory lives. Applications can use numactl to explicitly bind both the process and its memory allocation to the same node.</div>
+        <div class="zh">中文：这造成跨 UPI 的远端内存访问，每次访问增加约 40–80 ns 延迟。对内存密集型 workload，累积影响很显著。OS 调度器会尽量把进程和它的内存放在同一 NUMA 节点。应用层可以用 <code>numactl --cpunodebind=0 --membind=0</code> 明确绑定，彻底避免跨 socket 访问。</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:2rem">Linux Follow-Ups / Linux 追问</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">L1</span><span class="q-text">服务挂了，你的排查顺序？<br><span style="font-weight:400;color:var(--text2)">Service is down — what is your troubleshooting order?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">First: systemctl status — get the last error and exit code immediately. Then: journalctl -u to see the full service logs. Then: confirm the config, binary path, and permissions with systemctl cat. Then: check dependencies with systemctl list-dependencies. Finally: try running the binary manually as the service user to see raw output. I try to narrow the failure layer before changing anything.</div>
+        <div class="zh">中文：第一步 systemctl status 看最后一条错误和退出码 → 第二步 journalctl -u 看完整日志 → 第三步 systemctl cat 确认配置/路径/权限 → 第四步 systemctl list-dependencies 确认依赖 → 第五步以服务用户手动运行二进制看原始输出。原则：在改任何东西之前先缩小故障层。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">L2</span><span class="q-text">磁盘满了，你先做什么？<br><span style="font-weight:400;color:var(--text2)">Disk is full — what do you do first?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">I first confirm with df -h to see which filesystem is actually full. Then I use du -sh on subdirectories to find what's consuming space — common culprits are log files, old backups, core dumps, or large temp files. Once I identify the problem, I decide whether to archive, compress, delete, or set up log rotation to prevent recurrence.</div>
+        <div class="zh">中文：先用 <code>df -h</code> 确认哪个文件系统真的满了 → 再用 <code>du -sh /*</code> 逐级缩小找到占空间的路径 → 常见元凶：日志文件、旧备份、core dump、临时文件 → 确认后决定：归档/压缩/删除/设置 log rotation。不要一上来就删文件，先搞清楚是什么。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">L3</span><span class="q-text">网络断了，你检查什么？<br><span style="font-weight:400;color:var(--text2)">Network is down — what do you check?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">I check interface state with ip a (is the interface up?), routes with ip r (is there a default route?), connectivity with ping (loopback first, then gateway, then external), open ports with ss, and NIC details with ethtool (link speed, duplex, carrier). If it's a VM or cloud instance, I also check the security group / firewall rules.</div>
+        <div class="zh">中文：<code>ip a</code> 看接口状态（up/down）→ <code>ip r</code> 看路由（有没有默认路由）→ <code>ping</code> 测连通性（先 loopback → 再网关 → 再外网）→ <code>ss -tulpn</code> 看端口 → <code>ethtool eth0</code> 看链路速率和载波。如果是虚机/云实例，还要检查安全组/防火墙规则。</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:2rem">Python Follow-Ups / Python 追问</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">P1</span><span class="q-text">为什么用 class 而不是普通 dict？<br><span style="font-weight:400;color:var(--text2)">Why use a class instead of plain dictionaries?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">A class groups related data and behavior together. That means validation logic, default values, and helper methods live with the data they operate on — not scattered around the codebase. It also makes future extension easier: adding a method to a class is cleaner than adding more utility functions that take raw dicts.</div>
+        <div class="zh">中文：class 把相关的数据和行为打包在一起。验证逻辑、默认值、辅助方法都住在它们操作的数据旁边，不会散落在代码各处。扩展时也更干净：给 class 加方法比到处加接受裸 dict 的工具函数更清晰。dict 适合简单的一次性数据，class 适合需要行为和生命周期管理的实体。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">P2</span><span class="q-text">怎么处理输入中的坏行？<br><span style="font-weight:400;color:var(--text2)">How do you handle bad input lines?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">I validate the format first (check field count after split), skip malformed lines with continue while incrementing an invalid_count, and use guarded type conversion with try/except when converting strings to numbers. The key is never crashing silently — either skip and log the bad line, or surface the count in the summary so the caller knows data was dropped.</div>
+        <div class="zh">中文：先验证格式（split 后检查字段数），格式不对就 continue 跳过同时 invalid_count 加一，类型转换（字符串转数字）用 try/except 保护。关键原则：不能悄悄崩溃——要么跳过并记录，要么在摘要里报告有多少行被丢弃，让调用方知道数据有损失。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">P3</span><span class="q-text">文件非常大怎么处理？<br><span style="font-weight:400;color:var(--text2)">What if the file is very large?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">Read it line by line instead of loading the whole file into memory. In Python, for line in f is already a lazy generator — it reads one line at a time. Never use f.read() or f.readlines() for large files. If you also need to stream output, convert the function to a generator with yield instead of append. For multi-GB files, also consider chunked processing or using streaming tools like awk/grep first to pre-filter.</div>
+        <div class="zh">中文：逐行读取而不是把整个文件加载进内存。Python 的 <code>for line in f</code> 已经是懒加载生成器，每次只读一行。绝不用 <code>f.read()</code> 或 <code>f.readlines()</code> 处理大文件。如果还需要流式输出，把函数改成 generator（用 yield 代替 append）。GB 级文件还可以先用 grep/awk 预过滤，再交给 Python 处理。</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:2rem">IPMI / Redfish Follow-Ups / 管理接口追问</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">R1</span><span class="q-text">每个 IPMI 传感器都来自同一种硬件接口吗？<br><span style="font-weight:400;color:var(--text2)">Does every IPMI sensor come from one fixed hardware interface?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">No. Sensor type is a logical IPMI classification, but the physical interface depends on the platform implementation. Temperature sensors might come from I2C or PECI. Voltage/current from ADC or PMBus. Chassis state from GPIO or CPLD. OS and firmware events reach the BMC through host interfaces like KCS. The sensor type in IPMI just describes the data model — it doesn't dictate the hardware path.</div>
+        <div class="zh">中文：不是。传感器类型是 IPMI 的逻辑分类，物理接口取决于平台实现。温度传感器可能来自 I2C 或 PECI，电压/电流来自 ADC 或 PMBus，机箱状态来自 GPIO 或 CPLD，OS 和固件事件通过 KCS 等 host 接口到达 BMC。IPMI 里的传感器类型只描述数据模型，不规定物理硬件路径。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">R2</span><span class="q-text">RedfishVersion 和 @odata.type 有什么区别？<br><span style="font-weight:400;color:var(--text2)">What is the difference between RedfishVersion and @odata.type?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">RedfishVersion (from /redfish/v1) is the service-level protocol version — it tells you which version of the Redfish specification the BMC service implements, for example "1.16.0". @odata.type is the per-resource schema version — it tells you the schema name and version for that specific resource, for example #Thermal.v1_7_0.Thermal. Use @odata.type to know which properties are available on a resource.</div>
+        <div class="zh">中文：RedfishVersion（来自 /redfish/v1）是服务级协议版本——告诉你这个 BMC 的 Redfish 服务实现了哪个版本的规范，例如 "1.16.0"。@odata.type 是资源级 schema 版本——告诉你这个具体资源的 schema 名称和版本，例如 #Thermal.v1_7_0.Thermal。查某个资源有哪些属性可用时，看 @odata.type。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">R3</span><span class="q-text">Sensor 和 TelemetryService — 什么时候选哪个？<br><span style="font-weight:400;color:var(--text2)">Sensor vs TelemetryService — which is the right answer when?</span></span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">For direct current sensor readings — one sensor, right now — Sensor is the most direct answer. For collection pipelines, scheduled reporting, metric aggregation, or threshold-triggered alerts at scale — TelemetryService schemas (MetricDefinition, MetricReportDefinition, MetricReport, Triggers) are the right answer. In practice modern BMC implementations support both: Sensor for polling, TelemetryService for monitoring pipelines.</div>
+        <div class="zh">中文：问即时传感器读值（单个传感器，现在的值）→ 答 Sensor，最直接。问采集管道、定时报告、批量指标、阈值触发告警 → 答 TelemetryService 的一组 schema（MetricDefinition、MetricReportDefinition、MetricReport、Triggers）。现代 BMC 两者都支持：Sensor 用于 polling，TelemetryService 用于监控管道。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CODING DRILLS ─── -->
+<div class="section" id="coding-drills">
+  <h1>Python 编程 <em>训练清单</em></h1>
+  <p class="section-desc">不只是"读一遍"，要能手写出来。这 5 个 drill 是你需要反复练习到流畅的训练项目。<br>Reading is not enough — you need to be able to write these from scratch. Practice until fluent.</p>
+
+  <div class="callout warn"><span class="callout-icon">!</span>面试评分不只看"写没写出来"，还看：你有没有先说数据结构怎么选？有没有说怎么处理坏数据？有没有说怎么扩展？</div>
+
+  <h2>5 个必练 Drill / 5 Required Drills</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">D1</span><span class="q-text">Drill 1 — Parse sensor output 传感器文件解析</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="answer-text" style="margin-top:12px;font-size:13.5px">
+          <strong style="color:var(--text)">Input format:</strong><br>
+          <code>CPU1 Temp | 72 C | ok</code><br>
+          <code>CPU2 Temp | 91 C | cr</code><br>
+          <code>Fan1      | 8000 RPM | ok</code><br>
+          <code>bad line</code>
+        </div>
+        <div class="interview-box" style="margin-top:10px">Requirements: read line by line · skip bad lines · extract name/value/status · output bad sensor summary. Key skills to demonstrate: open/strip/split, field count check, case-insensitive status comparison, structured output dict.</div>
+        <div class="zh">训练要点：逐行读取（不 readlines）→ strip() 去空白 → split('|') 拆字段 → 验证字段数 == 3 → 验证 name 非空 → status 用 .lower() 比较 → 最后生成摘要。能从空白文件手写完整这个函数，才算练到位。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">D2</span><span class="q-text">Drill 2 — Count ERROR by module 日志模块错误计数</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="answer-text" style="margin-top:12px;font-size:13.5px">
+          <strong style="color:var(--text)">Input format:</strong><br>
+          <code>2026-03-24T10:15:02Z [network] ERROR link down</code><br>
+          <code>2026-03-24T10:15:05Z [sensor]  WARN  high temp</code>
+        </div>
+        <div class="interview-box" style="margin-top:10px">Requirements: extract module name · count ERROR occurrences · return top N. Key skills: regex with re.compile + re.IGNORECASE, defaultdict(int), sorted with lambda, slice [:n] for top N.</div>
+        <div class="zh">训练要点：<code>re.compile(r'\[(\w+)\]\s+ERROR', re.IGNORECASE)</code> → <code>m.group(1)</code> 提取模块名 → <code>defaultdict(int)</code> 计数 → <code>sorted(counts.items(), key=lambda x: -x[1])[:n]</code> 返回 Top N。WARN 行和坏行静默跳过（没匹配到就不处理）。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">D3</span><span class="q-text">Drill 3 — Parse Redfish JSON 解析 Redfish JSON</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box" style="margin-top:10px">Input: a list of sensor dicts from a Redfish JSON response. Requirements: use .get() to prevent KeyError on missing fields · extract temperature sensors above threshold · return structured alert list with sensor_name, reading_celsius, severity, timestamp.</div>
+        <div class="zh">训练要点：用 <code>.get('ReadingCelsius')</code> 防 KeyError → 检查是否为 None → <code>try: float(raw) except (ValueError, TypeError): continue</code> 类型转换保护 → 超阈值才 append 到 alerts → severity 判断（critical vs warning）→ 加 timestamp。每一步都要有防御。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">D4</span><span class="q-text">Drill 4 — Export to JSON and CSV 导出 JSON 和 CSV</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+<pre style="margin-top:10px">
+<span class="c-blue">import</span> json, csv
+
+<span class="c-text3"># Export to JSON / 导出 JSON</span>
+<span class="c-blue">with</span> <span class="c-gold">open</span>(<span class="c-purple">'output.json'</span>, <span class="c-purple">'w'</span>) <span class="c-blue">as</span> f:
+    json.<span class="c-gold">dump</span>(records, f, indent=<span class="c-gold">2</span>)
+
+<span class="c-text3"># Export to CSV / 导出 CSV</span>
+<span class="c-blue">with</span> <span class="c-gold">open</span>(<span class="c-purple">'output.csv'</span>, <span class="c-purple">'w'</span>, newline=<span class="c-purple">''</span>) <span class="c-blue">as</span> f:
+    writer = csv.<span class="c-gold">DictWriter</span>(f, fieldnames=[<span class="c-purple">'name'</span>, <span class="c-purple">'value'</span>, <span class="c-purple">'status'</span>])
+    writer.<span class="c-gold">writeheader</span>()
+    writer.<span class="c-gold">writerows</span>(records)
+</pre>
+        <div class="zh">训练要点：JSON 导出用 <code>json.dump</code>，CSV 导出用 <code>csv.DictWriter</code> + writeheader() + writerows()。注意 CSV 要加 <code>newline=''</code> 参数，否则在 Windows 上会多出空行。能手写这两段是加分项。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">D5</span><span class="q-text">Drill 5 — 口头解释你的代码 / Explain your code out loud</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">Practice explaining in this order: 1) Data structure choice — "I used a list of dicts because..." 2) How you handle malformed input — "I validate field count first, then..." 3) How it scales — "For large files I read line by line instead of readlines(). For streaming, I'd convert to a generator with yield." This is the difference between a candidate who just writes code and one who thinks like an engineer.</div>
+        <div class="zh">练习按这个顺序口头解释：1）数据结构怎么选——"我用 list of dicts 因为......"2）怎么处理坏数据——"我先验证字段数，再......"3）怎么扩展到更大规模——"大文件我用逐行读取，流式处理我会把函数改成 generator"。这是区分"只会写代码"和"像工程师一样思考"的关键差异。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── RESUME BRIDGE ─── -->
+<div class="section" id="resume-bridge">
+  <h1>自我介绍 &amp; <em>Why This Role</em></h1>
+  <p class="section-desc">把过去的经历映射到这个岗位。面试开始 5 分钟内会用到这些。<br>Bridge your background to this role. You'll use these in the first 5 minutes.</p>
+
+  <div class="callout info"><span class="callout-icon">KEY</span>自我介绍不是简历朗读。先说背景（1句）→ 当前工作或关注点（1句）→ 为什么适合这个岗位（1句）。控制在 30 秒。</div>
+
+  <h2>30-Second Self Introduction / 30 秒自我介绍模板</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">模板</span><span class="q-text">30-Second Introduction Template / 30 秒介绍模板</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">My background is in IT and systems-related work, and I'm particularly interested in server platforms, Linux troubleshooting, and management technologies. For this interview I focused on the SYS-221HE-FTNR and X13DEM platform, Linux administration, Python parsing workflows, and BMC-related technologies including IPMI and Redfish. I think this role is a good fit because it combines hardware understanding, debugging, and automation — which is exactly the direction I want to keep building depth in.</div>
+        <div class="zh">中文模板：我的背景是 IT 和系统相关工作，对服务器平台、Linux 排障和管理技术尤其感兴趣。为了这次面试，我重点准备了 SYS-221HE-FTNR 和 X13DEM 平台、Linux 系统管理、Python 解析工作流，以及 IPMI 和 Redfish 等 BMC 相关技术。我觉得这个岗位非常适合我，因为它把硬件理解、排障和自动化结合在一起——这正是我想深入发展的方向。</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:1.5rem">Why This Role / 为什么想要这个岗位</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">模板</span><span class="q-text">Why This Role Template / 为什么选这个岗位模板</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">I'm interested in this role because it sits at the intersection of hardware platforms, Linux systems, management interfaces, and automation. That combination matches the areas I want to keep building depth in — understanding how hardware works at the platform level, being able to troubleshoot across layers, and using scripting to automate validation work.</div>
+        <div class="zh">中文模板：我对这个岗位感兴趣，因为它处于硬件平台、Linux 系统、管理接口和自动化的交叉点。这个组合正好匹配我想深入发展的方向——在平台级别理解硬件的工作原理，能够跨层排障，用脚本自动化验证工作。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)"><span class="q-icon">模板</span><span class="q-text">"What can you contribute?" / "你能带来什么贡献？"</span><span class="q-arrow">▶</span></div>
+      <div class="qa-a">
+        <div class="interview-box">I can contribute by learning platform details quickly, debugging systematically rather than randomly, and using Python scripting to automate repetitive validation and parsing work. I also bring cross-domain context — I understand both the hardware management layer and the software automation layer, which helps in roles that sit between those two areas.</div>
+        <div class="zh">中文模板：我能带来的贡献是：快速学习平台细节、系统性排障（不靠猜）、用 Python 自动化重复的验证和解析工作。我还带来跨领域的视角——我既理解硬件管理层，也理解软件自动化层，这在需要跨越这两个领域的岗位上很有价值。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── WEAK POINT CHECKLIST ─── -->
+<div class="section" id="weakpoint-checklist">
+  <h1>✅ Pre-Interview <em>Checklist</em></h1>
+  <p class="section-desc">面试前最后自查清单。这些是最容易失分的点，重点看。<br>Last self-check before walking in. These are your highest-risk failure points.</p>
+
+  <h2>术语不能说错 / Terminology — Never Mix These Up</h2>
+  <table class="kv-table">
+    <tr><th>❌ 不能说 / Wrong</th><th>✅ 正确说法 / Correct</th><th>为什么重要 / Why</th></tr>
+    <tr><td style="color:var(--red)">QPI（用在这一代）</td><td style="color:var(--green)">UPI（Ultra Path Interconnect）</td><td>QPI 是 Haswell 及以前，这一代用 UPI 2.0，说错会被当场扣分</td></tr>
+    <tr><td style="color:var(--red)">BMC 是 memory controller</td><td style="color:var(--green)">Memory Controller 在 CPU 内部，BMC 是独立管理芯片</td><td>完全不同的两个东西，面试最常混淆</td></tr>
+    <tr><td style="color:var(--red)">NVMe 走 SATA</td><td style="color:var(--green)">NVMe 走 PCIe（直连 CPU root port）</td><td>协议和物理路径都不同</td></tr>
+    <tr><td style="color:var(--red)">RedfishVersion = 资源 schema 版本</td><td style="color:var(--green)">@odata.type = 资源 schema 版本；RedfishVersion = 服务级协议版本</td><td>两个版本概念完全不同</td></tr>
+  </table>
+
+  <h2 style="margin-top:1.5rem">答题风格 / Answer Style</h2>
+  <div class="tip">先给一句结论 → 再展开 2–3 个要点 → 避免一开始就讲太散。<br>Lead with one conclusion sentence → expand into 2–3 points → never open by rambling.</div>
+
+  <h2 style="margin-top:1.5rem">编程风格 / Coding Style Checklist</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--green)"></div><span style="color:var(--green)">✓ 必须做到</span></div>
+      <div class="c-body">
+        ✓ 跳过空行（<code>if not line: continue</code>）<br>
+        ✓ 验证字段数（<code>if len(parts) != 3</code>）<br>
+        ✓ 类型转换保护（<code>try: float(x) except...</code>）<br>
+        ✓ 大文件逐行读（<code>for line in f</code>，不 readlines）<br>
+        ✓ 大小写无关（<code>.lower()</code> 或 <code>re.IGNORECASE</code>）<br>
+        ✓ .get() 防 KeyError（JSON 字段）<br>
+        ✓ 输出结构化结果（dict/list，不是裸字符串）
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--red)"></div><span style="color:var(--red)">✗ 不要做</span></div>
+      <div class="c-body">
+        ✗ 不处理空行就 split（IndexError）<br>
+        ✗ 直接 f.read() 大文件<br>
+        ✗ dict['key'] 直接取 JSON 字段<br>
+        ✗ int()/float() 不加 try/except<br>
+        ✗ 写完不讲思路就等面试官问<br>
+        ✗ 只考虑正常情况，不考虑边界
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:1.5rem">排障风格 / Troubleshooting Style</h2>
+  <div class="tip">先确认现象（status/sensor） → 再缩小层级（是哪层的问题）→ 再看日志/状态 → 最后才改配置/重启。不要一上来就猜根因或随机重启。<br>Confirm symptoms first → narrow the layer → read logs/status → only then change config. Never guess root cause or random-restart.</div>
+
+  <h2 style="margin-top:1.5rem">必背链条 / Must-Know Chains</h2>
+  <div class="tip"><strong>IPMI Event Chain:</strong> SDR 定义传感器 → SEL 记录事件 → PEF 决策（过滤规则）→ PET 外送告警（SNMP trap）</div>
+  <div class="tip"><strong>Sensor Interface Rule:</strong> Threshold sensors → I2C / SMBus / PMBus / ADC / PECI. Discrete state → GPIO / CPLD. OS/firmware events → KCS / BT / SSIF.</div>
+  <div class="tip"><strong>Redfish Answer Rule:</strong> 即时读值 → Sensor. 采集管道/定时报告 → TelemetryService. @odata.type → 资源 schema 版本. RedfishVersion → 服务协议版本.</div>
 </div>
 
 <!-- ─── CROSS-TOPIC ─── -->
