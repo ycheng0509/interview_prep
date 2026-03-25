@@ -550,6 +550,11 @@ pre .c-comment { color: var(--text3); }
   <a class="nav-item" onclick="show('python-oop')">OOP</a>
   <a class="nav-item" onclick="show('python-parsing')">File Parsing</a>
   <a class="nav-item" onclick="show('python-qa')">🎯 Interview Q&A</a>
+  <a class="nav-item" onclick="show('python-coding')">💻 Coding Round A/B/C</a>
+
+  <div class="nav-section" style="margin-top:1rem">Interview Rounds</div>
+  <a class="nav-item" onclick="show('sysdesign')">🏗 System Design</a>
+  <a class="nav-item" onclick="show('behavioral')">🗣 Behavioral 行为题</a>
 
   <div class="nav-section" style="margin-top:1rem">Research</div>
   <a class="nav-item" onclick="show('ipmi-overview')">IPMI Overview</a>
@@ -973,6 +978,17 @@ pre .c-comment { color: var(--text3); }
         <div class="zh">中文：BMC 和 Memory Controller 是完全不同的两个东西。BMC 是独立的 ARM 处理器，负责带外管理（远程开关机、KVM、硬件监控），主机关机它仍在运行。Memory Controller 集成在 CPU die 内部，负责 CPU 和 DRAM 之间所有数据读写。前者是管理平面，后者是数据通路组件。面试常考的混淆点。</div>
       </div>
     </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">Host OS 挂掉 vs BMC 挂掉 — 各自还能做什么？不能做什么？<br><span style="font-weight:400;color:var(--text2)">If the host OS crashes vs. if the BMC fails — what can and can't you still do?</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">标准答法</span>
+        <div class="interview-box">If the host OS crashes: the BMC stays fully operational. You can still read sensor data via IPMI or Redfish, browse the SEL event log, use IPMI KVM for remote console access, power-cycle the host, and update BIOS or BMC firmware — all out-of-band. If the BMC itself fails: you lose all out-of-band management. You cannot remotely read sensors, trigger alerts, or access the system if the OS is also down. Physical console access is the only option. This is why monitoring BMC health is critical — it is the management plane's last line of defense.</div>
+        <div class="zh">中文：Host OS 挂掉时 BMC 仍正常运行：可以远程读传感器、查 SEL 日志、用 IPMI KVM 访问控制台、远程重启/关机、升级 BIOS/BMC 固件——带外管理全部可用，这正是 BMC 存在的意义。BMC 挂掉时：失去所有带外管理能力，无法远程读传感器，无法触发告警，如果 OS 也挂了就只能物理到机器前操作。这就是为什么 BMC 本身的健康监控也很重要——BMC 是管理平面的最后防线，它自己挂了就没有退路了。</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1134,6 +1150,30 @@ pre .c-comment { color: var(--text3); }
         <div class="answer-text">DMI 4.0 双向约 16 GB/s。如果同时有多个 SATA 盘高速 IO + USB 设备 + M.2 boot 盘大量读写，这些流量都要挤过同一条 DMI 总线。实际场景中，把数据盘都换成 NVMe（走 CPU PCIe）可以彻底避免 DMI 瓶颈，只让 SATA 做低优先级任务。</div>
         <div class="interview-box">DMI 4.0 provides about 16 GB/s bidirectionally. If multiple SATA drives are doing heavy I/O simultaneously alongside USB and M.2 traffic, they all share this single DMI link to the CPU. The solution is to use NVMe for high-performance storage, which bypasses DMI entirely by connecting directly to CPU PCIe root ports, leaving DMI only for legacy or low-priority devices.</div>
         <div class="zh">中文：DMI 4.0 双向约 16 GB/s，所有走 chipset 的流量都要挤过这条总线——多个 SATA 盘大量 IO 加上 USB、M.2 流量时，DMI 就会成为瓶颈。解决方案是把高性能存储换成 NVMe，NVMe 直连 CPU PCIe root port，完全绕过 DMI，让 DMI 只处理低优先级的 legacy 设备。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q8</span><span class="q-text">某块 NVMe 性能异常，你会先看链路层还是文件系统层？给出排查顺序。<br><span style="font-weight:400;color:var(--text2)">An NVMe drive is underperforming. Where do you start — link layer or filesystem?</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">从底往上排查：先硬件链路，再固件/驱动，最后才是文件系统和应用层。链路问题是根因，文件系统问题是结果——如果链路有问题，跑 benchmark 只会得到错误的结论。</div>
+        <div class="interview-box">Start from the bottom of the stack. Step 1: check PCIe link status with lspci -vv — confirm the NVMe is running at the expected generation and width (e.g., PCIe 5.0 x4; if it shows x1 or Gen 3, the link trained down). Step 2: check drive health with nvme smart-log /dev/nvme0 — look for media errors, wear level, and temperature. Step 3: check kernel errors with dmesg | grep nvme — look for PCIe errors, resets, or timeouts. Step 4: only then run a filesystem-level benchmark with fio. Reasoning: link problems are hardware-level and explain performance loss definitively. Starting at the filesystem wastes time if the root cause is lower.</div>
+        <div class="zh">中文：从底层往上排查，不要一上来就跑 benchmark。第一步：<code>lspci -vv</code> 确认 NVMe PCIe 链路速率和宽度是否符合预期（如 PCIe 5.0 x4，如果显示 x1 或 Gen3 说明链路降级了）。第二步：<code>nvme smart-log /dev/nvme0</code> 查盘健康（media errors、wear level、温度）。第三步：<code>dmesg | grep nvme</code> 查内核有没有 PCIe 错误、reset 或 timeout。第四步：最后才用 <code>fio</code> 做性能测试。逻辑：链路层问题是根因，从那里开始能最快找到答案；从文件系统层开始，如果根因在链路，得到的结论是误导性的。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q9</span><span class="q-text">你怎么判断是硬件故障、固件问题，还是 OS 驱动问题？<br><span style="font-weight:400;color:var(--text2)">How do you distinguish hardware failure vs. firmware bug vs. OS driver issue?</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">深度解析</span>
+        <div class="answer-text">三种问题有不同的特征信号。关键是先看 BMC 传感器（硬件视角），再看是否跨系统复现（固件视角），最后看版本相关性（驱动视角）。</div>
+        <div class="interview-box">Hardware failure: IPMI or Redfish sensor shows abnormal readings (temperature, voltage, error counters); the issue persists across different OS installs or even before the OS boots; SEL or dmesg shows uncorrectable PCIe or memory errors. Firmware bug: issue only appears on specific firmware versions with no physical degradation in sensors; often triggered by a specific command sequence; resolved by firmware update. OS/driver issue: only reproduces on a specific kernel version or driver; hardware passes POST and BMC sensors are clean; rolling back the kernel or driver resolves it. Key approach: check BMC sensors first for hardware evidence, then check if it reproduces across OS installs, then check version correlation.</div>
+        <div class="zh">中文：硬件故障的信号：IPMI/Redfish 传感器数值异常（温度过高、电压偏移、错误计数增加）；换了不同 OS 也复现，甚至 POST 前就有问题；SEL 或 dmesg 有 uncorrectable 错误。固件问题的信号：只在特定固件版本复现，传感器无物理异常，升级固件可解决。OS/驱动问题的信号：只在特定内核版本或驱动版本复现，硬件 POST 通过，BMC 传感器干净，回滚内核或驱动可解决。排查顺序：先看 BMC 传感器（有无物理异常），再看是否跨系统复现（排除 OS 因素），最后看版本相关性（确认是驱动/固件问题）。</div>
       </div>
     </div>
   </div>
@@ -1843,6 +1883,34 @@ pre .c-comment { color: var(--text3); }
         <div class="zh">中文：&gt; 把标准输出重定向到文件，如果文件存在则覆盖；&gt;&gt; 追加写入不覆盖。2&gt;&amp;1 的意思是"把文件描述符 2（stderr）重定向到文件描述符 1（stdout）当前指向的地方"，实际上就是把错误输出合并进正常输出流。常用模式 command &gt; output.log 2&gt;&amp;1 把 stdout 和 stderr 都捕获到同一个日志文件。</div>
       </div>
     </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q9</span><span class="q-text">系统突然变慢：CPU 高、IO wait 高、内存压力 — 每种情况分别看什么？<br><span style="font-weight:400;color:var(--text2)">System is slow. How do you diagnose CPU high vs IO wait vs memory pressure differently?</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答</span>
+        <div class="interview-box">High CPU: use top or htop to find the process consuming CPU, then perf top for call-stack profiling if needed. High IO wait (CPU idle waiting for disk): use iostat -xz 1 to find which device is saturated (util near 100%), then iotop to find which process is doing the I/O. Memory pressure: use free -h for overview, vmstat 1 to watch swap activity (si/so columns — non-zero means active swapping), and dmesg | grep -i oom to check if the OOM killer has been terminating processes. Each symptom points to a different bottleneck — never apply the same command set to all three.</div>
+        <div class="zh">中文：CPU 高：<code>top</code>/<code>htop</code> 找耗 CPU 的进程，<code>perf top</code> 看调用栈找热点函数。IO wait 高（CPU 在空转等磁盘响应）：<code>iostat -xz 1</code> 看哪块磁盘 util 接近 100%（饱和），<code>iotop</code> 找哪个进程在大量读写。内存压力：<code>free -h</code> 看整体，<code>vmstat 1</code> 看 si/so 列（swap 换入/换出，有值说明内存不足在用 swap），<code>dmesg | grep -i oom</code> 看有没有 OOM killer 杀进程。三种情况根因完全不同，用同一套命令去查会浪费时间，面试时说出"先区分是哪种瓶颈"能体现方法论。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q10</span><span class="q-text">给一段日志，找出所有 ERROR 行并按模块计数 — 怎么用命令行做？<br><span style="font-weight:400;color:var(--text2)">From a log file, count all ERROR lines grouped by module using the command line.</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">完整回答 + 命令</span>
+        <div class="answer-text">日志格式示例：<code>2026-03-24T10:15:02Z [network] ERROR link down</code></div>
+<pre style="margin:10px 0">grep -i ERROR app.log \
+  | grep -oP '\[\w+\]' \
+  | sort \
+  | uniq -c \
+  | sort -rn</pre>
+        <div class="interview-box">The pipeline: grep -i ERROR filters to error lines (case-insensitive). grep -oP '\[\w+\]' extracts just the module name in brackets. sort orders them so identical names are adjacent. uniq -c counts consecutive duplicates. sort -rn sorts by count descending. For journalctl: journalctl --since "30 minutes ago" | grep -i ERROR | awk '{print $5}' | sort | uniq -c | sort -rn. The interviewer is testing whether you can chain grep, awk, sort, and uniq correctly — explain each step as you write it.</div>
+        <div class="zh">中文：管道的逻辑：<code>grep -i ERROR</code> 过滤出错误行（大小写无关）→ <code>grep -oP '\[\w+\]'</code> 只提取方括号内的模块名 → <code>sort</code> 排序让相同名字相邻（uniq 需要相邻才能计数）→ <code>uniq -c</code> 计数相邻重复行 → <code>sort -rn</code> 按数量降序排列。如果是 journalctl：<code>journalctl --since "30 minutes ago" | grep -i ERROR | awk '{print $5}' | sort | uniq -c | sort -rn</code>。面试时边写边解释每一步的作用，说"sort 是为了让 uniq 能正确计数"这类细节会加分。</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2117,6 +2185,271 @@ result = subprocess.run(
         <span class="answer-label">Answer</span>
         <div class="interview-box">self refers to the specific instance of the class that the method is being called on. When you write sensor.get_reading(), Python automatically passes the sensor object as the first argument to get_reading. This is how instance methods access and modify the object's own attributes.</div>
         <div class="zh">中文：self 指向调用该方法的具体实例对象。当你写 sensor.get_reading() 时，Python 会自动把 sensor 对象作为第一个参数传给 get_reading。实例方法就是通过 self 来访问和修改对象自己的属性的。这是 Python OOP 的基础机制。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PYTHON CODING -->
+<div class="section" id="python-coding">
+  <h1>Python <em>Coding Round</em></h1>
+  <p class="section-desc">面试实际编程题完整参考答案。题 A（必做）+ 题 B（必做）+ 题 C（加分）。每题含完整代码、中文注释、追问答案。<br>Full reference solutions for the coding round. A+B required, C bonus.</p>
+
+  <div class="callout warn"><span class="callout-icon">!</span>面试时边写边讲：说出每一步的思路，写完主动提追问答案（大文件/大小写/CSV导出），不要等面试官问。</div>
+
+  <h2>题 A — Parse Sensor File（必做）</h2>
+  <div class="zh">考查点：with open 逐行读取、strip/split 清洗、异常处理、结构化输出。记住：先 strip，再 split，再验证字段数，再验证非空。</div>
+  <div class="callout info"><span class="callout-icon">KEY</span>输入：每行 <code>名称 | 值 | 状态</code>，可能有空行/缺字段/格式错误。返回结构化记录列表 + 摘要。</div>
+<pre>
+<span class="c-blue">def</span> <span class="c-gold">parse_sensor_file</span>(path: <span class="c-green">str</span>) -&gt; <span class="c-green">tuple</span>[<span class="c-green">list</span>[<span class="c-green">dict</span>], <span class="c-green">int</span>]:
+    <span class="c-purple">"""Returns (records, invalid_line_count).
+    records: list of {'name': str, 'value': str, 'status': str}
+    中文: 返回 (有效记录列表, 无效行数)"""</span>
+    records = []
+    invalid_count = <span class="c-gold">0</span>
+
+    <span class="c-blue">with</span> <span class="c-gold">open</span>(path, <span class="c-purple">'r'</span>, encoding=<span class="c-purple">'utf-8'</span>) <span class="c-blue">as</span> f:
+        <span class="c-blue">for</span> line <span class="c-blue">in</span> f:                    <span class="c-text3"># 逐行读，不把整个文件加载进内存</span>
+            line = line.strip()          <span class="c-text3"># 去首尾空白</span>
+            <span class="c-blue">if not</span> line:                 <span class="c-text3"># 跳过空行</span>
+                <span class="c-blue">continue</span>
+
+            parts = [p.strip() <span class="c-blue">for</span> p <span class="c-blue">in</span> line.split(<span class="c-purple">'|'</span>)]
+
+            <span class="c-blue">if</span> <span class="c-gold">len</span>(parts) != <span class="c-gold">3</span>:          <span class="c-text3"># 必须有 3 个字段</span>
+                invalid_count += <span class="c-gold">1</span>
+                <span class="c-blue">continue</span>
+
+            name, value, status = parts
+
+            <span class="c-blue">if not</span> name:                 <span class="c-text3"># 名称不能为空</span>
+                invalid_count += <span class="c-gold">1</span>
+                <span class="c-blue">continue</span>
+
+            records.append({
+                <span class="c-purple">'name'</span>: name,
+                <span class="c-purple">'value'</span>: value,
+                <span class="c-purple">'status'</span>: status
+            })
+
+    <span class="c-blue">return</span> records, invalid_count
+
+
+<span class="c-blue">def</span> <span class="c-gold">summarize</span>(records: <span class="c-green">list</span>[<span class="c-green">dict</span>], invalid_line_count: <span class="c-green">int</span> = <span class="c-gold">0</span>) -&gt; <span class="c-green">dict</span>:
+    bad_items = [
+        r[<span class="c-purple">'name'</span>] <span class="c-blue">for</span> r <span class="c-blue">in</span> records
+        <span class="c-blue">if</span> r[<span class="c-purple">'status'</span>].lower() != <span class="c-purple">'ok'</span>  <span class="c-text3"># 大小写无关匹配</span>
+    ]
+    <span class="c-blue">return</span> {
+        <span class="c-purple">'total_count'</span>: <span class="c-gold">len</span>(records),
+        <span class="c-purple">'bad_count'</span>: <span class="c-gold">len</span>(bad_items),
+        <span class="c-purple">'bad_items'</span>: bad_items,
+        <span class="c-purple">'invalid_line_count'</span>: invalid_line_count
+    }
+</pre>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">追</span><span class="q-text">大文件 5GB 怎么避免内存爆？状态大小写混写怎么办？能否导出 CSV/JSON？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">追问答案</span>
+        <div class="interview-box">Large file: the solution above already handles it — for line in f is a generator that loads one line at a time, never the whole file. Never use f.readlines() or f.read() on large files. Case mixing: .lower() before comparing normalizes OK/ok/Ok to the same value. Export CSV: use csv.DictWriter with fieldnames=['name','value','status']. Export JSON: json.dump(records, open('out.json','w'), indent=2). Design tip: keep parse, validate, summarize, and export as separate steps for testability.</div>
+        <div class="zh">中文：大文件——上面的代码已经处理了，<code>for line in f</code> 是懒加载生成器，每次只读一行，绝不用 readlines()/read()。大小写混写——用 <code>.lower()</code> 统一后再比较，把 OK/ok/Ok 都规范化。CSV 导出——用 <code>csv.DictWriter</code>，指定 fieldnames 后调用 writeheader() + writerows()。JSON 导出——<code>json.dump(records, open('out.json','w'), indent=2)</code>。设计原则：把解析、验证、摘要、导出分成独立函数，每个可以单独测试。</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:2.5rem">题 B — Log Error Aggregation（必做）</h2>
+  <div class="zh">考查点：正则提取字段、defaultdict 计数、排序取 Top N、坏行静默跳过。</div>
+  <div class="callout info"><span class="callout-icon">KEY</span>输入：日志行列表，格式含 <code>[模块名] ERROR</code>。返回按错误数降序的 Top N 模块列表。</div>
+<pre>
+<span class="c-blue">import</span> re
+<span class="c-blue">from</span> collections <span class="c-blue">import</span> defaultdict
+
+_PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w+)\]\s+ERROR'</span>, re.IGNORECASE)
+
+<span class="c-blue">def</span> <span class="c-gold">top_error_modules</span>(lines: <span class="c-green">list</span>[<span class="c-green">str</span>], n: <span class="c-green">int</span> = <span class="c-gold">3</span>) -&gt; <span class="c-green">list</span>[<span class="c-green">tuple</span>[<span class="c-green">str</span>, <span class="c-green">int</span>]]:
+    <span class="c-purple">"""Returns [(module_name, error_count), ...] sorted by count desc.
+    中文: 返回 [(模块名, 错误数), ...] 按错误数降序，跳过格式错误的行"""</span>
+    counts: <span class="c-green">dict</span>[<span class="c-green">str</span>, <span class="c-green">int</span>] = defaultdict(<span class="c-green">int</span>)
+
+    <span class="c-blue">for</span> line <span class="c-blue">in</span> lines:
+        m = _PATTERN.<span class="c-gold">search</span>(line)   <span class="c-text3"># search 在行中任意位置匹配，比 match 灵活</span>
+        <span class="c-blue">if</span> m:                         <span class="c-text3"># 没匹配到就跳过（坏行/WARN行）</span>
+            counts[m.<span class="c-gold">group</span>(<span class="c-gold">1</span>)] += <span class="c-gold">1</span>  <span class="c-text3"># group(1) 是 (\w+) 捕获的模块名</span>
+
+    <span class="c-blue">return</span> <span class="c-gold">sorted</span>(counts.items(), key=<span class="c-blue">lambda</span> x: -x[<span class="c-gold">1</span>])[:n]
+</pre>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">追</span><span class="q-text">如何限制到最近 1 小时？如何改为实时流处理？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">追问答案</span>
+        <div class="interview-box">Time window: parse the ISO-8601 timestamp from each line with datetime.fromisoformat(), compare against datetime.now(timezone.utc) - timedelta(hours=1), skip lines outside the window. Wrap in try/except ValueError for malformed timestamps. Real-time stream: change the parameter from list to an iterator/generator — the current code already iterates, so no logic changes needed. For a true streaming setup, use a deque with a time-bounded sliding window, or route logs to Kafka and consume with a Python stream processor maintaining per-window counts in Redis.</div>
+        <div class="zh">中文：时间窗口——用 <code>datetime.fromisoformat()</code> 解析每行时间戳，与 <code>datetime.now(timezone.utc) - timedelta(hours=1)</code> 比较，窗口外的跳过，解析失败的用 try/except 跳过。实时流——把参数类型从 list 改成接受 iterator/generator，当前代码逻辑不需要改（本来就是迭代的）。真实流处理：用 deque 做滑动时间窗口，或把日志发到 Kafka，Python consumer 在 Redis 中维护时间窗口计数。</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:2.5rem">题 C — Redfish Poller（加分）</h2>
+  <div class="zh">考查点：JSON .get() 防 KeyError、类型转换 try/except、返回结构化告警列表。</div>
+<pre>
+<span class="c-blue">from</span> datetime <span class="c-blue">import</span> datetime, timezone
+<span class="c-blue">from</span> typing <span class="c-blue">import</span> Any
+
+<span class="c-blue">def</span> <span class="c-gold">find_overheat</span>(
+    readings: <span class="c-green">list</span>[<span class="c-green">dict</span>[<span class="c-green">str</span>, <span class="c-green">Any</span>]],
+    threshold: <span class="c-green">float</span> = <span class="c-gold">80.0</span>
+) -&gt; <span class="c-green">list</span>[<span class="c-green">dict</span>]:
+    <span class="c-purple">"""Filter sensor readings above threshold.
+    中文: 过滤超过阈值的传感器读值，返回结构化告警列表"""</span>
+    alerts = []
+    now = datetime.<span class="c-gold">now</span>(timezone.utc).<span class="c-gold">isoformat</span>()
+
+    <span class="c-blue">for</span> sensor <span class="c-blue">in</span> readings:
+        name = sensor.<span class="c-gold">get</span>(<span class="c-purple">'Name'</span>, <span class="c-purple">'unknown'</span>)  <span class="c-text3"># .get() 防 KeyError</span>
+        raw = sensor.<span class="c-gold">get</span>(<span class="c-purple">'ReadingCelsius'</span>)
+        <span class="c-blue">if</span> raw <span class="c-blue">is None</span>:
+            <span class="c-blue">continue</span>
+        <span class="c-blue">try</span>:
+            reading = <span class="c-green">float</span>(raw)            <span class="c-text3"># 类型转换加保护</span>
+        <span class="c-blue">except</span> (<span class="c-green">ValueError</span>, <span class="c-green">TypeError</span>):
+            <span class="c-blue">continue</span>
+        <span class="c-blue">if</span> reading &gt; threshold:
+            severity = <span class="c-purple">'critical'</span> <span class="c-blue">if</span> reading &gt; threshold + <span class="c-gold">15</span> <span class="c-blue">else</span> <span class="c-purple">'warning'</span>
+            alerts.append({
+                <span class="c-purple">'sensor_name'</span>: name,
+                <span class="c-purple">'reading_celsius'</span>: reading,
+                <span class="c-purple">'severity'</span>: severity,
+                <span class="c-purple">'timestamp'</span>: now
+            })
+    <span class="c-blue">return</span> alerts
+</pre>
+</div>
+
+<!-- SYSTEM DESIGN -->
+<div class="section" id="sysdesign">
+  <h1>System Design — <em>BMC Health Monitor</em></h1>
+  <p class="section-desc">可选题（20 分钟）。设计一个 BMC 传感器健康监控服务。面试官考查的是你能不能把需求拆解成有序的工程组件，并主动说出每层的权衡。<br>Optional 20-min round. Design a BMC sensor health monitoring service.</p>
+
+  <div class="callout warn"><span class="callout-icon">!</span>不要急着画架构，先把需求拆解确认：采集频率、告警通道、数据保留、查询 API。再逐层展开。</div>
+
+  <h2>需求拆解 / Requirements Breakdown</h2>
+  <table class="kv-table">
+    <tr><th>需求</th><th>细节</th><th>影响哪个组件</th></tr>
+    <tr><td>每 30 秒采集传感器</td><td>频率不能太高（避免打垮 BMC），不能太低（告警延迟）</td><td>Poller 设计、间隔配置</td></tr>
+    <tr><td>阈值告警 warning/critical</td><td>需要双级阈值，防抖（避免告警风暴）</td><td>Rule Engine + Hysteresis</td></tr>
+    <tr><td>最近 7 天历史</td><td>需要时序存储，支持按时间查询</td><td>Storage 选型</td></tr>
+    <tr><td>简单查询 API</td><td>按传感器名、时间段查询</td><td>API 层</td></tr>
+  </table>
+
+  <h2>系统组件 / Components</h2>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--accent)"></div><span style="color:var(--accent)">Poller（采集器）</span></div>
+      <div class="c-body">定时（30s）通过 Redfish Sensor API 拉取传感器数据。设置请求超时（5s），失败后指数退避重试（1s→2s→4s），超过 3 次失败记告警。用 asyncio 或线程池支持多台 BMC 并发采集。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--gold)"></div><span style="color:var(--gold)">Rule Engine（规则引擎）</span></div>
+      <div class="c-body">双阈值：warning（如 &gt;80°C）和 critical（如 &gt;95°C）。Hysteresis（滞回）：温度超过阈值才触发，降回阈值以下 5°C 才恢复，避免在边界值来回抖动产生告警风暴。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--purple)"></div><span style="color:var(--purple)">Storage（存储）</span></div>
+      <div class="c-body">时序数据库首选（InfluxDB / Prometheus TSDB / TimescaleDB）——专为按时间查询优化。如果团队已用 PostgreSQL，也可以用带时间戳索引的表。7 天数据自动 TTL 清除。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--red)"></div><span style="color:var(--red)">Alert Channel（告警通道）</span></div>
+      <div class="c-body">告警去重（同一传感器 5 分钟内只发一次），支持多通道：Email、Slack Webhook、PagerDuty。告警恢复时发恢复通知。所有告警记录到 DB 用于审计。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--green)"></div><span style="color:var(--green)">Query API</span></div>
+      <div class="c-body">REST API：GET /sensors?name=CPU1+Temp&amp;from=&amp;to= 按名称和时间段查询。GET /alerts?status=active 查当前活跃告警。轻量即可，不需要 GraphQL。</div>
+    </div>
+    <div class="concept-card">
+      <div class="c-title"><div class="dot" style="background:var(--blue)"></div><span style="color:var(--blue)">Observability（可观测性）</span></div>
+      <div class="c-body">Poller 本身也需要被监控：采集成功率、延迟、错误率。用 Prometheus 暴露 metrics，设置 Grafana 看板。如果 Poller 自己挂了要有 health check 和自动重启（systemd 或 k8s）。</div>
+    </div>
+  </div>
+
+  <h2>关键权衡 / Key Trade-offs to Mention</h2>
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">为什么选 TSDB 而不是普通关系数据库？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">答法</span>
+        <div class="interview-box">Time-series databases are optimized for the access pattern here: high write throughput of time-stamped data, efficient range queries by time, and built-in data retention/TTL. A relational database works but requires manual indexing on the timestamp column and grows slow on range queries as data accumulates. For this scale, either works — I'd choose based on what the team already operates. If they already run PostgreSQL with TimescaleDB, that's fine. If they're starting fresh, InfluxDB or Prometheus is more purpose-fit.</div>
+        <div class="zh">中文：时序数据库针对这种访问模式做了专门优化：高频时间戳数据写入、按时间段的范围查询、内置 TTL 自动过期。普通关系数据库也能做，但需要手动在时间戳字段建索引，数据量大了范围查询会变慢。实际选型取决于团队已有什么——已经跑 PostgreSQL+TimescaleDB 就直接用，从零开始选 InfluxDB 或 Prometheus 更合适。</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">Q</span><span class="q-text">Hysteresis（滞回）是什么？为什么需要？</span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">答法</span>
+        <div class="interview-box">Hysteresis prevents alert flapping — a sensor that oscillates around a threshold would otherwise generate a constant stream of alert/recover/alert/recover events, overwhelming the oncall. The fix: require the value to exceed the upper threshold before alerting, but only clear the alert once it drops below a lower threshold (e.g., alert at 80°C, recover at 75°C). This dead band absorbs normal sensor variation without missing real events.</div>
+        <div class="zh">中文：Hysteresis（滞回/迟滞）防止告警抖动——传感器值在阈值附近来回波动时，没有滞回就会产生连续的告警/恢复/告警/恢复事件，把 oncall 淹没。解决方法：超过上阈值才告警（如 80°C），降回到下阈值才恢复（如 75°C），两个阈值之间的区间形成"死区"，吸收正常传感器波动，同时不会漏掉真实事件。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BEHAVIORAL -->
+<div class="section" id="behavioral">
+  <h1>Behavioral — <em>行为题</em></h1>
+  <p class="section-desc">最后一轮常见行为题。答题框架：先结论（1句），再故事（STAR：情境→任务→行动→结果），控制在 90 秒内。<br>Framework: lead with the conclusion in 1 sentence, then STAR story in 60–90 sec.</p>
+
+  <div class="callout info"><span class="callout-icon">KEY</span>面试官在评分的不是故事本身，而是：你有没有自我意识？你有没有主动推进事情？你能不能根据证据调整方向？</div>
+
+  <div class="qa-list">
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">B1</span><span class="q-text">遇到你不确定的技术问题，你怎么处理？<br><span style="font-weight:400;color:var(--text2)">How do you handle something you don't know?</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">答法框架</span>
+        <div class="interview-box">I say clearly what I know and what I don't, then describe my approach: check the spec or datasheet first, try to reproduce the issue in a minimal environment, then escalate with a clear reproduction case rather than vague symptoms. I also timebox my own research — if I'm not making progress in 30 minutes, I ask rather than spin. Saying "I don't know but here's how I'd find out" is a strong answer.</div>
+        <div class="zh">中文：先说清楚我知道什么、不知道什么，然后说找答案的路径：先查规格书/数据手册，尝试在最小可复现环境重现，带复现步骤而不是带模糊问题去找人。给自己设时间限制——30 分钟没进展就提问，不会一直转圈。"我不确定，但这是我会怎么找答案的"是很有力的回答，比假装知道好得多。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">B2</span><span class="q-text">如何与硬件/BIOS/BMC/软件团队协作定位跨域问题？<br><span style="font-weight:400;color:var(--text2)">How do you collaborate across hardware/firmware/software teams on a cross-domain issue?</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">答法框架</span>
+        <div class="interview-box">I try to narrow the problem to a specific layer before involving another team — "this is a hardware-level issue because the sensor is abnormal before OS boots" rather than "something is wrong." Bringing a hypothesis rather than just symptoms saves everyone time. I also document findings as we go so the next person doesn't repeat the same investigation. For cross-team issues, I make sure the handoff includes: what I tested, what I ruled out, and what the next step is.</div>
+        <div class="zh">中文：找人之前先把问题缩小到某个层——"这是硬件层问题，OS 启动前传感器就异常了"而不是"出问题了"。带假设不带症状去找人，能节省所有人时间。过程中边排查边记文档，避免下一个人重复同样的调查。跨团队交接时，我会说清楚：我测了什么、我排除了什么、下一步是什么。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">B3</span><span class="q-text">说一次你发现方案不对并及时调整的经历。<br><span style="font-weight:400;color:var(--text2)">Tell me about a time you changed course mid-way through a project.</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">答法框架</span>
+        <div class="interview-box">Structure: what was the original plan → what signal told you it was wrong (data, test result, feedback) → what you changed → what the outcome was. The key is showing you respond to evidence, not ego. Keep it to 60–90 seconds. Avoid stories where the change was forced by someone else — the interviewer wants to see you initiated the pivot yourself.</div>
+        <div class="zh">中文：结构：原来的方案是什么 → 什么信号告诉你方向不对（数据/测试结果/反馈）→ 你改了什么 → 结果如何。关键是体现你根据证据调整，而不是因为被强迫。控制在 60–90 秒，不要跑题。避免"被别人逼着改"的故事，面试官想看到的是你自己主动发现并推动了调整。</div>
+      </div>
+    </div>
+
+    <div class="qa-card">
+      <div class="qa-q" onclick="toggle(this)">
+        <span class="q-icon">B4</span><span class="q-text">如何在"快交付"和"高可靠"之间做取舍？<br><span style="font-weight:400;color:var(--text2)">How do you balance speed of delivery vs. reliability?</span></span><span class="q-arrow">▶</span>
+      </div>
+      <div class="qa-a">
+        <span class="answer-label">答法框架</span>
+        <div class="interview-box">I treat it as a risk-management question: what is the cost of being wrong? For an internal monitoring script, shipping fast with clear known limitations is fine. For code that controls physical hardware or triggers alerts affecting production, reliability is non-negotiable — shortcuts create incident risk. I try to make the trade-off explicit and visible: "I can ship v1 in 3 days with these known gaps, or a complete version in 2 weeks — which fits the current risk tolerance?" That way the decision is shared, not unilateral.</div>
+        <div class="zh">中文：我把它当成风险管理问题：出错的代价是什么？内部用的监控脚本，快速交付加上说清楚已知局限是合理的。控制物理硬件或触发生产告警的代码，可靠性不可妥协。我会把权衡说清楚、说可见："v1 版本 3 天可以交付，有这些已知缺口；完整版 2 周——你们当前的风险接受度是什么？"这样决策是共同承担的，不是我单方面拍的。</div>
       </div>
     </div>
   </div>
