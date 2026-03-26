@@ -2542,26 +2542,26 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
 <!-- IPMI OVERVIEW -->
 <div class="section" id="ipmi-overview">
   <h1>IPMI <em>Overview</em></h1>
-  <p class="section-desc">Intelligent Platform Management Interface — an open standard for out-of-band server management via the BMC. Understand it as the spec that defines how software talks to BMC hardware.</p>
+  <p class="section-desc">Intelligent Platform Management Interface — an open standard for out-of-band server management via the BMC. Understand it as the spec that defines how software talks to BMC hardware.<br><span style="color:var(--text3);font-size:13px">IPMI 是服务器带外管理的开放标准，定义了软件如何通过 BMC 管理硬件。</span></p>
 
   <h2>Architecture</h2>
   <div class="zh">IPMI 是定义 BMC 如何暴露服务器管理功能的开放标准。理解 IPMI 架构的关键是区分 in-band（主机 OS 通过 KCS/SSIF 访问）和 out-of-band（管理站通过专用网卡直接访问）两条路径，以及 BMC 独立于主系统运行的特性。</div>
   <div class="concept-grid">
     <div class="concept-card">
       <div class="c-title"><div class="dot" style="background:var(--accent)"></div><span style="color:var(--accent)">BMC (Baseboard Management Controller)</span></div>
-      <div class="c-body">Dedicated microcontroller on the motherboard. Runs independently of the main CPU — works even when the server is powered off (standby power). Implements the IPMI spec.</div>
+      <div class="c-body">Dedicated microcontroller on the motherboard. Runs independently of the main CPU — works even when the server is powered off (standby power). Implements the IPMI spec.<br><span style="color:var(--text3);font-size:12px">主板上的专用微控制器，独立于主 CPU 运行，服务器断电时靠待机电源仍可工作，负责实现 IPMI 规范。</span></div>
     </div>
     <div class="concept-card">
       <div class="c-title"><div class="dot" style="background:var(--blue)"></div><span style="color:var(--blue)">In-band vs Out-of-band</span></div>
-      <div class="c-body">In-band: host OS talks to BMC via system bus (KCS/SSIF). Out-of-band: management station talks to BMC directly via dedicated LAN (IPMI over LAN / RMCP+).</div>
+      <div class="c-body">In-band: host OS talks to BMC via system bus (KCS/SSIF). Out-of-band: management station talks to BMC directly via dedicated LAN (IPMI over LAN / RMCP+).<br><span style="color:var(--text3);font-size:12px">In-band：主机 OS 通过系统总线（KCS/SSIF）访问 BMC。Out-of-band：管理站通过独立的 BMC 网口直接访问，不经过主机 OS。</span></div>
     </div>
     <div class="concept-card">
       <div class="c-title"><div class="dot" style="background:var(--gold)"></div><span style="color:var(--gold)">IPMI Version</span></div>
-      <div class="c-body">IPMI 2.0 is the current standard. Adds encrypted remote access (RMCP+), serial over LAN (SOL), and payload authentication vs IPMI 1.5.</div>
+      <div class="c-body">IPMI 2.0 is the current standard. Adds encrypted remote access (RMCP+), serial over LAN (SOL), and payload authentication vs IPMI 1.5.<br><span style="color:var(--text3);font-size:12px">IPMI 2.0 是当前标准，相比 1.5 增加了加密远程访问（RMCP+）、串口重定向（SOL）和载荷认证。</span></div>
     </div>
     <div class="concept-card">
       <div class="c-title"><div class="dot" style="background:var(--purple)"></div><span style="color:var(--purple)">ipmitool</span></div>
-      <div class="c-body">CLI tool to interact with BMC. <code class="cmd">ipmitool sdr list</code>, <code class="cmd">ipmitool sel list</code>, <code class="cmd">ipmitool chassis status</code> are the most common commands.</div>
+      <div class="c-body">CLI tool to interact with BMC. <code class="cmd">ipmitool sdr list</code>, <code class="cmd">ipmitool sel list</code>, <code class="cmd">ipmitool chassis status</code> are the most common commands.<br><span style="color:var(--text3);font-size:12px">与 BMC 交互的命令行工具，最常用的三条命令：查传感器列表、查事件日志、查机箱状态。</span></div>
     </div>
   </div>
 
@@ -2607,31 +2607,39 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
 <!-- IPMI SENSORS -->
 <div class="section" id="ipmi-sensors">
   <h1>IPMI <em>Sensor Types &amp; Interfaces</em></h1>
-  <p class="section-desc">Two core sensor classes defined in the IPMI spec, and the four hardware messaging interfaces BMC uses to communicate with the host.</p>
+  <p class="section-desc">Two core sensor classes defined in the IPMI spec, and the four hardware messaging interfaces BMC uses to communicate with the host.<br><span style="color:var(--text3);font-size:13px">IPMI 定义的两类传感器，以及 BMC 与主机通信的四种硬件接口。</span></p>
 
   <h2>Sensor Types (IPMI Spec)</h2>
   <div class="zh">IPMI 定义两类传感器：Threshold-based（数值型，如温度/电压，有 6 个阈值级别）和 Discrete（状态型，返回位掩码表示当前哪些状态有效）。理解这两类的区别是解释 SDR 记录和 SEL 事件的前提。</div>
   <div class="callout info"><span class="callout-icon">KEY</span>All IPMI sensors fall into two classes: Threshold-based (numeric) or Discrete (event/state bitmask).</div>
 
   <table class="kv-table">
-    <tr><th>Class</th><th>How It Works</th><th>Examples</th></tr>
-    <tr><td><strong style="color:var(--accent)">Threshold-based</strong></td><td>Returns a numeric reading. Has up to 6 threshold levels: Lower Non-Critical, Lower Critical, Lower Non-Recoverable, and upper equivalents. An event fires when a reading crosses a threshold.</td><td>Temperature, Voltage, Fan Speed, Current</td></tr>
-    <tr><td><strong style="color:var(--blue)">Discrete</strong></td><td>Returns a bitmask of up to 15 event states. Each bit represents a specific condition (asserted/deasserted). No numeric value — just which states are active.</td><td>Processor status, Power Supply status, Drive Slot state, Button state</td></tr>
+    <tr><th>Class / 类型</th><th>How It Works / 工作方式</th><th>Examples / 示例</th></tr>
+    <tr>
+      <td><strong style="color:var(--accent)">Threshold-based</strong><br><span style="color:var(--text3);font-size:12px">数值阈值型</span></td>
+      <td>Returns a numeric reading. Has up to 6 threshold levels: Lower Non-Critical, Lower Critical, Lower Non-Recoverable, and upper equivalents. An event fires when a reading crosses a threshold.<br><span style="color:var(--text3);font-size:12px">返回数值读数，有 6 个阈值级别（下限/上限各三级：非临界、临界、不可恢复）。读值超过任一阈值时触发事件。</span></td>
+      <td>Temperature, Voltage, Fan Speed, Current<br><span style="color:var(--text3);font-size:12px">温度、电压、风扇转速、电流</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--blue)">Discrete</strong><br><span style="color:var(--text3);font-size:12px">离散状态型</span></td>
+      <td>Returns a bitmask of up to 15 event states. Each bit represents a specific condition (asserted/deasserted). No numeric value — just which states are active.<br><span style="color:var(--text3);font-size:12px">返回最多 15 位的位掩码，每位代表一个状态（有效/无效），没有数值，只表示哪些状态当前激活。</span></td>
+      <td>Processor status, Power Supply status, Drive Slot state, Button state<br><span style="color:var(--text3);font-size:12px">处理器状态、电源状态、硬盘槽位状态、按钮状态</span></td>
+    </tr>
   </table>
 
   <div class="concept-grid">
     <div class="concept-card">
       <div class="c-title"><div class="dot" style="background:var(--accent)"></div><span style="color:var(--accent)">Threshold Sensor Thresholds</span></div>
-      <div class="c-body">LNR → LC → LNC → (normal) → UNC → UC → UNR<br>Lower Non-Recoverable is worst-case low; Upper Non-Recoverable is worst-case high. BMC logs a SEL event when any threshold is crossed.</div>
+      <div class="c-body">LNR → LC → LNC → (normal) → UNC → UC → UNR<br>Lower Non-Recoverable is worst-case low; Upper Non-Recoverable is worst-case high. BMC logs a SEL event when any threshold is crossed.<br><span style="color:var(--text3);font-size:12px">从低到高：下不可恢复 → 下临界 → 下非临界 → 正常区 → 上非临界 → 上临界 → 上不可恢复。任意阈值被穿越时 BMC 写入 SEL 事件。</span></div>
     </div>
     <div class="concept-card">
       <div class="c-title"><div class="dot" style="background:var(--blue)"></div><span style="color:var(--blue)">Discrete Sensor Subtypes</span></div>
-      <div class="c-body"><strong>Generic discrete</strong>: uses standard event/reading type codes (e.g., 0x03 = state asserted).<br><strong>Sensor-specific discrete</strong>: event meanings are defined per sensor type (e.g., Processor sensor: bit0 = IERR, bit1 = Thermal trip).</div>
+      <div class="c-body"><strong>Generic discrete</strong>: uses standard event/reading type codes (e.g., 0x03 = state asserted).<br><strong>Sensor-specific discrete</strong>: event meanings are defined per sensor type (e.g., Processor sensor: bit0 = IERR, bit1 = Thermal trip).<br><span style="color:var(--text3);font-size:12px"><strong>通用离散</strong>：使用标准事件码（如 0x03 = 状态有效）。<strong>传感器专用离散</strong>：每类传感器自定义位含义（如 Processor 传感器：bit0 = IERR，bit1 = 热跳闸）。</span></div>
     </div>
   </div>
 
   <h2>BMC Hardware Interfaces (Host-side)</h2>
-  <div class="callout info"><span class="callout-icon">KEY</span>These are the physical interfaces the host CPU/OS uses to send IPMI messages to the BMC on the same board (in-band).</div>
+  <div class="callout info"><span class="callout-icon">KEY</span>These are the physical interfaces the host CPU/OS uses to send IPMI messages to the BMC on the same board (in-band).<br><span style="color:var(--text3);font-size:12px">这些是主机 CPU/OS 向同一块板上的 BMC 发送 IPMI 消息的物理接口（in-band 路径）。</span></div>
 
   <table class="kv-table kv-table-stack">
     <thead>
@@ -2692,7 +2700,7 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
 <!-- IPMI FLOWCHART -->
 <div class="section" id="ipmi-flowchart">
   <h1>PEF / PET / SEL / <em>SDR</em></h1>
-  <p class="section-desc">How the four components interact: SDR defines sensors → sensors generate events → SEL stores them → PEF filters them → PET delivers alerts.</p>
+  <p class="section-desc">How the four components interact: SDR defines sensors → sensors generate events → SEL stores them → PEF filters them → PET delivers alerts.<br><span style="color:var(--text3);font-size:13px">四个组件如何协作：SDR 定义传感器 → 传感器产生事件 → SEL 记录事件 → PEF 过滤决策 → PET 发送告警。</span></p>
 
   <h2>Component Definitions</h2>
   <div class="zh">SDR/SEL/PEF/PET 是 IPMI 事件链的四个环节：SDR 定义传感器 → 传感器触发事件 → SEL 记录事件 → PEF 过滤决策 → PET 发送 SNMP 告警。能把这条链路完整解释出来是面试加分项。</div>
@@ -2721,7 +2729,7 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
   </table>
 
   <h2>Flow Diagram</h2>
-  <div class="callout info"><span class="callout-icon">FLOW</span>Follow the path: hardware event → sensor reading → SDR threshold check → SEL log → PEF filter → PET alert</div>
+  <div class="callout info"><span class="callout-icon">FLOW</span>Follow the path: hardware event → sensor reading → SDR threshold check → SEL log → PEF filter → PET alert<br><span style="color:var(--text3);font-size:12px">完整链路：硬件事件 → 传感器读值 → SDR 阈值比较 → 写入 SEL → PEF 规则匹配 → PET 对外告警</span></div>
 
   <pre style="line-height:2">
 <span class="c-comment">┌─────────────────────────────────────────────────────────┐
@@ -2785,18 +2793,34 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
 <!-- REDFISH SCHEMA -->
 <div class="section" id="redfish-schema">
   <h1>Redfish <em>Schema Versions</em></h1>
-  <p class="section-desc">How to identify which Redfish schema version a URI or property supports — essential for writing compatible management tools.</p>
+  <p class="section-desc">How to identify which Redfish schema version a URI or property supports — essential for writing compatible management tools.<br><span style="color:var(--text3);font-size:13px">如何识别 Redfish 资源使用的 schema 版本——编写兼容管理工具的前提。</span></p>
 
   <h2>How to Identify Schema Version</h2>
   <div class="zh">Redfish schema 版本管理是面试中容易被问到的实战问题。最关键的字段是 @odata.type，格式是 #SchemaName.vX_Y_Z.TypeName，直接告诉你该资源用的是哪个 schema 版本。写管理工具时要先检查版本再访问版本特有的属性。</div>
-  <div class="callout info"><span class="callout-icon">KEY</span>The primary method is reading <code class="cmd">@odata.type</code> in any Redfish resource response. It encodes the schema name and version directly.</div>
+  <div class="callout info"><span class="callout-icon">KEY</span>The primary method is reading <code class="cmd">@odata.type</code> in any Redfish resource response. It encodes the schema name and version directly.<br><span style="color:var(--text3);font-size:12px">最主要的方式是读取任意 Redfish 资源响应中的 @odata.type 字段，它直接包含 schema 名称和版本。</span></div>
 
   <table class="kv-table">
-    <tr><th>Method</th><th>What to Look At</th><th>Example</th></tr>
-    <tr><td><strong style="color:var(--accent)">@odata.type</strong></td><td>Present in every resource response. Format: <code class="cmd">#SchemaName.vX_Y_Z.TypeName</code></td><td><code class="cmd">"@odata.type": "#Thermal.v1_7_0.Thermal"</code> → Thermal schema v1.7.0</td></tr>
-    <tr><td><strong style="color:var(--blue)">Service Root</strong></td><td>GET <code class="cmd">/redfish/v1/</code> — the RedfishVersion field shows the Redfish protocol version</td><td><code class="cmd">"RedfishVersion": "1.16.0"</code></td></tr>
-    <tr><td><strong style="color:var(--gold)">$metadata</strong></td><td>GET <code class="cmd">/redfish/v1/$metadata</code> — OData metadata document listing all schemas and versions supported by this implementation</td><td>Lists all EntityType and EnumType definitions with their namespaces</td></tr>
-    <tr><td><strong style="color:var(--purple)">Schema Store</strong></td><td>GET <code class="cmd">/redfish/v1/schemas/</code> — collection of schema files served by the BMC</td><td>Each member is a JSON schema file (e.g., <code class="cmd">Thermal.v1_7_0.json</code>)</td></tr>
+    <tr><th>Method / 方式</th><th>What to Look At / 查哪里</th><th>Example / 示例</th></tr>
+    <tr>
+      <td><strong style="color:var(--accent)">@odata.type</strong></td>
+      <td>Present in every resource response. Format: <code class="cmd">#SchemaName.vX_Y_Z.TypeName</code><br><span style="color:var(--text3);font-size:12px">每个资源响应都有，格式：#Schema名称.v版本.类型名</span></td>
+      <td><code class="cmd">"@odata.type": "#Thermal.v1_7_0.Thermal"</code> → Thermal schema v1.7.0<br><span style="color:var(--text3);font-size:12px">→ Thermal schema 版本 1.7.0</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--blue)">Service Root</strong><br><span style="color:var(--text3);font-size:12px">服务根路径</span></td>
+      <td>GET <code class="cmd">/redfish/v1/</code> — the RedfishVersion field shows the Redfish protocol version<br><span style="color:var(--text3);font-size:12px">GET /redfish/v1/ 返回的 RedfishVersion 是整个服务的协议版本</span></td>
+      <td><code class="cmd">"RedfishVersion": "1.16.0"</code></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--gold)">$metadata</strong></td>
+      <td>GET <code class="cmd">/redfish/v1/$metadata</code> — OData metadata document listing all schemas and versions supported by this implementation<br><span style="color:var(--text3);font-size:12px">OData 元数据文档，列出该 BMC 实现支持的所有 schema 及版本，最完整的版本查询方式</span></td>
+      <td>Lists all EntityType and EnumType definitions with their namespaces</td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--purple)">Schema Store</strong><br><span style="color:var(--text3);font-size:12px">Schema 文件库</span></td>
+      <td>GET <code class="cmd">/redfish/v1/schemas/</code> — collection of schema files served by the BMC<br><span style="color:var(--text3);font-size:12px">BMC 提供的 schema 文件集合</span></td>
+      <td>Each member is a JSON schema file (e.g., <code class="cmd">Thermal.v1_7_0.json</code>)</td>
+    </tr>
   </table>
 
   <h2>Reading @odata.type</h2>
@@ -2827,7 +2851,7 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
     两者不要混淆——面试里这是高频踩坑点。
   </div>
 
-  <div class="callout tip"><span class="callout-icon">TIP</span>When writing a management tool that reads Redfish, always check <code class="cmd">@odata.type</code> before accessing version-specific properties. A property added in v1.5.0 won't exist on a BMC that only supports v1.3.0.</div>
+  <div class="callout tip"><span class="callout-icon">TIP</span>When writing a management tool that reads Redfish, always check <code class="cmd">@odata.type</code> before accessing version-specific properties. A property added in v1.5.0 won't exist on a BMC that only supports v1.3.0.<br><span style="color:var(--text3);font-size:12px">写 Redfish 管理工具时，访问版本特有属性前先检查 @odata.type 确认版本。v1.5.0 新增的属性在只支持 v1.3.0 的 BMC 上不存在。</span></div>
 
   <div class="qa-list">
     <div class="qa-card">
@@ -2846,17 +2870,37 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
 <!-- REDFISH TELEMETRY -->
 <div class="section" id="redfish-telemetry">
   <h1>Redfish <em>Telemetry Service</em></h1>
-  <p class="section-desc">The Redfish Telemetry Service provides a standardized way to collect, define, and report sensor and metric data from a BMC.</p>
+  <p class="section-desc">The Redfish Telemetry Service provides a standardized way to collect, define, and report sensor and metric data from a BMC.<br><span style="color:var(--text3);font-size:13px">Redfish 遥测服务提供标准化的指标定义、采集和报告机制，用于从 BMC 获取传感器和指标数据。</span></p>
 
   <h2>Telemetry Schemas Overview</h2>
   <div class="zh">Redfish Telemetry Service 提供标准化的指标采集和报告机制。关键区分：MetricDefinition（定义"什么是这个指标"）→ MetricReportDefinition（定义"怎么采、多久采一次"）→ MetricReport（实际采集到的数据）。Sensor schema 是直接读取单个传感器当前值的现代方式。</div>
   <table class="kv-table">
-    <tr><th>Schema</th><th>URI Pattern</th><th>Main Coverage</th></tr>
-    <tr><td><strong style="color:var(--accent)">TelemetryService</strong></td><td><code class="cmd">/redfish/v1/TelemetryService</code></td><td>Entry point. Exposes links to MetricDefinitions and MetricReportDefinitions collections. Describes max report count, min collection interval, and supported features.</td></tr>
-    <tr><td><strong style="color:var(--blue)">MetricDefinition</strong></td><td><code class="cmd">/redfish/v1/TelemetryService/MetricDefinitions/{id}</code></td><td>Defines what a metric <em>is</em>: name, units, data type (Numeric/Boolean/String/Enumeration), implementation (PhysicalContext, sensor type), wildcards for multi-instance metrics.</td></tr>
-    <tr><td><strong style="color:var(--gold)">MetricReportDefinition</strong></td><td><code class="cmd">/redfish/v1/TelemetryService/MetricReportDefinitions/{id}</code></td><td>Defines <em>how</em> and <em>when</em> to collect metrics: schedule (interval or OnChange), report type (Periodic/OnChange/OnRequest), which MetricDefinitions to include, and where to log the result.</td></tr>
-    <tr><td><strong style="color:var(--green)">MetricReport</strong></td><td><code class="cmd">/redfish/v1/TelemetryService/MetricReports/{id}</code></td><td>The actual collected data. Contains a timestamped array of MetricValues — each entry has a MetricId, Value, and Timestamp. Generated automatically based on its MetricReportDefinition.</td></tr>
-    <tr><td><strong style="color:var(--red)">Triggers</strong></td><td><code class="cmd">/redfish/v1/TelemetryService/Triggers/{id}</code></td><td>Defines alert conditions on metric values: numeric threshold triggers (Upper/Lower Critical/Warning) or discrete-state triggers. Actions include LogToLogService or sending an event.</td></tr>
+    <tr><th>Schema</th><th>URI Pattern</th><th>Main Coverage / 主要用途</th></tr>
+    <tr>
+      <td><strong style="color:var(--accent)">TelemetryService</strong></td>
+      <td><code class="cmd">/redfish/v1/TelemetryService</code></td>
+      <td>Entry point. Exposes links to MetricDefinitions and MetricReportDefinitions collections. Describes max report count, min collection interval, and supported features.<br><span style="color:var(--text3);font-size:12px">入口点，提供指向 MetricDefinitions 和 MetricReportDefinitions 集合的链接，描述最大报告数量和最短采集间隔。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--blue)">MetricDefinition</strong><br><span style="color:var(--text3);font-size:12px">指标定义</span></td>
+      <td><code class="cmd">/redfish/v1/TelemetryService/MetricDefinitions/{id}</code></td>
+      <td>Defines what a metric <em>is</em>: name, units, data type (Numeric/Boolean/String/Enumeration), implementation (PhysicalContext, sensor type), wildcards for multi-instance metrics.<br><span style="color:var(--text3);font-size:12px">定义"这个指标是什么"：名称、单位、数据类型、对应的物理传感器，相当于指标的说明书。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--gold)">MetricReportDefinition</strong><br><span style="color:var(--text3);font-size:12px">报告定义</span></td>
+      <td><code class="cmd">/redfish/v1/TelemetryService/MetricReportDefinitions/{id}</code></td>
+      <td>Defines <em>how</em> and <em>when</em> to collect metrics: schedule (interval or OnChange), report type (Periodic/OnChange/OnRequest), which MetricDefinitions to include, and where to log the result.<br><span style="color:var(--text3);font-size:12px">定义"怎么采、多久采一次"：采集间隔/触发方式、包含哪些指标、结果存哪里。相当于采集任务配置。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--green)">MetricReport</strong><br><span style="color:var(--text3);font-size:12px">指标报告（实际数据）</span></td>
+      <td><code class="cmd">/redfish/v1/TelemetryService/MetricReports/{id}</code></td>
+      <td>The actual collected data. Contains a timestamped array of MetricValues — each entry has a MetricId, Value, and Timestamp. Generated automatically based on its MetricReportDefinition.<br><span style="color:var(--text3);font-size:12px">实际采集到的数据，包含带时间戳的数值数组，由 MetricReportDefinition 的计划自动生成。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--red)">Triggers</strong><br><span style="color:var(--text3);font-size:12px">触发器/告警条件</span></td>
+      <td><code class="cmd">/redfish/v1/TelemetryService/Triggers/{id}</code></td>
+      <td>Defines alert conditions on metric values: numeric threshold triggers (Upper/Lower Critical/Warning) or discrete-state triggers. Actions include LogToLogService or sending an event.<br><span style="color:var(--text3);font-size:12px">定义指标的告警条件：数值阈值触发（上/下临界/警告）或离散状态触发，动作包括记录日志或发送事件。</span></td>
+    </tr>
   </table>
 
   <h2>Schema Relationship</h2>
@@ -2890,10 +2934,22 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
   <div class="callout tip"><span class="callout-icon">BMC</span><strong>MetricReport</strong> is the primary telemetry source for sensor readings. For direct per-sensor access, the <strong>Sensor</strong> schema is used.</div>
 
   <table class="kv-table">
-    <tr><th>Schema</th><th>Sensor Reading Coverage</th><th>Notes</th></tr>
-    <tr><td><strong style="color:var(--green)">MetricReport</strong></td><td>Contains MetricValues[] array with Value + Timestamp per metric. The primary output of the Telemetry Service for bulk/scheduled readings.</td><td>Most relevant for BMC telemetry design. Reports are auto-generated per MetricReportDefinition schedule.</td></tr>
-    <tr><td><strong style="color:var(--accent)">Sensor</strong> (v1.0+)</td><td>Direct per-sensor resource under <code class="cmd">/redfish/v1/Chassis/{id}/Sensors/</code>. Each sensor has Reading, ReadingType, ReadingUnits, thresholds, and status.</td><td>Introduced in Redfish DSP0268 v1.8. The modern replacement for the older Thermal/Power inline sensor arrays.</td></tr>
-    <tr><td><strong style="color:var(--gold)">Thermal / Power</strong></td><td>Older schemas that embed sensor data inline (Temperatures[], Fans[], Voltages[]). Still widely supported for backward compatibility.</td><td>Deprecated in favor of standalone Sensor schema. BMCs typically support both.</td></tr>
+    <tr><th>Schema</th><th>Sensor Reading Coverage / 传感器读值覆盖</th><th>Notes / 备注</th></tr>
+    <tr>
+      <td><strong style="color:var(--green)">MetricReport</strong></td>
+      <td>Contains MetricValues[] array with Value + Timestamp per metric. The primary output of the Telemetry Service for bulk/scheduled readings.<br><span style="color:var(--text3);font-size:12px">包含每个指标的读值数组（值+时间戳），是 TelemetryService 批量/定时采集的主要输出。</span></td>
+      <td>Most relevant for BMC telemetry design. Reports are auto-generated per MetricReportDefinition schedule.<br><span style="color:var(--text3);font-size:12px">BMC 遥测设计最相关的 schema，报告按 MetricReportDefinition 的计划自动生成。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--accent)">Sensor</strong> (v1.0+)</td>
+      <td>Direct per-sensor resource under <code class="cmd">/redfish/v1/Chassis/{id}/Sensors/</code>. Each sensor has Reading, ReadingType, ReadingUnits, thresholds, and status.<br><span style="color:var(--text3);font-size:12px">每个传感器的独立资源，包含 Reading（读值）、ReadingType、单位、阈值和状态，直接读取当前值的最佳方式。</span></td>
+      <td>Introduced in Redfish DSP0268 v1.8. The modern replacement for the older Thermal/Power inline sensor arrays.<br><span style="color:var(--text3);font-size:12px">Redfish v1.8 引入，是旧版 Thermal/Power 内嵌传感器数组的现代替代方案。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--gold)">Thermal / Power</strong></td>
+      <td>Older schemas that embed sensor data inline (Temperatures[], Fans[], Voltages[]). Still widely supported for backward compatibility.<br><span style="color:var(--text3);font-size:12px">较旧的 schema，传感器数据内嵌在资源里（如 Temperatures[]、Fans[]），向后兼容仍广泛支持。</span></td>
+      <td>Deprecated in favor of standalone Sensor schema. BMCs typically support both.<br><span style="color:var(--text3);font-size:12px">已被独立 Sensor schema 取代，但 BMC 通常两者都支持。</span></td>
+    </tr>
   </table>
 
   <div class="qa-list">
