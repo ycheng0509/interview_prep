@@ -461,6 +461,37 @@ pre .c-comment { color: var(--text3); }
   .nav-overlay.open { display: block; }
   main { padding: 4rem 1rem 4rem; margin-top: 52px; }
   .concept-grid { grid-template-columns: 1fr; }
+
+  /* ── Stack wide tables on mobile instead of horizontal scroll ── */
+  .kv-table-stack { display: block; width: 100%; }
+  .kv-table-stack thead { display: none; }
+  .kv-table-stack tbody { display: block; width: 100%; }
+  .kv-table-stack tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .kv-table-stack td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: normal;
+  }
+  .kv-table-stack td:last-child { border-bottom: none; }
+  .kv-table-stack td::before {
+    content: attr(data-label);
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
 }
 
 /* ─── CROSS-TOPIC / REFERENCE HELPERS ─── */
@@ -2582,12 +2613,36 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
   <h2>BMC Hardware Interfaces (Host-side)</h2>
   <div class="callout info"><span class="callout-icon">KEY</span>These are the physical interfaces the host CPU/OS uses to send IPMI messages to the BMC on the same board (in-band).</div>
 
-  <table class="kv-table">
-    <tr><th>Interface</th><th>Full Name</th><th>How It Works</th><th>Common Use</th></tr>
-    <tr><td><strong style="color:var(--accent)">KCS</strong></td><td>Keyboard Controller Style</td><td>Mapped to I/O ports (default 0xCA0/0xCA4). Host writes command bytes to input buffer; BMC processes and writes response to output buffer. Interrupt or polling-based.</td><td>Most common in-band interface. Used by ipmitool on Linux via /dev/ipmi0.</td></tr>
-    <tr><td><strong style="color:var(--blue)">SMIC</strong></td><td>Server Management Interface Chip</td><td>3-wire serial interface (SMS_ATN, SMS_DATA, SMS_CLK). Older design, lower bandwidth than KCS.</td><td>Legacy systems. Rarely seen on modern hardware.</td></tr>
-    <tr><td><strong style="color:var(--gold)">BT</strong></td><td>Block Transfer</td><td>Similar to KCS but with larger buffer size and supports full duplex. Uses 3 I/O registers. Allows sending/receiving bigger payloads in one transaction.</td><td>Less common; seen in some older server platforms.</td></tr>
-    <tr><td><strong style="color:var(--purple)">SSIF</strong></td><td>SMBus System Interface</td><td>Uses the SMBus (I2C-based) to communicate with BMC. Host acts as SMBus master, BMC as slave. Address 0x10 by default.</td><td>Used in some embedded/ATCA systems. Also common in BMC-less designs using a dedicated management microcontroller.</td></tr>
+  <table class="kv-table kv-table-stack">
+    <thead>
+      <tr><th>Interface</th><th>Full Name</th><th>How It Works</th><th>Common Use</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-label="Interface"><strong style="color:var(--accent)">KCS</strong></td>
+        <td data-label="Full Name">Keyboard Controller Style<br><span style="color:var(--text3);font-size:12px">键盘控制器风格接口</span></td>
+        <td data-label="How It Works">Mapped to I/O ports (default 0xCA0/0xCA4). Host writes command bytes to input buffer; BMC processes and writes response to output buffer. Interrupt or polling-based.<br><span style="color:var(--text3);font-size:12px">映射到 I/O 端口。主机把命令字节写入输入缓冲区，BMC 处理后把响应写入输出缓冲区，支持中断或轮询两种模式。</span></td>
+        <td data-label="Common Use">Most common in-band interface. Used by ipmitool on Linux via /dev/ipmi0.<br><span style="color:var(--text3);font-size:12px">最常用的 in-band 接口。Linux 上运行 ipmitool 时走的就是 KCS（设备节点 /dev/ipmi0）。</span></td>
+      </tr>
+      <tr>
+        <td data-label="Interface"><strong style="color:var(--blue)">SMIC</strong></td>
+        <td data-label="Full Name">Server Management Interface Chip<br><span style="color:var(--text3);font-size:12px">服务器管理接口芯片</span></td>
+        <td data-label="How It Works">3-wire serial interface (SMS_ATN, SMS_DATA, SMS_CLK). Older design, lower bandwidth than KCS.<br><span style="color:var(--text3);font-size:12px">3 线串行接口，设计较老，带宽低于 KCS。</span></td>
+        <td data-label="Common Use">Legacy systems. Rarely seen on modern hardware.<br><span style="color:var(--text3);font-size:12px">仅见于老平台，现代硬件基本不用，面试知道缩写即可。</span></td>
+      </tr>
+      <tr>
+        <td data-label="Interface"><strong style="color:var(--gold)">BT</strong></td>
+        <td data-label="Full Name">Block Transfer<br><span style="color:var(--text3);font-size:12px">块传输接口</span></td>
+        <td data-label="How It Works">Similar to KCS but with larger buffer size and supports full duplex. Uses 3 I/O registers. Allows sending/receiving bigger payloads in one transaction.<br><span style="color:var(--text3);font-size:12px">与 KCS 类似但缓冲区更大，支持全双工，一次事务可传输更大的数据包。</span></td>
+        <td data-label="Common Use">Less common; seen in some older server platforms.<br><span style="color:var(--text3);font-size:12px">不常见，出现在部分老服务器平台。</span></td>
+      </tr>
+      <tr>
+        <td data-label="Interface"><strong style="color:var(--purple)">SSIF</strong></td>
+        <td data-label="Full Name">SMBus System Interface<br><span style="color:var(--text3);font-size:12px">SMBus 系统接口</span></td>
+        <td data-label="How It Works">Uses the SMBus (I2C-based) to communicate with BMC. Host acts as SMBus master, BMC as slave. Address 0x10 by default.<br><span style="color:var(--text3);font-size:12px">通过 SMBus（I2C 变体）与 BMC 通信。主机是 SMBus master，BMC 是 slave，默认地址 0x10。</span></td>
+        <td data-label="Common Use">Used in some embedded/ATCA systems. Also common in BMC-less designs using a dedicated management microcontroller.<br><span style="color:var(--text3);font-size:12px">用于部分嵌入式和 ATCA 系统，也常见于无独立 BMC 芯片、用专用管理微控制器的设计。</span></td>
+      </tr>
+    </tbody>
   </table>
   <div class="zh">
     <strong>四种 Host 接口的白话区分：</strong><br>
