@@ -2567,12 +2567,32 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
 
   <h2>Key Components</h2>
   <table class="kv-table">
-    <tr><th>Component</th><th>Full Name</th><th>Role</th></tr>
-    <tr><td>SDR</td><td>Sensor Data Repository</td><td>Database of all sensor definitions (type, thresholds, entity)</td></tr>
-    <tr><td>SEL</td><td>System Event Log</td><td>Hardware event log stored in non-volatile BMC memory</td></tr>
-    <tr><td>PEF</td><td>Platform Event Filtering</td><td>Rules engine — filters events and triggers actions</td></tr>
-    <tr><td>PET</td><td>Platform Event Trap</td><td>SNMP trap sent by BMC when PEF fires an alert action</td></tr>
-    <tr><td>FRU</td><td>Field Replaceable Unit</td><td>Inventory data for replaceable components (part number, serial)</td></tr>
+    <tr><th>Component</th><th>Full Name / 全称</th><th>Role / 作用</th></tr>
+    <tr>
+      <td>SDR</td>
+      <td>Sensor Data Repository<br><span style="color:var(--text3);font-size:12px">传感器数据记录库</span></td>
+      <td>Database of all sensor definitions (type, thresholds, entity)<br><span style="color:var(--text3);font-size:12px">存所有传感器的"定义"——名称、类型、阈值。BMC 靠它解读读值。</span></td>
+    </tr>
+    <tr>
+      <td>SEL</td>
+      <td>System Event Log<br><span style="color:var(--text3);font-size:12px">系统事件日志</span></td>
+      <td>Hardware event log stored in non-volatile BMC memory<br><span style="color:var(--text3);font-size:12px">BMC 的"黑匣子"，记录所有硬件事件，断电不丢。</span></td>
+    </tr>
+    <tr>
+      <td>PEF</td>
+      <td>Platform Event Filtering<br><span style="color:var(--text3);font-size:12px">平台事件过滤</span></td>
+      <td>Rules engine — filters events and triggers actions<br><span style="color:var(--text3);font-size:12px">规则引擎，匹配事件后决定执行什么动作（告警/重启/断电）。</span></td>
+    </tr>
+    <tr>
+      <td>PET</td>
+      <td>Platform Event Trap<br><span style="color:var(--text3);font-size:12px">平台事件陷阱</span></td>
+      <td>SNMP trap sent by BMC when PEF fires an alert action<br><span style="color:var(--text3);font-size:12px">PEF 触发 Alert 时，BMC 向管理站发出的 SNMP 告警包。</span></td>
+    </tr>
+    <tr>
+      <td>FRU</td>
+      <td>Field Replaceable Unit<br><span style="color:var(--text3);font-size:12px">现场可更换单元</span></td>
+      <td>Inventory data for replaceable components (part number, serial)<br><span style="color:var(--text3);font-size:12px">可更换组件的铭牌数据，包含部件号、序列号，用于资产管理。</span></td>
+    </tr>
   </table>
   <div class="zh">
     <strong>五个关键缩写的白话解释：</strong><br>
@@ -2678,10 +2698,26 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
   <div class="zh">SDR/SEL/PEF/PET 是 IPMI 事件链的四个环节：SDR 定义传感器 → 传感器触发事件 → SEL 记录事件 → PEF 过滤决策 → PET 发送 SNMP 告警。能把这条链路完整解释出来是面试加分项。</div>
   <table class="kv-table">
     <tr><th>Component</th><th>What It Is</th><th>Stored In</th></tr>
-    <tr><td><strong style="color:var(--accent)">SDR</strong></td><td>Sensor Data Repository — a table of sensor records. Each record describes one sensor: name, type, entity, thresholds, units, event generation settings.</td><td>BMC non-volatile storage. Read via <code class="cmd">ipmitool sdr list</code>.</td></tr>
-    <tr><td><strong style="color:var(--blue)">SEL</strong></td><td>System Event Log — a ring buffer of hardware events. Each entry has a timestamp, sensor reference, event direction (assert/deassert), and event data.</td><td>BMC non-volatile storage. Read via <code class="cmd">ipmitool sel list</code>.</td></tr>
-    <tr><td><strong style="color:var(--gold)">PEF</strong></td><td>Platform Event Filtering — a table of rules. Each rule matches event fields (sensor type, event type, severity) and specifies an action to take when the event matches.</td><td>BMC volatile/NV storage. Configured via <code class="cmd">ipmitool pef</code>.</td></tr>
-    <tr><td><strong style="color:var(--red)">PET</strong></td><td>Platform Event Trap — an SNMP trap payload. Sent by the BMC to a configured management station IP when PEF fires an "Alert" action. Carries event data in a standardized format.</td><td>Transmitted over the network (UDP/162). Received by SNMP trap manager.</td></tr>
+    <tr>
+      <td><strong style="color:var(--accent)">SDR</strong></td>
+      <td>Sensor Data Repository — a table of sensor records. Each record describes one sensor: name, type, entity, thresholds, units, event generation settings.<br><span style="color:var(--text3);font-size:12px">传感器的"说明书库"。每条记录定义一个传感器的名称、类型、阈值和单位。BMC 靠它知道怎么解读传感器读值。</span></td>
+      <td>BMC non-volatile storage. Read via <code class="cmd">ipmitool sdr list</code>.<br><span style="color:var(--text3);font-size:12px">存在 BMC 非易失性内存中，断电不丢失。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--blue)">SEL</strong></td>
+      <td>System Event Log — a ring buffer of hardware events. Each entry has a timestamp, sensor reference, event direction (assert/deassert), and event data.<br><span style="color:var(--text3);font-size:12px">BMC 的"黑匣子"。传感器超限、硬件故障都会在这里留下带时间戳的记录，断电不丢。</span></td>
+      <td>BMC non-volatile storage. Read via <code class="cmd">ipmitool sel list</code>.<br><span style="color:var(--text3);font-size:12px">存在 BMC 非易失性内存中。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--gold)">PEF</strong></td>
+      <td>Platform Event Filtering — a table of rules. Each rule matches event fields (sensor type, event type, severity) and specifies an action to take when the event matches.<br><span style="color:var(--text3);font-size:12px">BMC 的"规则引擎"。定义"当某类事件发生时执行什么动作"，动作可以是 Alert / 重启 / 断电等。</span></td>
+      <td>BMC volatile/NV storage. Configured via <code class="cmd">ipmitool pef</code>.<br><span style="color:var(--text3);font-size:12px">存在 BMC 中，可通过 ipmitool 配置规则。</span></td>
+    </tr>
+    <tr>
+      <td><strong style="color:var(--red)">PET</strong></td>
+      <td>Platform Event Trap — an SNMP trap payload. Sent by the BMC to a configured management station IP when PEF fires an "Alert" action. Carries event data in a standardized format.<br><span style="color:var(--text3);font-size:12px">BMC 向外发出的 SNMP 告警包。PEF 触发 Alert 时，BMC 把事件数据打包发送到管理站 IP。</span></td>
+      <td>Transmitted over the network (UDP/162). Received by SNMP trap manager.<br><span style="color:var(--text3);font-size:12px">通过网络发出（UDP 162 端口），由 SNMP 管理系统接收。</span></td>
+    </tr>
   </table>
 
   <h2>Flow Diagram</h2>
