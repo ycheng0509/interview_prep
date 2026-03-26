@@ -2543,6 +2543,14 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
     <tr><td>PET</td><td>Platform Event Trap</td><td>SNMP trap sent by BMC when PEF fires an alert action</td></tr>
     <tr><td>FRU</td><td>Field Replaceable Unit</td><td>Inventory data for replaceable components (part number, serial)</td></tr>
   </table>
+  <div class="zh">
+    <strong>五个关键缩写的白话解释：</strong><br>
+    • <strong>SDR（Sensor Data Repository）</strong>：传感器的"说明书库"。里面每条记录定义了一个传感器叫什么名字、是什么类型、阈值是多少。BMC 靠它知道怎么解读传感器的读值。<br>
+    • <strong>SEL（System Event Log）</strong>：BMC 的"黑匣子"。任何传感器超限、硬件故障都会在这里留下一条带时间戳的记录，存在 BMC 非易失性内存里，断电不丢。<br>
+    • <strong>PEF（Platform Event Filtering）</strong>：BMC 的"规则引擎"。你告诉它"如果 CPU 温度超过临界值，就执行 XX 动作"，它负责匹配事件和触发动作。<br>
+    • <strong>PET（Platform Event Trap）</strong>：BMC 向外发出的"SNMP 告警包"。PEF 触发 Alert 动作时，BMC 向指定 IP 发一个 SNMP trap，管理系统收到后知道发生了什么事。<br>
+    • <strong>FRU（Field Replaceable Unit）</strong>：可更换组件的"铭牌数据"，包含部件号、序列号、厂商信息，用于资产管理和备件核对。
+  </div>
 </div>
 
 <!-- IPMI SENSORS -->
@@ -2581,6 +2589,13 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
     <tr><td><strong style="color:var(--gold)">BT</strong></td><td>Block Transfer</td><td>Similar to KCS but with larger buffer size and supports full duplex. Uses 3 I/O registers. Allows sending/receiving bigger payloads in one transaction.</td><td>Less common; seen in some older server platforms.</td></tr>
     <tr><td><strong style="color:var(--purple)">SSIF</strong></td><td>SMBus System Interface</td><td>Uses the SMBus (I2C-based) to communicate with BMC. Host acts as SMBus master, BMC as slave. Address 0x10 by default.</td><td>Used in some embedded/ATCA systems. Also common in BMC-less designs using a dedicated management microcontroller.</td></tr>
   </table>
+  <div class="zh">
+    <strong>四种 Host 接口的白话区分：</strong><br>
+    • <strong>KCS</strong> 是现代 Linux 服务器最常用的接口。你在 Linux 上运行 <code>ipmitool</code> 时，它通过 <code>/dev/ipmi0</code> 设备节点走的就是 KCS，底层是映射到 I/O 端口的寄存器。<br>
+    • <strong>SSIF</strong> 走的是 SMBus（I2C 的变体），BMC 作为 SMBus slave，适合没有专用 KCS I/O 端口的嵌入式设计。<br>
+    • <strong>BT</strong> 和 <strong>SMIC</strong> 是较老的接口，现代平台基本不用，面试里知道缩写全称即可。<br>
+    这四个接口都是 <strong>in-band</strong> 路径——OS 运行中从主机侧主动发请求给 BMC。与之对应的 <strong>out-of-band</strong> 路径是管理员从独立的 BMC 网口（IPMI over LAN）远程访问，完全不经过主机 OS。
+  </div>
 
   <h2>Sensor Group → Hardware Interface Quick Map / 传感器分组速查表</h2>
   <div class="zh">面试追问"传感器读值来自哪里"时，用这张表回答。关键结论：Temperature 主要靠 I2C/SMBus 和 PECI，Voltage/Current 靠 ADC 和 PMBus，Fan/GPIO 状态靠 GPIO，OS 和固件事件靠 KCS/BT/SSIF 这类 host 接口。</div>
@@ -2652,6 +2667,15 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
 │  → received by SNMP manager / NMS                       │
 └─────────────────────────────────────────────────────────┘</span>
 </pre>
+  <div class="zh">
+    <strong>用一个场景把整条链路串起来：</strong><br>
+    假设 CPU 温度突然升到 91°C，超过了临界阈值（Upper Critical）：<br>
+    1. <strong>SDR</strong> 里早已定义了"CPU Temp"传感器的 Upper Critical 阈值是 85°C——BMC 用这个定义判断当前读值是否超限。<br>
+    2. 读值 91°C 超过了 SDR 定义的阈值，BMC 生成一个事件，写入 <strong>SEL</strong>，记录时间戳、传感器编号、事件类型（Upper Critical 超限）。<br>
+    3. 同时，<strong>PEF</strong> 的 Event Filter Table 里有一条规则："CPU 温度 Upper Critical → 动作：Alert"，BMC 扫描规则表发现匹配。<br>
+    4. PEF 触发 Alert 动作，BMC 构造一个 <strong>PET</strong>（SNMP trap），发送到管理站的 IP 地址，管理员收到告警，知道要处理 CPU 过热问题。<br>
+    <strong>一句话记忆：SDR 定义规则 → 事件写 SEL → PEF 匹配决策 → PET 对外发告警。</strong>
+  </div>
 
   <div class="qa-list">
     <div class="qa-card">
@@ -2699,6 +2723,18 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
 #   Version     = v1_7_0  → 1.7.0
 #   TypeName    = Thermal (the specific type within the schema)</span>
 </pre>
+  <div class="zh">
+    <strong>@odata.type 格式拆解：</strong><br>
+    以 <code>#Thermal.v1_7_0.Thermal</code> 为例：<br>
+    • <code>#Thermal</code>：schema 名称，告诉你这是 Thermal 资源（管理温度和风扇的 schema）。<br>
+    • <code>v1_7_0</code>：schema 版本，对应 1.7.0——下划线分隔主版本.次版本.勘误版本。<br>
+    • 最后一个 <code>Thermal</code>：该 schema 里的具体类型名称。<br><br>
+    <strong>为什么版本很重要？</strong>某些属性是高版本新增的。比如你的代码访问一个 v1.5 才有的字段，但 BMC 只实现了 v1.3，访问会失败。所以写管理工具时要先读 <code>@odata.type</code> 确认版本，再决定能不能访问某个属性。<br><br>
+    <strong>@odata.type vs RedfishVersion 的区别：</strong><br>
+    • <code>RedfishVersion</code>：在 <code>/redfish/v1/</code> 根路径，代表整个 Redfish 服务支持的协议版本，例如 "1.16.0"。<br>
+    • <code>@odata.type</code>：在每个具体资源里，代表该资源使用的 schema 版本，例如 "#Thermal.v1_7_0.Thermal"。<br>
+    两者不要混淆——面试里这是高频踩坑点。
+  </div>
 
   <div class="callout tip"><span class="callout-icon">TIP</span>When writing a management tool that reads Redfish, always check <code class="cmd">@odata.type</code> before accessing version-specific properties. A property added in v1.5.0 won't exist on a BMC that only supports v1.3.0.</div>
 
@@ -2747,6 +2783,17 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
   └── Triggers/                 ← alert rules on metric values
         └── {TriggerId}        ← e.g., alert if CPU0_Temp &gt; 85°C</span>
 </pre>
+  <div class="zh">
+    <strong>三层结构的白话解释：</strong><br>
+    把 TelemetryService 想象成一个"数据采集系统"的三个层次：<br>
+    • <strong>MetricDefinition（定义层）</strong>：相当于"这个指标是什么"的说明书。比如定义"CPU0 温度"是摄氏度的数值型指标，对应 CPU0 的物理传感器。<br>
+    • <strong>MetricReportDefinition（计划层）</strong>：相当于"采集任务配置"。比如设置"每 10 秒采集一次 CPU 温度和风扇转速，生成一份报告"。<br>
+    • <strong>MetricReport（数据层）</strong>：相当于"实际采集到的数据"。按照 MetricReportDefinition 的计划，BMC 自动填入带时间戳的读值数组。<br><br>
+    <strong>什么时候用 Sensor，什么时候用 TelemetryService？</strong><br>
+    • 面试官问"怎么读一个传感器的当前温度"→ 答 <code>Sensor</code>，路径在 <code>/redfish/v1/Chassis/{id}/Sensors/</code>。<br>
+    • 面试官问"怎么做周期性采集、批量上报"→ 答 <code>TelemetryService</code> + MetricReportDefinition + MetricReport。<br>
+    这是面试里最常见的"选哪个"陷阱，记住这个判断标准就不会答错。
+  </div>
 
   <h2>Which Schema Covers Sensor Readings?</h2>
   <div class="callout tip"><span class="callout-icon">BMC</span><strong>MetricReport</strong> is the primary telemetry source for sensor readings. For direct per-sensor access, the <strong>Sensor</strong> schema is used.</div>
@@ -3149,6 +3196,14 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
     <li>IPMI exposes them in a traditional server management model</li>
     <li>Redfish exposes them through modern RESTful schemas (<code>Sensor</code>, telemetry resources)</li>
   </ul>
+  <div class="zh">
+    <strong>信号链路的完整白话版：</strong><br>
+    1. <strong>物理层</strong>：主板上的温度传感器通过 I2C/SMBus 连接到 BMC；CPU 内部温度通过 PECI 传给 BMC；风扇转速通过 tach 信号传给 BMC；电源状态通过 PMBus 传给 BMC。<br>
+    2. <strong>BMC 采集层</strong>：BMC（AST2600）持续轮询这些 sideband 接口，把读值和 SDR 里定义的阈值做比较，超限就写 SEL 并触发 PEF。<br>
+    3. <strong>IPMI 暴露层</strong>：管理员或脚本通过 <code>ipmitool sdr list</code> / <code>sel list</code> 访问 BMC，走的是 IPMI 命令集（in-band 走 KCS，out-of-band 走 IPMI over LAN）。<br>
+    4. <strong>Redfish 暴露层</strong>：同样的 BMC 数据，通过 HTTPS REST API 以 JSON 格式暴露。<code>GET /redfish/v1/Chassis/1/Sensors/CPUTemp</code> 返回的 Reading 字段，和 <code>ipmitool sdr get "CPU Temp"</code> 读到的是同一个物理传感器的值。<br>
+    <strong>核心结论：IPMI 和 Redfish 是同一份 BMC 数据的两个不同接口，不是两套独立的系统。</strong>
+  </div>
   <div class="qa-list" style="margin-top:1.5rem">
     <div class="qa-card">
       <div class="qa-q" onclick="toggle(this)">
@@ -3175,6 +3230,16 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
     <li>Linux 上用 <code>lspci</code>, <code>dmidecode</code>, <code>lsblk</code> 对照硬件拓扑</li>
     <li>做验证时把 BMC 视角和 OS 视角互相对照</li>
   </ul>
+  <div class="zh">
+    <strong>为什么要交叉验证？每个工具看到的是不同层次的视角：</strong><br>
+    • <strong>BMC / IPMI / Redfish 视角</strong>：硬件层。传感器超温、硬盘 slot 状态异常、电源故障——这些是物理信号，OS 不一定能看到。<br>
+    • <strong>OS / Linux 视角</strong>：驱动和文件系统层。<code>lsblk</code> 看到的是内核识别的块设备，<code>lspci</code> 看到的是驱动枚举的 PCIe 设备。<br><br>
+    <strong>三个典型交叉验证场景：</strong><br>
+    1. IPMI 报硬盘 slot offline，但 <code>lsblk</code> 仍然看得到盘 → 说明硬件没完全掉，可能是 BMC sideband 通信问题或固件 bug，不是真正的硬盘故障。<br>
+    2. <code>dmesg</code> 报 PCIe AER 错误，但 IPMI SEL 没有对应事件 → 说明是驱动层面发现的错误，BMC 没有收到对应的硬件中断，需要查驱动和固件版本。<br>
+    3. Redfish Sensor 读到 CPU 温度 91°C，同时 <code>journalctl</code> 里有 thermal throttle 日志 → 两个视角互相印证，是真实的散热问题。<br>
+    <strong>面试答法：先说"我会对照 BMC 和 OS 两个视角"，再举一个具体场景，比第一个场景最容易说清楚。</strong>
+  </div>
   <div class="qa-list" style="margin-top:1.5rem">
     <div class="qa-card">
       <div class="qa-q" onclick="toggle(this)">
@@ -3199,6 +3264,17 @@ _PATTERN = re.<span class="c-gold">compile</span>(<span class="c-purple">r'\[(\w
     <li>Python 请求 Redfish API 的 JSON 并处理响应结构</li>
     <li>Python 把测试输出结构化，生成 summary / CSV / JSON / report</li>
   </ul>
+  <div class="zh">
+    <strong>Python 在这个工作流里做的事，用一个具体例子说清楚：</strong><br><br>
+    <strong>场景：用 Python 解析 ipmitool 输出</strong><br>
+    <code>ipmitool sdr list</code> 输出是这样的文本：<br>
+    <code style="display:block;margin:6px 0;padding:8px;background:var(--surface2);border-radius:4px;font-size:12px">CPU Temp        | 72 degrees C      | ok<br>Fan1            | 8000 RPM          | ok<br>PSU Voltage     | 12.10 Volts       | ok</code>
+    Python 逐行读取、split('|')、strip 每个字段，提取 name / value / status，标记超限项，最后输出一份 JSON 报告。这就是题 1 的实际应用场景。<br><br>
+    <strong>场景：用 Python 调用 Redfish API</strong><br>
+    <code style="display:block;margin:6px 0;padding:8px;background:var(--surface2);border-radius:4px;font-size:12px">import requests<br>r = requests.get('https://bmc-ip/redfish/v1/Chassis/1/Sensors/CPUTemp',<br>                 auth=('admin','pass'), verify=False)<br>data = r.json()<br>reading = data.get('Reading')   # 用 .get() 防止字段缺失</code>
+    用 <code>.get()</code> 而不是 <code>['key']</code> 防止字段缺失时崩溃，提取 Reading 值后和阈值对比，生成告警列表。<br><br>
+    <strong>面试时把这两个场景说出来，就把 Python + IPMI + Redfish 三个知识点串在一起了。</strong>
+  </div>
   <div class="qa-list" style="margin-top:1.5rem">
     <div class="qa-card">
       <div class="qa-q" onclick="toggle(this)">
